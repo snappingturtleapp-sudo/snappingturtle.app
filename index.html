@@ -76,7 +76,7 @@
     .section-eyebrow { color: var(--green); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 14px; }
     .pch-title { font-size: clamp(20px, 3vw, 34px); font-weight: bold; margin-bottom: 16px; }
     .pch-body { color: var(--brown); font-size: 14px; line-height: 24px; font-style: italic; margin-bottom: 28px; max-width: 520px; margin-left: auto; margin-right: auto; }
-    .pch-img { width: min(580px, 90vw); border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,0.5); margin-bottom: 20px; display: block; margin-left: auto; margin-right: auto; }
+    .pch-img { width: min(700px, 92vw); border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,0.5); margin-bottom: 20px; display: block; margin-left: auto; margin-right: auto; }
     .pch-caption { color: var(--dim); font-size: 11px; letter-spacing: 2px; margin-bottom: 28px; font-style: italic; }
 
     /* Waitlist */
@@ -100,7 +100,7 @@
 
     /* Fairy lights banner */
     .fairy-banner { width: 100%; padding-top: 64px; }
-    .fairy-banner img { width: 100%; display: block; max-height: 420px; object-fit: cover; object-position: center; }
+    .fairy-banner img { width: 100%; display: block; max-height: 320px; object-fit: cover; object-position: center; }
 
     /* Good mail hero */
     .goodmail-hero { text-align: center; padding: 60px 24px 50px; border-bottom: 1px solid rgba(255,255,255,0.07); }
@@ -114,16 +114,16 @@
     .story-label { text-align: center; margin-bottom: 48px; }
     .story-label h2 { font-size: clamp(20px, 2.5vw, 32px); color: var(--fridge-cream); margin-bottom: 8px; }
     .story-label p { color: #7A8A6A; font-size: 12px; letter-spacing: 2px; font-style: italic; }
-    .story-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    .story-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
     .story-frame { display: flex; flex-direction: column; align-items: center; }
     .story-frame-num { color: var(--green); font-size: 10px; letter-spacing: 3px; margin-bottom: 10px; }
-    .story-polaroid { background: white; padding: 10px 10px 36px; box-shadow: 4px 6px 20px rgba(0,0,0,0.5); width: 100%; }
+    .story-polaroid { background: white; padding: 10px 10px 44px; box-shadow: 4px 6px 20px rgba(0,0,0,0.5); width: 100%; }
     .story-frame:nth-child(1) .story-polaroid { transform: rotate(-2deg); }
     .story-frame:nth-child(2) .story-polaroid { transform: rotate(1.5deg); }
     .story-frame:nth-child(3) .story-polaroid { transform: rotate(-1deg); }
     .story-frame:nth-child(4) .story-polaroid { transform: rotate(2deg); }
-    .story-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
-    .story-caption { padding-top: 8px; text-align: center; font-family: 'Courier New', monospace; font-size: 11px; color: #333; font-style: italic; line-height: 1.4; }
+    .story-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+    .story-caption { padding-top: 10px; text-align: center; font-family: 'Courier New', monospace; font-size: 10px; color: #444; font-style: italic; line-height: 1.5; }
 
     /* Fridge polaroid benefits */
     .fridge-section { padding: 80px 24px; border-bottom: 1px solid rgba(255,255,255,0.07); }
@@ -140,7 +140,7 @@
     .magnet.green-m { background: radial-gradient(circle at 35% 35%, #50c050, #1A6B1A); }
     .magnet.orange { background: radial-gradient(circle at 35% 35%, #e08030, #8B4A1A); }
     .magnet.purple { background: radial-gradient(circle at 35% 35%, #a050e0, #4A1A8B); }
-    .polaroid { background: white; padding: 10px 10px 36px; box-shadow: 4px 6px 18px rgba(0,0,0,0.4); max-width: 240px; width: 100%; }
+    .polaroid { background: white; padding: 12px 12px 44px; box-shadow: 4px 6px 18px rgba(0,0,0,0.4); max-width: 300px; width: 100%; }
     .polaroid-wrap:nth-child(1) .polaroid { transform: rotate(-2.5deg); }
     .polaroid-wrap:nth-child(2) .polaroid { transform: rotate(1.8deg); }
     .polaroid-wrap:nth-child(3) .polaroid { transform: rotate(-1.2deg); }
@@ -159,7 +159,7 @@
     .intent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
     .intent-img-wrap { position: relative; display: flex; justify-content: center; }
     .intent-magnet { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); width: 28px; height: 28px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #e05050, #8B1A1A); box-shadow: 0 2px 8px rgba(0,0,0,0.4); z-index: 3; }
-    .intent-img { width: 100%; max-width: 380px; border: 12px solid white; box-shadow: 6px 8px 24px rgba(0,0,0,0.5); transform: rotate(-1.5deg); }
+    .intent-img { width: 100%; max-width: 460px; border: 14px solid white; box-shadow: 6px 8px 24px rgba(0,0,0,0.5); transform: rotate(-1.5deg); }
     .intent-eyebrow { color: var(--green); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 14px; }
     .intent-title { font-size: clamp(22px, 3vw, 36px); font-weight: bold; margin-bottom: 20px; line-height: 1.2; color: var(--fridge-cream); }
     .intent-body { color: #A0B090; font-size: 14px; line-height: 25px; }
@@ -172,7 +172,7 @@
     .wabac-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
     .wabac-img-wrap { position: relative; display: flex; justify-content: center; order: 2; }
     .wabac-magnet { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); width: 28px; height: 28px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #5090e0, #1A3A8B); box-shadow: 0 2px 8px rgba(0,0,0,0.4); z-index: 3; }
-    .wabac-img { width: 100%; max-width: 380px; border: 12px solid white; box-shadow: 6px 8px 24px rgba(0,0,0,0.5); transform: rotate(1.5deg); }
+    .wabac-img { width: 100%; max-width: 460px; border: 14px solid white; box-shadow: 6px 8px 24px rgba(0,0,0,0.5); transform: rotate(1.5deg); }
     .wabac-copy { order: 1; }
     .wabac-eyebrow { color: var(--green); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 14px; }
     .wabac-title { font-size: clamp(22px, 3vw, 36px); font-weight: bold; margin-bottom: 20px; line-height: 1.2; color: var(--fridge-cream); }
@@ -184,7 +184,7 @@
     .mom-section { padding: 80px 24px; text-align: center; }
     .mom-inner { max-width: 600px; margin: 0 auto; }
     .mom-magnet { width: 30px; height: 30px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #50c050, #1A6B1A); box-shadow: 0 2px 8px rgba(0,0,0,0.4); margin: 0 auto; margin-bottom: -15px; position: relative; z-index: 3; }
-    .mom-img { width: min(440px, 88vw); border: 14px solid white; box-shadow: 6px 8px 30px rgba(0,0,0,0.6); transform: rotate(0.5deg); margin: 0 auto 44px; display: block; }
+    .mom-img { width: min(560px, 90vw); border: 14px solid white; box-shadow: 6px 8px 30px rgba(0,0,0,0.6); transform: rotate(0.5deg); margin: 0 auto 44px; display: block; }
     .mom-title { font-size: clamp(22px, 3vw, 36px); font-weight: bold; color: var(--fridge-cream); margin-bottom: 14px; }
     .mom-body { color: #A0B090; font-size: 15px; line-height: 26px; font-style: italic; margin-bottom: 36px; }
 
@@ -348,7 +348,7 @@
           <p class="story-frame-num">I.</p>
           <div class="story-polaroid">
             <img src="Floor1.png" alt="He opens the envelope and reads the message" class="story-img" />
-            <p class="story-caption">He opens the envelope. Reads the message. Hearts everywhere.</p>
+            <p class="story-caption">The envelope opens. The message is read. Hearts everywhere.</p>
           </div>
         </div>
         <div class="story-frame">
