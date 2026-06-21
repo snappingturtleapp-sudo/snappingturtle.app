@@ -15,13 +15,12 @@
       --dim: #6B5830;
       --border: #3A3020;
       --red: #CC2200;
-      --avocado: #4A5240;
-      --avocado-light: #5C6650;
-      --avocado-dark: #2E3228;
+      --avocado: #3D4435;
+      --avocado-dark: #252B20;
       --fridge-cream: #E8E0C8;
     }
     html { scroll-behavior: smooth; }
-    body { background: var(--black); color: var(--cream); font-family: monospace; }
+    body { background: var(--black); color: var(--cream); font-family: monospace; margin: 0; }
     a { color: inherit; text-decoration: none; }
 
     /* ── NAV ── */
@@ -30,238 +29,212 @@
       display: flex; align-items: center; justify-content: space-between;
       padding: 16px 40px;
       border-bottom: 1px solid var(--border);
-      background: var(--black);
+      background: rgba(10,10,8,0.97);
+      backdrop-filter: blur(8px);
     }
-    .nav-logo { color: var(--green); font-size: 13px; letter-spacing: 4px; cursor: pointer; }
-    .nav-links { display: flex; gap: 28px; }
-    .nav-links a {
-      font-size: 11px; letter-spacing: 3px; color: var(--dim);
-      text-transform: uppercase; transition: color 0.2s; cursor: pointer;
-    }
+    .nav-logo { color: var(--green); font-size: 12px; letter-spacing: 4px; cursor: pointer; white-space: nowrap; }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { font-size: 10px; letter-spacing: 2px; color: var(--dim); text-transform: uppercase; transition: color 0.2s; cursor: pointer; white-space: nowrap; }
     .nav-links a:hover, .nav-links a.active { color: var(--cream); }
 
     /* ── PAGES ── */
-    .page { display: none; min-height: 100vh; }
+    .page { display: none; }
     .page.active { display: block; }
 
     /* ── BUTTONS ── */
-    .btn {
-      display: inline-block; background: var(--red); color: var(--cream);
-      padding: 16px 48px; font-size: 13px; letter-spacing: 4px;
-      font-weight: bold; font-family: monospace; cursor: pointer;
-      border: none; transition: opacity 0.2s;
-    }
+    .btn { display: inline-block; background: var(--red); color: var(--cream); padding: 15px 44px; font-size: 12px; letter-spacing: 4px; font-weight: bold; font-family: monospace; cursor: pointer; border: none; transition: opacity 0.2s; }
     .btn:hover { opacity: 0.85; }
-    .btn-ghost {
-      display: inline-block; background: transparent; color: var(--cream);
-      padding: 16px 48px; font-size: 13px; letter-spacing: 4px;
-      font-weight: bold; font-family: monospace; cursor: pointer;
-      border: 1px solid var(--border); transition: border-color 0.2s;
-    }
+    .btn-ghost { display: inline-block; background: transparent; color: var(--cream); padding: 15px 44px; font-size: 12px; letter-spacing: 4px; font-weight: bold; font-family: monospace; cursor: pointer; border: 1px solid var(--border); transition: border-color 0.2s; }
     .btn-ghost:hover { border-color: var(--cream); }
 
-    /* ══════════════════════════════════════════
+    /* ══════════════════════════════════
        HOME PAGE
-    ══════════════════════════════════════════ */
-    #page-home { background: var(--black); }
+    ══════════════════════════════════ */
+    #page-home { background: var(--black); min-height: 100vh; }
 
     .hero {
-      min-height: 100vh;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
       text-align: center; padding: 100px 24px 80px;
       border-bottom: 1px solid var(--border);
     }
     .hero-channel { color: var(--green); font-size: 11px; letter-spacing: 6px; margin-bottom: 32px; }
-    .hero-mascot {
-      width: min(480px, 90vw); border-radius: 12px;
-      margin-bottom: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-    }
-    .hero-title { font-size: clamp(32px, 5vw, 64px); font-weight: bold; letter-spacing: 2px; line-height: 1.1; margin-bottom: 12px; }
-    .hero-subtitle { color: var(--green); font-size: 13px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 32px; }
-    .hero-divider { width: 60px; height: 1px; background: var(--border); margin: 0 auto 32px; }
-    .hero-tagline { color: var(--brown); font-size: 16px; line-height: 28px; font-style: italic; max-width: 480px; margin: 0 auto 40px; }
-    .hero-steps { display: flex; align-items: center; gap: 16px; margin-bottom: 48px; flex-wrap: wrap; justify-content: center; }
+    .hero-mascot { width: min(460px, 88vw); border-radius: 12px; margin-bottom: 36px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
+    .hero-title { font-size: clamp(30px, 5vw, 60px); font-weight: bold; letter-spacing: 2px; line-height: 1.1; margin-bottom: 10px; }
+    .hero-subtitle { color: var(--green); font-size: 12px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 28px; }
+    .hero-divider { width: 50px; height: 1px; background: var(--border); margin: 0 auto 28px; }
+    .hero-tagline { color: var(--brown); font-size: 15px; line-height: 26px; font-style: italic; max-width: 440px; margin: 0 auto 36px; }
+    .hero-steps { display: flex; align-items: center; gap: 14px; margin-bottom: 44px; flex-wrap: wrap; justify-content: center; }
     .step { text-align: center; }
-    .step-num { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--green); color: var(--green); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; margin: 0 auto 8px; }
-    .step-label { font-size: 10px; color: var(--dim); letter-spacing: 1px; text-transform: uppercase; line-height: 14px; }
-    .step-arrow { color: var(--green); font-size: 20px; opacity: 0.5; margin-bottom: 20px; }
+    .step-num { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--green); color: var(--green); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; margin: 0 auto 7px; }
+    .step-label { font-size: 9px; color: var(--dim); letter-spacing: 1px; text-transform: uppercase; line-height: 14px; }
+    .step-arrow { color: var(--green); font-size: 18px; opacity: 0.5; margin-bottom: 18px; }
 
-    /* PCH humor section */
+    /* PCH section */
     .pch-section { padding: 80px 24px; text-align: center; border-bottom: 1px solid var(--border); }
-    .pch-inner { max-width: 800px; margin: 0 auto; }
-    .pch-eyebrow { color: var(--green); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 16px; }
-    .pch-title { font-size: clamp(22px, 3vw, 36px); font-weight: bold; margin-bottom: 16px; }
-    .pch-body { color: var(--brown); font-size: 14px; line-height: 24px; font-style: italic; margin-bottom: 32px; max-width: 560px; margin-left: auto; margin-right: auto; }
-    .pch-img { width: min(600px, 90vw); border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,0.4); margin-bottom: 24px; display: block; margin-left: auto; margin-right: auto; }
-    .pch-caption { color: var(--dim); font-size: 11px; letter-spacing: 2px; margin-bottom: 32px; font-style: italic; }
+    .pch-inner { max-width: 760px; margin: 0 auto; }
+    .section-eyebrow { color: var(--green); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 14px; }
+    .pch-title { font-size: clamp(20px, 3vw, 34px); font-weight: bold; margin-bottom: 16px; }
+    .pch-body { color: var(--brown); font-size: 14px; line-height: 24px; font-style: italic; margin-bottom: 28px; max-width: 520px; margin-left: auto; margin-right: auto; }
+    .pch-img { width: min(580px, 90vw); border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,0.5); margin-bottom: 20px; display: block; margin-left: auto; margin-right: auto; }
+    .pch-caption { color: var(--dim); font-size: 11px; letter-spacing: 2px; margin-bottom: 28px; font-style: italic; }
 
     /* Waitlist */
     .waitlist-section { padding: 80px 24px; border-bottom: 1px solid var(--border); text-align: center; }
-    .waitlist-inner { max-width: 480px; margin: 0 auto; }
-    .waitlist-eyebrow { color: var(--green); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 16px; }
-    .waitlist-title { font-size: clamp(24px, 3vw, 40px); font-weight: bold; margin-bottom: 16px; }
-    .waitlist-sub { color: var(--brown); font-size: 14px; line-height: 24px; margin-bottom: 32px; font-style: italic; }
+    .waitlist-inner { max-width: 460px; margin: 0 auto; }
+    .waitlist-title { font-size: clamp(22px, 3vw, 38px); font-weight: bold; margin-bottom: 14px; }
+    .waitlist-sub { color: var(--brown); font-size: 13px; line-height: 22px; margin-bottom: 28px; font-style: italic; }
     .waitlist-form { display: flex; }
-    .waitlist-input {
-      flex: 1; background: #1A1A18; border: 1px solid var(--border);
-      border-right: none; color: var(--cream); padding: 14px 16px;
-      font-size: 13px; font-family: monospace; outline: none;
-    }
+    .waitlist-input { flex: 1; background: #1A1A18; border: 1px solid var(--border); border-right: none; color: var(--cream); padding: 13px 14px; font-size: 13px; font-family: monospace; outline: none; }
     .waitlist-input:focus { border-color: var(--green); }
-    .waitlist-btn {
-      background: var(--green); color: var(--black); border: none;
-      padding: 14px 20px; font-size: 11px; letter-spacing: 3px;
-      font-weight: bold; font-family: monospace; cursor: pointer;
-    }
+    .waitlist-btn { background: var(--green); color: var(--black); border: none; padding: 13px 18px; font-size: 10px; letter-spacing: 3px; font-weight: bold; font-family: monospace; cursor: pointer; white-space: nowrap; }
     .waitlist-btn:hover { opacity: 0.85; }
-    .waitlist-result { margin-top: 12px; font-size: 12px; letter-spacing: 1px; display: none; }
+    .waitlist-result { margin-top: 10px; font-size: 12px; letter-spacing: 1px; display: none; }
     .waitlist-result.success { color: var(--green); }
     .waitlist-result.error { color: var(--red); }
 
-    /* ══════════════════════════════════════════
+    /* ══════════════════════════════════
        GOOD MAIL PAGE
-    ══════════════════════════════════════════ */
-    #page-goodmail { background: var(--avocado-dark); }
+    ══════════════════════════════════ */
+    #page-goodmail { background: var(--avocado-dark); min-height: 100vh; }
 
-    .goodmail-hero {
-      min-height: 50vh;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      text-align: center; padding: 120px 24px 60px;
-      border-bottom: 2px solid rgba(255,255,255,0.06);
-    }
-    .goodmail-eyebrow { color: var(--green); font-size: 11px; letter-spacing: 6px; margin-bottom: 20px; }
-    .goodmail-title { font-size: clamp(40px, 7vw, 96px); font-weight: bold; color: var(--fridge-cream); margin-bottom: 16px; line-height: 1; }
-    .goodmail-sub { color: #A8B898; font-size: 15px; line-height: 26px; max-width: 560px; font-style: italic; }
+    /* Fairy lights banner */
+    .fairy-banner { width: 100%; padding-top: 64px; }
+    .fairy-banner img { width: 100%; display: block; max-height: 420px; object-fit: cover; object-position: center; }
 
-    /* Fridge / polaroid section */
-    .fridge-section { position: relative; padding: 80px 24px; }
-    .fridge-inner { position: relative; z-index: 2; max-width: 1100px; margin: 0 auto; }
-    .fridge-label { text-align: center; margin-bottom: 60px; }
-    .fridge-label h2 { font-size: clamp(22px, 3vw, 36px); color: var(--fridge-cream); margin-bottom: 8px; }
-    .fridge-label p { color: #8A9A7A; font-size: 13px; letter-spacing: 2px; font-style: italic; }
+    /* Good mail hero */
+    .goodmail-hero { text-align: center; padding: 60px 24px 50px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .goodmail-eyebrow { color: var(--green); font-size: 11px; letter-spacing: 6px; margin-bottom: 16px; }
+    .goodmail-title { font-size: clamp(48px, 8vw, 100px); font-weight: bold; color: var(--fridge-cream); margin-bottom: 16px; line-height: 1; }
+    .goodmail-sub { color: #A0B090; font-size: 15px; line-height: 26px; max-width: 520px; margin: 0 auto; font-style: italic; }
 
-    .polaroid-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 52px 32px; align-items: start;
-    }
-    .polaroid-wrap { display: flex; justify-content: center; flex-direction: column; align-items: center; }
-    .magnet {
-      width: 28px; height: 28px; border-radius: 50%;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-      margin-bottom: -14px; position: relative; z-index: 3;
-      flex-shrink: 0;
-    }
+    /* Pepé story strip */
+    .story-section { padding: 80px 24px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .story-inner { max-width: 1100px; margin: 0 auto; }
+    .story-label { text-align: center; margin-bottom: 48px; }
+    .story-label h2 { font-size: clamp(20px, 2.5vw, 32px); color: var(--fridge-cream); margin-bottom: 8px; }
+    .story-label p { color: #7A8A6A; font-size: 12px; letter-spacing: 2px; font-style: italic; }
+    .story-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    .story-frame { display: flex; flex-direction: column; align-items: center; }
+    .story-frame-num { color: var(--green); font-size: 10px; letter-spacing: 3px; margin-bottom: 10px; }
+    .story-polaroid { background: white; padding: 10px 10px 36px; box-shadow: 4px 6px 20px rgba(0,0,0,0.5); width: 100%; }
+    .story-frame:nth-child(1) .story-polaroid { transform: rotate(-2deg); }
+    .story-frame:nth-child(2) .story-polaroid { transform: rotate(1.5deg); }
+    .story-frame:nth-child(3) .story-polaroid { transform: rotate(-1deg); }
+    .story-frame:nth-child(4) .story-polaroid { transform: rotate(2deg); }
+    .story-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
+    .story-caption { padding-top: 8px; text-align: center; font-family: 'Courier New', monospace; font-size: 11px; color: #333; font-style: italic; line-height: 1.4; }
+
+    /* Fridge polaroid benefits */
+    .fridge-section { padding: 80px 24px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .fridge-inner { max-width: 1060px; margin: 0 auto; }
+    .fridge-label { text-align: center; margin-bottom: 56px; }
+    .fridge-label h2 { font-size: clamp(20px, 2.5vw, 32px); color: var(--fridge-cream); margin-bottom: 8px; }
+    .fridge-label p { color: #7A8A6A; font-size: 12px; letter-spacing: 2px; font-style: italic; }
+    .polaroid-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 48px 28px; align-items: start; }
+    .polaroid-wrap { display: flex; flex-direction: column; align-items: center; }
+    .magnet { width: 26px; height: 26px; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.5); margin-bottom: -13px; position: relative; z-index: 3; flex-shrink: 0; }
     .magnet.red { background: radial-gradient(circle at 35% 35%, #e05050, #8B1A1A); }
     .magnet.blue { background: radial-gradient(circle at 35% 35%, #5090e0, #1A3A8B); }
     .magnet.yellow { background: radial-gradient(circle at 35% 35%, #e0d050, #8B7A1A); }
     .magnet.green-m { background: radial-gradient(circle at 35% 35%, #50c050, #1A6B1A); }
     .magnet.orange { background: radial-gradient(circle at 35% 35%, #e08030, #8B4A1A); }
     .magnet.purple { background: radial-gradient(circle at 35% 35%, #a050e0, #4A1A8B); }
-
-    .polaroid {
-      background: white; padding: 12px 12px 40px;
-      box-shadow: 4px 6px 20px rgba(0,0,0,0.4);
-      max-width: 260px; width: 100%;
-    }
+    .polaroid { background: white; padding: 10px 10px 36px; box-shadow: 4px 6px 18px rgba(0,0,0,0.4); max-width: 240px; width: 100%; }
     .polaroid-wrap:nth-child(1) .polaroid { transform: rotate(-2.5deg); }
     .polaroid-wrap:nth-child(2) .polaroid { transform: rotate(1.8deg); }
     .polaroid-wrap:nth-child(3) .polaroid { transform: rotate(-1.2deg); }
     .polaroid-wrap:nth-child(4) .polaroid { transform: rotate(2.8deg); }
     .polaroid-wrap:nth-child(5) .polaroid { transform: rotate(-0.8deg); }
     .polaroid-wrap:nth-child(6) .polaroid { transform: rotate(1.5deg); }
-
     .polaroid-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; background: #e8e8e8; }
-    .polaroid-placeholder { width: 100%; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; font-size: 52px; background: #f0ede8; }
-    .polaroid-caption { padding-top: 10px; text-align: center; font-family: 'Courier New', monospace; }
-    .polaroid-title { font-size: 12px; font-weight: bold; color: #222; margin-bottom: 4px; letter-spacing: 0.5px; }
-    .polaroid-text { font-size: 10px; color: #666; line-height: 1.5; }
+    .polaroid-placeholder { width: 100%; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; font-size: 44px; background: #f0ede8; }
+    .polaroid-caption { padding-top: 8px; text-align: center; font-family: 'Courier New', monospace; }
+    .polaroid-title { font-size: 11px; font-weight: bold; color: #222; margin-bottom: 3px; letter-spacing: 0.5px; }
+    .polaroid-text { font-size: 9px; color: #666; line-height: 1.5; }
 
     /* Intent section */
-    .intent-section { padding: 80px 24px; border-top: 2px solid rgba(255,255,255,0.06); }
-    .intent-inner { max-width: 900px; margin: 0 auto; }
-    .intent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+    .intent-section { padding: 80px 24px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .intent-inner { max-width: 860px; margin: 0 auto; }
+    .intent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
     .intent-img-wrap { position: relative; display: flex; justify-content: center; }
-    .intent-magnet {
-      position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
-      width: 32px; height: 32px; border-radius: 50%;
-      background: radial-gradient(circle at 35% 35%, #e05050, #8B1A1A);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.4); z-index: 3;
-    }
-    .intent-img {
-      width: 100%; max-width: 400px; border: 14px solid white;
-      box-shadow: 6px 8px 24px rgba(0,0,0,0.5); transform: rotate(-1.5deg);
-    }
-    .intent-eyebrow { color: var(--green); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 16px; }
-    .intent-title { font-size: clamp(24px, 3vw, 40px); font-weight: bold; margin-bottom: 24px; line-height: 1.2; color: var(--fridge-cream); }
-    .intent-body { color: #A8B898; font-size: 14px; line-height: 26px; }
-    .intent-body p { margin-bottom: 16px; }
+    .intent-magnet { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); width: 28px; height: 28px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #e05050, #8B1A1A); box-shadow: 0 2px 8px rgba(0,0,0,0.4); z-index: 3; }
+    .intent-img { width: 100%; max-width: 380px; border: 12px solid white; box-shadow: 6px 8px 24px rgba(0,0,0,0.5); transform: rotate(-1.5deg); }
+    .intent-eyebrow { color: var(--green); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 14px; }
+    .intent-title { font-size: clamp(22px, 3vw, 36px); font-weight: bold; margin-bottom: 20px; line-height: 1.2; color: var(--fridge-cream); }
+    .intent-body { color: #A0B090; font-size: 14px; line-height: 25px; }
+    .intent-body p { margin-bottom: 14px; }
     .intent-body strong { color: var(--fridge-cream); }
 
-    /* Fridge closer */
-    .fridge-closer {
-      padding: 80px 24px; text-align: center;
-      border-top: 2px solid rgba(255,255,255,0.06);
-    }
-    .fridge-closer-inner { max-width: 640px; margin: 0 auto; }
-    .closer-magnet {
-      width: 32px; height: 32px; border-radius: 50%;
-      background: radial-gradient(circle at 35% 35%, #50c050, #1A6B1A);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-      margin: 0 auto; position: relative; z-index: 3;
-      margin-bottom: -16px;
-    }
-    .closer-img {
-      width: min(460px, 90vw); border: 14px solid white;
-      box-shadow: 6px 8px 30px rgba(0,0,0,0.5); transform: rotate(0.8deg);
-      margin: 0 auto 48px; display: block;
-    }
-    .closer-title { font-size: clamp(24px, 3vw, 40px); font-weight: bold; color: var(--fridge-cream); margin-bottom: 16px; }
-    .closer-body { color: #A8B898; font-size: 15px; line-height: 26px; font-style: italic; margin-bottom: 40px; }
+    /* Father / WABAC section */
+    .wabac-section { padding: 80px 24px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .wabac-inner { max-width: 860px; margin: 0 auto; }
+    .wabac-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+    .wabac-img-wrap { position: relative; display: flex; justify-content: center; order: 2; }
+    .wabac-magnet { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); width: 28px; height: 28px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #5090e0, #1A3A8B); box-shadow: 0 2px 8px rgba(0,0,0,0.4); z-index: 3; }
+    .wabac-img { width: 100%; max-width: 380px; border: 12px solid white; box-shadow: 6px 8px 24px rgba(0,0,0,0.5); transform: rotate(1.5deg); }
+    .wabac-copy { order: 1; }
+    .wabac-eyebrow { color: var(--green); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 14px; }
+    .wabac-title { font-size: clamp(22px, 3vw, 36px); font-weight: bold; margin-bottom: 20px; line-height: 1.2; color: var(--fridge-cream); }
+    .wabac-body { color: #A0B090; font-size: 14px; line-height: 25px; }
+    .wabac-body p { margin-bottom: 14px; }
+    .wabac-body strong { color: var(--fridge-cream); }
 
-    /* ══════════════════════════════════════════
+    /* Mom closer */
+    .mom-section { padding: 80px 24px; text-align: center; }
+    .mom-inner { max-width: 600px; margin: 0 auto; }
+    .mom-magnet { width: 30px; height: 30px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #50c050, #1A6B1A); box-shadow: 0 2px 8px rgba(0,0,0,0.4); margin: 0 auto; margin-bottom: -15px; position: relative; z-index: 3; }
+    .mom-img { width: min(440px, 88vw); border: 14px solid white; box-shadow: 6px 8px 30px rgba(0,0,0,0.6); transform: rotate(0.5deg); margin: 0 auto 44px; display: block; }
+    .mom-title { font-size: clamp(22px, 3vw, 36px); font-weight: bold; color: var(--fridge-cream); margin-bottom: 14px; }
+    .mom-body { color: #A0B090; font-size: 15px; line-height: 26px; font-style: italic; margin-bottom: 36px; }
+
+    /* ══════════════════════════════════
        PRICING PAGE
-    ══════════════════════════════════════════ */
-    #page-pricing { background: var(--black); padding-top: 80px; }
+    ══════════════════════════════════ */
+    #page-pricing { background: var(--black); min-height: 100vh; padding-top: 64px; }
     .pricing-hero { padding: 80px 24px; text-align: center; border-bottom: 1px solid var(--border); }
-    .pricing-eyebrow { color: var(--green); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 16px; }
-    .pricing-title { font-size: clamp(32px, 5vw, 64px); font-weight: bold; margin-bottom: 16px; }
-    .pricing-sub { color: var(--brown); font-size: 15px; line-height: 26px; font-style: italic; }
-    .price-card { border: 1px solid var(--border); padding: 60px 48px; text-align: center; max-width: 480px; margin: 64px auto; }
-    .price-amount { font-size: 80px; font-weight: bold; color: var(--green); line-height: 1; }
-    .price-label { color: var(--dim); font-size: 11px; letter-spacing: 3px; margin: 8px 0 32px; }
-    .price-includes { list-style: none; margin-bottom: 40px; }
-    .price-includes li { color: var(--brown); font-size: 13px; padding: 12px 0; border-bottom: 1px solid var(--border); letter-spacing: 1px; }
+    .pricing-title { font-size: clamp(30px, 5vw, 60px); font-weight: bold; margin-bottom: 14px; }
+    .pricing-sub { color: var(--brown); font-size: 14px; line-height: 24px; font-style: italic; }
+    .price-card { border: 1px solid var(--border); padding: 56px 44px; text-align: center; max-width: 460px; margin: 60px auto; }
+    .price-amount { font-size: 76px; font-weight: bold; color: var(--green); line-height: 1; }
+    .price-label { color: var(--dim); font-size: 10px; letter-spacing: 3px; margin: 8px 0 28px; }
+    .price-includes { list-style: none; margin-bottom: 36px; }
+    .price-includes li { color: var(--brown); font-size: 13px; padding: 11px 0; border-bottom: 1px solid var(--border); letter-spacing: 1px; }
     .price-includes li:last-child { border-bottom: none; }
 
-    /* ══════════════════════════════════════════
+    /* ══════════════════════════════════
        DAMAGE CLAIM PAGE
-    ══════════════════════════════════════════ */
-    #page-claim { background: var(--black); padding-top: 80px; }
+    ══════════════════════════════════ */
+    #page-claim { background: var(--black); min-height: 100vh; padding-top: 64px; }
     .claim-hero { padding: 80px 24px; text-align: center; border-bottom: 1px solid var(--border); }
-    .claim-eyebrow { color: var(--green); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 16px; }
-    .claim-title { font-size: clamp(28px, 4vw, 48px); font-weight: bold; margin-bottom: 16px; }
-    .claim-body-wrap { max-width: 560px; margin: 48px auto; padding: 0 24px 80px; text-align: center; }
-    .claim-card { border: 1px solid var(--border); padding: 40px; }
-    .claim-card p { color: var(--brown); font-size: 14px; line-height: 24px; margin-bottom: 16px; }
-    .claim-card strong { color: var(--cream); }
-    .claim-email-link { color: var(--green); font-size: 16px; letter-spacing: 2px; display: block; margin: 24px 0; font-weight: bold; }
-    .claim-note { color: var(--dim); font-size: 11px; line-height: 18px; letter-spacing: 1px; border-top: 1px solid var(--border); padding-top: 20px; margin-top: 8px; }
+    .claim-title { font-size: clamp(26px, 4vw, 44px); font-weight: bold; margin-bottom: 14px; }
+    .claim-body-wrap { max-width: 520px; margin: 48px auto; padding: 0 24px 80px; }
+    .claim-card { border: 1px solid var(--border); padding: 36px; }
+    .claim-card p { color: var(--brown); font-size: 13px; line-height: 22px; margin-bottom: 14px; }
+    .claim-list { color: var(--brown); font-size: 13px; line-height: 24px; padding-left: 20px; margin-bottom: 16px; }
+    .claim-email-link { color: var(--green); font-size: 15px; letter-spacing: 1px; display: block; margin: 20px 0; font-weight: bold; word-break: break-all; }
+    .claim-note { color: var(--dim); font-size: 11px; line-height: 18px; letter-spacing: 1px; border-top: 1px solid var(--border); padding-top: 18px; margin-top: 6px; }
 
     /* ── FOOTER ── */
-    footer { padding: 48px 40px; text-align: center; border-top: 1px solid var(--border); background: var(--black); }
-    .footer-logo { color: var(--green); font-size: 11px; letter-spacing: 4px; margin-bottom: 20px; }
-    .footer-links { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
-    .footer-links a { font-size: 11px; color: var(--dim); letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: color 0.2s; }
+    footer { padding: 44px 40px; text-align: center; border-top: 1px solid var(--border); background: var(--black); }
+    .footer-logo { color: var(--green); font-size: 10px; letter-spacing: 4px; margin-bottom: 18px; }
+    .footer-links { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 18px; }
+    .footer-links a { font-size: 10px; color: var(--dim); letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: color 0.2s; }
     .footer-links a:hover { color: var(--cream); }
-    .footer-copy { font-size: 10px; color: var(--border); letter-spacing: 2px; }
+    .footer-copy { font-size: 9px; color: var(--border); letter-spacing: 2px; }
 
-    @media (max-width: 700px) {
-      nav { padding: 14px 16px; }
-      .nav-links { gap: 12px; }
+    @media (max-width: 720px) {
+      nav { padding: 12px 16px; }
+      .nav-links { gap: 10px; }
       .nav-links a { font-size: 9px; letter-spacing: 1px; }
-      .intent-grid { grid-template-columns: 1fr; }
-      .price-card { padding: 40px 20px; }
+      .story-strip { grid-template-columns: repeat(2, 1fr); }
+      .intent-grid, .wabac-grid { grid-template-columns: 1fr; }
+      .wabac-img-wrap { order: 1; }
+      .wabac-copy { order: 2; }
+      .price-card { padding: 36px 18px; }
+    }
+    @media (max-width: 480px) {
+      .story-strip { grid-template-columns: 1fr 1fr; gap: 12px; }
     }
   </style>
 </head>
@@ -278,9 +251,9 @@
   </div>
 </nav>
 
-<!-- ══════════════════════════════════════════
+<!-- ══════════════════════════════════
      HOME PAGE
-══════════════════════════════════════════ -->
+══════════════════════════════════ -->
 <div id="page-home" class="page active">
   <div class="hero">
     <p class="hero-channel">✦ CH. 3 ✦</p>
@@ -288,10 +261,7 @@
     <h1 class="hero-title">SnappingTurtle</h1>
     <p class="hero-subtitle">The Instant Memory Man</p>
     <div class="hero-divider"></div>
-    <p class="hero-tagline">
-      Strolling down memory lane can be as easy as three taps from your phone.
-      Real photos. Real mail. Real connection.
-    </p>
+    <p class="hero-tagline">Strolling down memory lane can be as easy as three taps from your phone. Real photos. Real mail. Real connection.</p>
     <div class="hero-steps">
       <div class="step">
         <div class="step-num">1</div>
@@ -309,29 +279,23 @@
       </div>
     </div>
     <button class="btn" onclick="document.getElementById('home-waitlist').scrollIntoView({behavior:'smooth'})">JOIN THE WAITLIST</button>
-    <p style="margin-top:16px;font-size:11px;color:var(--dim);letter-spacing:2px">iOS app · $25 per send · Up to 5 photos</p>
+    <p style="margin-top:14px;font-size:10px;color:var(--dim);letter-spacing:2px">iOS app · $25 per send · Up to 5 photos</p>
   </div>
 
-  <!-- PCH humor beat -->
   <div class="pch-section">
     <div class="pch-inner">
-      <p class="pch-eyebrow">Not This</p>
+      <p class="section-eyebrow">Not This</p>
       <h2 class="pch-title">Nobody sends good mail anymore.</h2>
-      <p class="pch-body">
-        It's all bills. Marketing materials. The occasional Publishers Clearinghouse sweepstakes
-        that somehow still finds your mailbox. When was the last time you got something
-        worth keeping?
-      </p>
-      <img src="image_d3712423.png" alt="Publishers Clearinghouse — not quite the same thing" class="pch-img" />
+      <p class="pch-body">It's all bills. Marketing materials. The occasional Publishers Clearinghouse sweepstakes that somehow still finds your mailbox. When was the last time you got something worth keeping?</p>
+      <img src="Winner1.png" alt="Publishers Clearinghouse — not quite the same thing" class="pch-img" />
       <p class="pch-caption">Not quite the same thing.</p>
       <button class="btn-ghost" onclick="showPage('goodmail')">WHAT IS GOOD MAIL →</button>
     </div>
   </div>
 
-  <!-- Waitlist -->
   <div class="waitlist-section" id="home-waitlist">
     <div class="waitlist-inner">
-      <p class="waitlist-eyebrow">Early Access</p>
+      <p class="section-eyebrow">Early Access</p>
       <h2 class="waitlist-title">Be first in line.</h2>
       <p class="waitlist-sub">SnappingTurtle is coming soon to iOS. Join the waitlist and we'll let you know the moment it's ready.</p>
       <div class="waitlist-form">
@@ -355,20 +319,64 @@
   </footer>
 </div>
 
-<!-- ══════════════════════════════════════════
+<!-- ══════════════════════════════════
      GOOD MAIL PAGE
-══════════════════════════════════════════ -->
+══════════════════════════════════ -->
 <div id="page-goodmail" class="page">
+
+  <!-- Fairy lights full-width banner -->
+  <div class="fairy-banner">
+    <img src="FairyLights1.png" alt="SnappingTurtle — Memories 2024" />
+  </div>
+
+  <!-- Good mail hero text -->
   <div class="goodmail-hero">
     <p class="goodmail-eyebrow">✦ A FORGOTTEN EMOTION ✦</p>
     <h1 class="goodmail-title">Good Mail.</h1>
-    <p class="goodmail-sub">
-      There used to be a feeling you got walking to the mailbox.
-      The chance that something good might be waiting.
-      SnappingTurtle brings that feeling back.
-    </p>
+    <p class="goodmail-sub">There used to be a feeling you got walking to the mailbox. The chance that something good might be waiting. SnappingTurtle brings that feeling back.</p>
   </div>
 
+  <!-- Pepé love story strip -->
+  <div class="story-section">
+    <div class="story-inner">
+      <div class="story-label">
+        <h2>A true story.</h2>
+        <p>What happens when Turtle Mail arrives.</p>
+      </div>
+      <div class="story-strip">
+        <div class="story-frame">
+          <p class="story-frame-num">I.</p>
+          <div class="story-polaroid">
+            <img src="Floor1.png" alt="He opens the envelope and reads the message" class="story-img" />
+            <p class="story-caption">He opens the envelope. Reads the message. Hearts everywhere.</p>
+          </div>
+        </div>
+        <div class="story-frame">
+          <p class="story-frame-num">II.</p>
+          <div class="story-polaroid">
+            <img src="Floor2.png" alt="Overwhelmed, surrounded by photos" class="story-img" />
+            <p class="story-caption">Overwhelmed. Surrounded by photos. Completely smitten.</p>
+          </div>
+        </div>
+        <div class="story-frame">
+          <p class="story-frame-num">III.</p>
+          <div class="story-polaroid">
+            <img src="Phone1.png" alt="L'amour au téléphone" class="story-img" />
+            <p class="story-caption">L'amour au téléphone. The photos started a real conversation.</p>
+          </div>
+        </div>
+        <div class="story-frame">
+          <p class="story-frame-num">IV.</p>
+          <div class="story-polaroid">
+            <img src="Refrigerator3.png" alt="Paris Mon Amour 2024" class="story-img" />
+            <p class="story-caption">Paris, Mon Amour! 2024. On the fridge. With a turtle magnet.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Polaroid benefits grid -->
   <div class="fridge-section">
     <div class="fridge-inner">
       <div class="fridge-label">
@@ -376,40 +384,36 @@
         <p>Pinned to the fridge. Not lost in the feed.</p>
       </div>
       <div class="polaroid-grid">
-
         <div class="polaroid-wrap">
           <div class="magnet red"></div>
           <div class="polaroid">
             <img src="TurtleMail.jpg" alt="Three taps" class="polaroid-img" />
             <div class="polaroid-caption">
               <div class="polaroid-title">Three Taps</div>
-              <div class="polaroid-text">Choose photos, pick a recipient, confirm. Under two minutes from your phone.</div>
+              <div class="polaroid-text">Choose photos, pick a recipient, confirm. Under two minutes.</div>
             </div>
           </div>
         </div>
-
         <div class="polaroid-wrap">
           <div class="magnet blue"></div>
           <div class="polaroid">
             <img src="WABAC_Machine.png" alt="The WABAC Machine" class="polaroid-img" />
             <div class="polaroid-caption">
               <div class="polaroid-title">The WABAC Machine</div>
-              <div class="polaroid-text">Your photo enters our print lab and emerges as a 4×6 gloss print at 300 DPI.</div>
+              <div class="polaroid-text">Your photo becomes a 4×6 gloss print at 300 DPI. Professional quality.</div>
             </div>
           </div>
         </div>
-
         <div class="polaroid-wrap">
           <div class="magnet yellow"></div>
           <div class="polaroid">
-            <div class="polaroid-placeholder">📬</div>
+            <img src="Mailbox1.png" alt="Real mail" class="polaroid-img" />
             <div class="polaroid-caption">
               <div class="polaroid-title">Real Mail</div>
-              <div class="polaroid-text">Not a notification. An actual envelope in an actual mailbox. Delivered by USPS.</div>
+              <div class="polaroid-text">Not a notification. An actual envelope in an actual mailbox.</div>
             </div>
           </div>
         </div>
-
         <div class="polaroid-wrap">
           <div class="magnet green-m"></div>
           <div class="polaroid">
@@ -420,18 +424,16 @@
             </div>
           </div>
         </div>
-
         <div class="polaroid-wrap">
           <div class="magnet orange"></div>
           <div class="polaroid">
             <div class="polaroid-placeholder">🔒</div>
             <div class="polaroid-caption">
               <div class="polaroid-title">Private by Default</div>
-              <div class="polaroid-text">Your address book lives on your device, PIN-protected. Photos deleted after delivery.</div>
+              <div class="polaroid-text">PIN-protected address book. Photos deleted after delivery.</div>
             </div>
           </div>
         </div>
-
         <div class="polaroid-wrap">
           <div class="magnet purple"></div>
           <div class="polaroid">
@@ -442,18 +444,17 @@
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </div>
 
-  <!-- Intent section -->
+  <!-- Intent section — mailbox -->
   <div class="intent-section">
     <div class="intent-inner">
       <div class="intent-grid">
         <div class="intent-img-wrap">
           <div class="intent-magnet"></div>
-          <img src="image_e9ac850c.png" alt="Someone smiling at Turtle Mail from the mailbox" class="intent-img" />
+          <img src="Mailbox1.png" alt="Someone smiling at Turtle Mail" class="intent-img" />
         </div>
         <div>
           <p class="intent-eyebrow">The Difference</p>
@@ -461,24 +462,41 @@
           <div class="intent-body">
             <p>The electric company didn't think about you. The cable company didn't think about you. Publishers Clearinghouse definitely didn't think about you.</p>
             <p><strong>Someone who sends Turtle Mail thought about you.</strong> They picked a photo. They typed your name. They pressed send. That's not nothing. That's everything.</p>
-            <p>In a world of automated everything, a deliberate act of sending something physical to someone you love is almost radical. Turtle Mail is that act.</p>
+            <p>In a world of automated everything, a deliberate act of sending something physical is almost radical. Turtle Mail is that act.</p>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Fridge closer -->
-  <div class="fridge-closer">
-    <div class="fridge-closer-inner">
-      <div class="closer-magnet"></div>
-      <img src="image_e9703635.png" alt="Cecil at the Beach on the fridge" class="closer-img" />
-      <h2 class="closer-title">This is where Turtle Mail ends up.</h2>
-      <p class="closer-body">
-        Not in the recycling bin. Not archived in a folder.
-        On the refrigerator. Where it stays for years.
-        Where someone sees it every morning with their coffee.
-      </p>
+  <!-- Father / WABAC section -->
+  <div class="wabac-section">
+    <div class="wabac-inner">
+      <div class="wabac-grid">
+        <div class="wabac-copy">
+          <p class="wabac-eyebrow">The Ritual</p>
+          <h2 class="wabac-title">A ritual, not a novelty.</h2>
+          <div class="wabac-body">
+            <p>Birthdays. Anniversaries. Holidays. Tuesdays. Once you start sending Turtle Mail you don't stop.</p>
+            <p><strong>The constraints are the point.</strong> Fixed price. Fixed size. Up to five photos. The decision is already made. You just have to show up.</p>
+            <p>Frame it as a ritual and it becomes one. The fridge fills up. The memories accumulate. Someone is looking at your photo right now.</p>
+          </div>
+        </div>
+        <div class="wabac-img-wrap">
+          <div class="wabac-magnet"></div>
+          <img src="Refrigerator2.png" alt="Father in the WABAC lab" class="wabac-img" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mom closer -->
+  <div class="mom-section">
+    <div class="mom-inner">
+      <div class="mom-magnet"></div>
+      <img src="Refrigerator1.png" alt="Mom looking at Cecil's photo on the fridge" class="mom-img" />
+      <h2 class="mom-title">Someone is looking at your photo right now.</h2>
+      <p class="mom-body">Not in the recycling bin. Not archived in a folder. On the refrigerator. Where it stays for years. Where someone sees it every morning with their coffee.</p>
       <button class="btn" onclick="showPage('home'); setTimeout(()=>document.getElementById('home-waitlist').scrollIntoView({behavior:'smooth'}),100)">GET EARLY ACCESS</button>
     </div>
   </div>
@@ -496,12 +514,12 @@
   </footer>
 </div>
 
-<!-- ══════════════════════════════════════════
+<!-- ══════════════════════════════════
      PRICING PAGE
-══════════════════════════════════════════ -->
+══════════════════════════════════ -->
 <div id="page-pricing" class="page">
   <div class="pricing-hero">
-    <p class="pricing-eyebrow">Pricing</p>
+    <p class="section-eyebrow">Pricing</p>
     <h1 class="pricing-title">Simple. Fixed. Fair.</h1>
     <p class="pricing-sub">One price. No subscriptions. No hidden fees.<br>Send when you want, as often as you want.</p>
   </div>
@@ -532,18 +550,18 @@
   </footer>
 </div>
 
-<!-- ══════════════════════════════════════════
+<!-- ══════════════════════════════════
      DAMAGE CLAIM PAGE
-══════════════════════════════════════════ -->
+══════════════════════════════════ -->
 <div id="page-claim" class="page">
   <div class="claim-hero">
-    <p class="claim-eyebrow">Damage Claim</p>
+    <p class="section-eyebrow">Damage Claim</p>
     <h1 class="claim-title">Something arrive damaged?</h1>
   </div>
   <div class="claim-body-wrap">
     <div class="claim-card">
-      <p>If your photos arrived damaged due to mail carrier handling, we want to make it right. Please email us directly with the following information:</p>
-      <ul style="color:var(--brown);font-size:13px;line-height:24px;padding-left:20px;margin-bottom:16px">
+      <p>If your photos arrived damaged due to mail carrier handling, please email us directly with the following information:</p>
+      <ul class="claim-list">
         <li>Your order number (begins with ST-)</li>
         <li>Your name</li>
         <li>A description of the damage</li>
@@ -551,7 +569,7 @@
       </ul>
       <a href="mailto:customerservice@snappingturtle.app" class="claim-email-link">customerservice@snappingturtle.app</a>
       <p>We will respond within 1 business day. Reprints are issued at our sole discretion upon verification of damage.</p>
-      <p class="claim-note">Claims must be submitted within 48 hours of delivery confirmation. One claim per order. SnappingTurtle reserves the right to review all claims before issuing a reprint.</p>
+      <p class="claim-note">Claims must be submitted within 48 hours of delivery confirmation. One claim per order. SnappingTurtle reserves the right to review all claims before issuing a reprint. Submission of a claim does not guarantee a reprint.</p>
     </div>
   </div>
   <footer>
@@ -598,4 +616,3 @@
 </script>
 </body>
 </html>
-
