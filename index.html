@@ -15,6 +15,10 @@
       --dim: #6B5830;
       --border: #3A3020;
       --red: #CC2200;
+      --avocado: #4A5240;
+      --avocado-light: #5C6650;
+      --avocado-dark: #2E3228;
+      --fridge-cream: #E8E0C8;
     }
     html { scroll-behavior: smooth; }
     body { background: var(--black); color: var(--cream); font-family: monospace; }
@@ -24,125 +28,240 @@
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 20px 40px;
+      padding: 16px 40px;
       border-bottom: 1px solid var(--border);
       background: var(--black);
     }
-    .nav-logo { color: var(--green); font-size: 13px; letter-spacing: 4px; }
-    .nav-links { display: flex; gap: 32px; }
-    .nav-links a { font-size: 11px; letter-spacing: 3px; color: var(--dim); text-transform: uppercase; transition: color 0.2s; }
-    .nav-links a:hover { color: var(--cream); }
+    .nav-logo { color: var(--green); font-size: 13px; letter-spacing: 4px; cursor: pointer; }
+    .nav-links { display: flex; gap: 28px; }
+    .nav-links a {
+      font-size: 11px; letter-spacing: 3px; color: var(--dim);
+      text-transform: uppercase; transition: color 0.2s; cursor: pointer;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--cream); }
 
-    /* ── HERO ── */
+    /* ── PAGES ── */
+    .page { display: none; min-height: 100vh; }
+    .page.active { display: block; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-block; background: var(--red); color: var(--cream);
+      padding: 16px 48px; font-size: 13px; letter-spacing: 4px;
+      font-weight: bold; font-family: monospace; cursor: pointer;
+      border: none; transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-ghost {
+      display: inline-block; background: transparent; color: var(--cream);
+      padding: 16px 48px; font-size: 13px; letter-spacing: 4px;
+      font-weight: bold; font-family: monospace; cursor: pointer;
+      border: 1px solid var(--border); transition: border-color 0.2s;
+    }
+    .btn-ghost:hover { border-color: var(--cream); }
+
+    /* ══════════════════════════════════════════
+       HOME PAGE
+    ══════════════════════════════════════════ */
+    #page-home { background: var(--black); }
+
     .hero {
       min-height: 100vh;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      text-align: center; padding: 120px 24px 80px;
+      text-align: center; padding: 100px 24px 80px;
       border-bottom: 1px solid var(--border);
     }
-    .hero-channel { color: var(--green); font-size: 11px; letter-spacing: 6px; margin-bottom: 40px; }
-    .hero-turtle { font-size: 72px; margin-bottom: 24px; }
-    .hero-title { font-size: clamp(36px, 6vw, 72px); font-weight: bold; letter-spacing: 2px; line-height: 1.1; margin-bottom: 16px; }
+    .hero-channel { color: var(--green); font-size: 11px; letter-spacing: 6px; margin-bottom: 32px; }
+    .hero-mascot {
+      width: min(480px, 90vw); border-radius: 12px;
+      margin-bottom: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .hero-title { font-size: clamp(32px, 5vw, 64px); font-weight: bold; letter-spacing: 2px; line-height: 1.1; margin-bottom: 12px; }
     .hero-subtitle { color: var(--green); font-size: 13px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 32px; }
     .hero-divider { width: 60px; height: 1px; background: var(--border); margin: 0 auto 32px; }
-    .hero-tagline { color: var(--brown); font-size: 16px; line-height: 28px; font-style: italic; max-width: 480px; margin: 0 auto 48px; }
-    .hero-steps { display: flex; align-items: center; gap: 16px; margin-bottom: 56px; flex-wrap: wrap; justify-content: center; }
+    .hero-tagline { color: var(--brown); font-size: 16px; line-height: 28px; font-style: italic; max-width: 480px; margin: 0 auto 40px; }
+    .hero-steps { display: flex; align-items: center; gap: 16px; margin-bottom: 48px; flex-wrap: wrap; justify-content: center; }
     .step { text-align: center; }
     .step-num { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--green); color: var(--green); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; margin: 0 auto 8px; }
     .step-label { font-size: 10px; color: var(--dim); letter-spacing: 1px; text-transform: uppercase; line-height: 14px; }
     .step-arrow { color: var(--green); font-size: 20px; opacity: 0.5; margin-bottom: 20px; }
-    .btn { display: inline-block; background: var(--red); color: var(--cream); padding: 16px 48px; font-size: 13px; letter-spacing: 4px; font-weight: bold; font-family: monospace; cursor: pointer; border: none; transition: opacity 0.2s; }
-    .btn:hover { opacity: 0.85; }
-    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--cream); }
-    .btn-outline:hover { border-color: var(--cream); }
-    .hero-note { margin-top: 24px; font-size: 11px; color: var(--dim); letter-spacing: 2px; }
 
-    /* ── SECTIONS ── */
-    section { padding: 100px 24px; border-bottom: 1px solid var(--border); }
-    .section-inner { max-width: 960px; margin: 0 auto; }
-    .section-eyebrow { color: var(--green); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 16px; }
-    .section-title { font-size: clamp(28px, 4vw, 48px); font-weight: bold; margin-bottom: 24px; line-height: 1.2; }
-    .section-body { color: var(--brown); font-size: 15px; line-height: 26px; max-width: 640px; }
+    /* PCH humor section */
+    .pch-section { padding: 80px 24px; text-align: center; border-bottom: 1px solid var(--border); }
+    .pch-inner { max-width: 800px; margin: 0 auto; }
+    .pch-eyebrow { color: var(--green); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 16px; }
+    .pch-title { font-size: clamp(22px, 3vw, 36px); font-weight: bold; margin-bottom: 16px; }
+    .pch-body { color: var(--brown); font-size: 14px; line-height: 24px; font-style: italic; margin-bottom: 32px; max-width: 560px; margin-left: auto; margin-right: auto; }
+    .pch-img { width: min(600px, 90vw); border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,0.4); margin-bottom: 24px; display: block; margin-left: auto; margin-right: auto; }
+    .pch-caption { color: var(--dim); font-size: 11px; letter-spacing: 2px; margin-bottom: 32px; font-style: italic; }
 
-    /* ── RITUAL ── */
-    .ritual-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2px; margin-top: 64px; }
-    .ritual-item { padding: 40px 32px; border: 1px solid var(--border); }
-    .ritual-num { color: var(--green); font-size: 11px; letter-spacing: 3px; margin-bottom: 16px; }
-    .ritual-heading { font-size: 18px; font-weight: bold; margin-bottom: 12px; }
-    .ritual-text { color: var(--brown); font-size: 13px; line-height: 22px; }
-
-    /* ── ABOUT / BENEFITS ── */
-    .benefits-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 32px; margin-top: 64px; }
-    .benefit { padding: 32px; border-left: 2px solid var(--border); }
-    .benefit-icon { font-size: 28px; margin-bottom: 16px; }
-    .benefit-title { font-size: 14px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; color: var(--cream); }
-    .benefit-text { color: var(--brown); font-size: 13px; line-height: 22px; }
-
-    /* ── PRICING ── */
-    .price-card { border: 1px solid var(--border); padding: 60px 48px; text-align: center; max-width: 480px; margin: 64px auto 0; }
-    .price-amount { font-size: 72px; font-weight: bold; color: var(--green); line-height: 1; }
-    .price-label { color: var(--dim); font-size: 11px; letter-spacing: 3px; margin: 8px 0 32px; }
-    .price-includes { list-style: none; margin-bottom: 40px; }
-    .price-includes li { color: var(--brown); font-size: 13px; padding: 10px 0; border-bottom: 1px solid var(--border); letter-spacing: 1px; }
-    .price-includes li:last-child { border-bottom: none; }
-
-    /* ── WAITLIST ── */
-    .waitlist-wrap { max-width: 480px; margin: 48px auto 0; }
-    .waitlist-form { display: flex; gap: 0; flex-wrap: wrap; }
-    .waitlist-input { flex: 1; min-width: 200px; background: #1A1A18; border: 1px solid var(--border); border-right: none; color: var(--cream); padding: 14px 16px; font-size: 13px; font-family: monospace; outline: none; }
+    /* Waitlist */
+    .waitlist-section { padding: 80px 24px; border-bottom: 1px solid var(--border); text-align: center; }
+    .waitlist-inner { max-width: 480px; margin: 0 auto; }
+    .waitlist-eyebrow { color: var(--green); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 16px; }
+    .waitlist-title { font-size: clamp(24px, 3vw, 40px); font-weight: bold; margin-bottom: 16px; }
+    .waitlist-sub { color: var(--brown); font-size: 14px; line-height: 24px; margin-bottom: 32px; font-style: italic; }
+    .waitlist-form { display: flex; }
+    .waitlist-input {
+      flex: 1; background: #1A1A18; border: 1px solid var(--border);
+      border-right: none; color: var(--cream); padding: 14px 16px;
+      font-size: 13px; font-family: monospace; outline: none;
+    }
     .waitlist-input:focus { border-color: var(--green); }
-    .waitlist-btn { background: var(--green); color: var(--black); border: none; padding: 14px 24px; font-size: 12px; letter-spacing: 3px; font-weight: bold; font-family: monospace; cursor: pointer; white-space: nowrap; transition: opacity 0.2s; }
+    .waitlist-btn {
+      background: var(--green); color: var(--black); border: none;
+      padding: 14px 20px; font-size: 11px; letter-spacing: 3px;
+      font-weight: bold; font-family: monospace; cursor: pointer;
+    }
     .waitlist-btn:hover { opacity: 0.85; }
     .waitlist-result { margin-top: 12px; font-size: 12px; letter-spacing: 1px; display: none; }
     .waitlist-result.success { color: var(--green); }
     .waitlist-result.error { color: var(--red); }
 
-    /* ── DAMAGE CLAIM ── */
-    .claim-card { border: 1px solid var(--border); padding: 48px; max-width: 560px; margin: 48px auto 0; }
-    .claim-policy { color: var(--brown); font-size: 13px; line-height: 22px; font-style: italic; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
-    .field-label { color: var(--green); font-size: 9px; letter-spacing: 3px; display: block; margin-bottom: 6px; margin-top: 20px; }
-    .field-input { width: 100%; background: #1A1A18; border: 1px solid var(--border); color: var(--cream); padding: 12px; font-size: 13px; font-family: monospace; outline: none; }
-    .field-input:focus { border-color: var(--green); }
-    textarea.field-input { height: 100px; resize: vertical; }
-    .claim-btn { width: 100%; background: var(--red); color: var(--cream); border: none; padding: 14px; font-size: 13px; letter-spacing: 4px; font-weight: bold; font-family: monospace; cursor: pointer; margin-top: 24px; transition: opacity 0.2s; }
-    .claim-btn:hover { opacity: 0.85; }
-    .claim-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .claim-result { display: none; margin-top: 16px; padding: 16px; border: 1px solid var(--border); font-size: 13px; text-align: center; }
-    .claim-result.success { border-color: var(--green); color: var(--green); }
-    .claim-result.error { border-color: var(--red); color: var(--red); }
+    /* ══════════════════════════════════════════
+       GOOD MAIL PAGE
+    ══════════════════════════════════════════ */
+    #page-goodmail { background: var(--avocado-dark); }
 
-    /* ── LEGAL ── */
-    .legal-content { max-width: 720px; }
-    .legal-content h2 { font-size: 16px; color: var(--green); letter-spacing: 3px; text-transform: uppercase; margin: 40px 0 12px; }
-    .legal-content h2:first-child { margin-top: 0; }
-    .legal-content p, .legal-content li { color: var(--brown); font-size: 13px; line-height: 24px; margin-bottom: 12px; }
-    .legal-content ul { padding-left: 20px; }
-    .legal-content strong { color: var(--cream); }
+    .goodmail-hero {
+      min-height: 50vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 120px 24px 60px;
+      border-bottom: 2px solid rgba(255,255,255,0.06);
+    }
+    .goodmail-eyebrow { color: var(--green); font-size: 11px; letter-spacing: 6px; margin-bottom: 20px; }
+    .goodmail-title { font-size: clamp(40px, 7vw, 96px); font-weight: bold; color: var(--fridge-cream); margin-bottom: 16px; line-height: 1; }
+    .goodmail-sub { color: #A8B898; font-size: 15px; line-height: 26px; max-width: 560px; font-style: italic; }
+
+    /* Fridge / polaroid section */
+    .fridge-section { position: relative; padding: 80px 24px; }
+    .fridge-inner { position: relative; z-index: 2; max-width: 1100px; margin: 0 auto; }
+    .fridge-label { text-align: center; margin-bottom: 60px; }
+    .fridge-label h2 { font-size: clamp(22px, 3vw, 36px); color: var(--fridge-cream); margin-bottom: 8px; }
+    .fridge-label p { color: #8A9A7A; font-size: 13px; letter-spacing: 2px; font-style: italic; }
+
+    .polaroid-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 52px 32px; align-items: start;
+    }
+    .polaroid-wrap { display: flex; justify-content: center; flex-direction: column; align-items: center; }
+    .magnet {
+      width: 28px; height: 28px; border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+      margin-bottom: -14px; position: relative; z-index: 3;
+      flex-shrink: 0;
+    }
+    .magnet.red { background: radial-gradient(circle at 35% 35%, #e05050, #8B1A1A); }
+    .magnet.blue { background: radial-gradient(circle at 35% 35%, #5090e0, #1A3A8B); }
+    .magnet.yellow { background: radial-gradient(circle at 35% 35%, #e0d050, #8B7A1A); }
+    .magnet.green-m { background: radial-gradient(circle at 35% 35%, #50c050, #1A6B1A); }
+    .magnet.orange { background: radial-gradient(circle at 35% 35%, #e08030, #8B4A1A); }
+    .magnet.purple { background: radial-gradient(circle at 35% 35%, #a050e0, #4A1A8B); }
+
+    .polaroid {
+      background: white; padding: 12px 12px 40px;
+      box-shadow: 4px 6px 20px rgba(0,0,0,0.4);
+      max-width: 260px; width: 100%;
+    }
+    .polaroid-wrap:nth-child(1) .polaroid { transform: rotate(-2.5deg); }
+    .polaroid-wrap:nth-child(2) .polaroid { transform: rotate(1.8deg); }
+    .polaroid-wrap:nth-child(3) .polaroid { transform: rotate(-1.2deg); }
+    .polaroid-wrap:nth-child(4) .polaroid { transform: rotate(2.8deg); }
+    .polaroid-wrap:nth-child(5) .polaroid { transform: rotate(-0.8deg); }
+    .polaroid-wrap:nth-child(6) .polaroid { transform: rotate(1.5deg); }
+
+    .polaroid-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; background: #e8e8e8; }
+    .polaroid-placeholder { width: 100%; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; font-size: 52px; background: #f0ede8; }
+    .polaroid-caption { padding-top: 10px; text-align: center; font-family: 'Courier New', monospace; }
+    .polaroid-title { font-size: 12px; font-weight: bold; color: #222; margin-bottom: 4px; letter-spacing: 0.5px; }
+    .polaroid-text { font-size: 10px; color: #666; line-height: 1.5; }
+
+    /* Intent section */
+    .intent-section { padding: 80px 24px; border-top: 2px solid rgba(255,255,255,0.06); }
+    .intent-inner { max-width: 900px; margin: 0 auto; }
+    .intent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+    .intent-img-wrap { position: relative; display: flex; justify-content: center; }
+    .intent-magnet {
+      position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+      width: 32px; height: 32px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #e05050, #8B1A1A);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4); z-index: 3;
+    }
+    .intent-img {
+      width: 100%; max-width: 400px; border: 14px solid white;
+      box-shadow: 6px 8px 24px rgba(0,0,0,0.5); transform: rotate(-1.5deg);
+    }
+    .intent-eyebrow { color: var(--green); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 16px; }
+    .intent-title { font-size: clamp(24px, 3vw, 40px); font-weight: bold; margin-bottom: 24px; line-height: 1.2; color: var(--fridge-cream); }
+    .intent-body { color: #A8B898; font-size: 14px; line-height: 26px; }
+    .intent-body p { margin-bottom: 16px; }
+    .intent-body strong { color: var(--fridge-cream); }
+
+    /* Fridge closer */
+    .fridge-closer {
+      padding: 80px 24px; text-align: center;
+      border-top: 2px solid rgba(255,255,255,0.06);
+    }
+    .fridge-closer-inner { max-width: 640px; margin: 0 auto; }
+    .closer-magnet {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #50c050, #1A6B1A);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+      margin: 0 auto; position: relative; z-index: 3;
+      margin-bottom: -16px;
+    }
+    .closer-img {
+      width: min(460px, 90vw); border: 14px solid white;
+      box-shadow: 6px 8px 30px rgba(0,0,0,0.5); transform: rotate(0.8deg);
+      margin: 0 auto 48px; display: block;
+    }
+    .closer-title { font-size: clamp(24px, 3vw, 40px); font-weight: bold; color: var(--fridge-cream); margin-bottom: 16px; }
+    .closer-body { color: #A8B898; font-size: 15px; line-height: 26px; font-style: italic; margin-bottom: 40px; }
+
+    /* ══════════════════════════════════════════
+       PRICING PAGE
+    ══════════════════════════════════════════ */
+    #page-pricing { background: var(--black); padding-top: 80px; }
+    .pricing-hero { padding: 80px 24px; text-align: center; border-bottom: 1px solid var(--border); }
+    .pricing-eyebrow { color: var(--green); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 16px; }
+    .pricing-title { font-size: clamp(32px, 5vw, 64px); font-weight: bold; margin-bottom: 16px; }
+    .pricing-sub { color: var(--brown); font-size: 15px; line-height: 26px; font-style: italic; }
+    .price-card { border: 1px solid var(--border); padding: 60px 48px; text-align: center; max-width: 480px; margin: 64px auto; }
+    .price-amount { font-size: 80px; font-weight: bold; color: var(--green); line-height: 1; }
+    .price-label { color: var(--dim); font-size: 11px; letter-spacing: 3px; margin: 8px 0 32px; }
+    .price-includes { list-style: none; margin-bottom: 40px; }
+    .price-includes li { color: var(--brown); font-size: 13px; padding: 12px 0; border-bottom: 1px solid var(--border); letter-spacing: 1px; }
+    .price-includes li:last-child { border-bottom: none; }
+
+    /* ══════════════════════════════════════════
+       DAMAGE CLAIM PAGE
+    ══════════════════════════════════════════ */
+    #page-claim { background: var(--black); padding-top: 80px; }
+    .claim-hero { padding: 80px 24px; text-align: center; border-bottom: 1px solid var(--border); }
+    .claim-eyebrow { color: var(--green); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 16px; }
+    .claim-title { font-size: clamp(28px, 4vw, 48px); font-weight: bold; margin-bottom: 16px; }
+    .claim-body-wrap { max-width: 560px; margin: 48px auto; padding: 0 24px 80px; text-align: center; }
+    .claim-card { border: 1px solid var(--border); padding: 40px; }
+    .claim-card p { color: var(--brown); font-size: 14px; line-height: 24px; margin-bottom: 16px; }
+    .claim-card strong { color: var(--cream); }
+    .claim-email-link { color: var(--green); font-size: 16px; letter-spacing: 2px; display: block; margin: 24px 0; font-weight: bold; }
+    .claim-note { color: var(--dim); font-size: 11px; line-height: 18px; letter-spacing: 1px; border-top: 1px solid var(--border); padding-top: 20px; margin-top: 8px; }
 
     /* ── FOOTER ── */
-    footer { padding: 60px 40px; text-align: center; }
-    .footer-logo { color: var(--green); font-size: 11px; letter-spacing: 4px; margin-bottom: 24px; }
-    .footer-links { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px; }
-    .footer-links a { font-size: 11px; color: var(--dim); letter-spacing: 2px; text-transform: uppercase; transition: color 0.2s; }
+    footer { padding: 48px 40px; text-align: center; border-top: 1px solid var(--border); background: var(--black); }
+    .footer-logo { color: var(--green); font-size: 11px; letter-spacing: 4px; margin-bottom: 20px; }
+    .footer-links { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
+    .footer-links a { font-size: 11px; color: var(--dim); letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: color 0.2s; }
     .footer-links a:hover { color: var(--cream); }
     .footer-copy { font-size: 10px; color: var(--border); letter-spacing: 2px; }
 
-    /* ── TABS ── */
-    .tab-nav { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 48px; flex-wrap: wrap; }
-    .tab-btn { background: none; border: none; color: var(--dim); font-family: monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; padding: 14px 24px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; }
-    .tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 600px) {
-      nav { padding: 16px 20px; }
-      .nav-links { gap: 16px; }
-      .hero { padding: 100px 20px 60px; }
-      section { padding: 60px 20px; }
-      .price-card { padding: 40px 24px; }
-      .claim-card { padding: 32px 20px; }
-      .waitlist-input { border-right: 1px solid var(--border); border-bottom: none; }
+    @media (max-width: 700px) {
+      nav { padding: 14px 16px; }
+      .nav-links { gap: 12px; }
+      .nav-links a { font-size: 9px; letter-spacing: 1px; }
+      .intent-grid { grid-template-columns: 1fr; }
+      .price-card { padding: 40px 20px; }
     }
   </style>
 </head>
@@ -150,141 +269,243 @@
 
 <!-- NAV -->
 <nav>
-  <span class="nav-logo">✦ SNAPPINGTURTLE ✦</span>
+  <span class="nav-logo" onclick="showPage('home')">✦ SNAPPINGTURTLE ✦</span>
   <div class="nav-links">
-    <a href="#about">About</a>
-    <a href="#pricing">Pricing</a>
-    <a href="#claim">Damage Claim</a>
-    <a href="#legal">Legal</a>
+    <a onclick="showPage('home')" class="active">Home</a>
+    <a onclick="showPage('goodmail')">Good Mail</a>
+    <a onclick="showPage('pricing')">Pricing</a>
+    <a onclick="showPage('claim')">Damage Claim</a>
   </div>
 </nav>
 
-<!-- HERO -->
-<div class="hero" id="home">
-  <p class="hero-channel">✦ CH. 3 ✦</p>
-  <div class="hero-turtle">🐢</div>
-  <h1 class="hero-title">SnappingTurtle</h1>
-  <p class="hero-subtitle">The Instant Memory Man</p>
-  <div class="hero-divider"></div>
-  <p class="hero-tagline">
-    Strolling down memory lane can be as easy as three taps from your phone.
-    Real photos. Real mail. Real connection.
-  </p>
-  <div class="hero-steps">
-    <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-label">Choose<br>Photos</div>
+<!-- ══════════════════════════════════════════
+     HOME PAGE
+══════════════════════════════════════════ -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <p class="hero-channel">✦ CH. 3 ✦</p>
+    <img src="TurtleMail.jpg" alt="The Instant Memory Man" class="hero-mascot" />
+    <h1 class="hero-title">SnappingTurtle</h1>
+    <p class="hero-subtitle">The Instant Memory Man</p>
+    <div class="hero-divider"></div>
+    <p class="hero-tagline">
+      Strolling down memory lane can be as easy as three taps from your phone.
+      Real photos. Real mail. Real connection.
+    </p>
+    <div class="hero-steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-label">Choose<br>Photos</div>
+      </div>
+      <span class="step-arrow">→</span>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-label">Pick<br>Contact</div>
+      </div>
+      <span class="step-arrow">→</span>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-label">Send<br>Turtle Mail</div>
+      </div>
     </div>
-    <span class="step-arrow">→</span>
-    <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-label">Pick<br>Contact</div>
-    </div>
-    <span class="step-arrow">→</span>
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-label">Send<br>Turtle Mail</div>
+    <button class="btn" onclick="document.getElementById('home-waitlist').scrollIntoView({behavior:'smooth'})">JOIN THE WAITLIST</button>
+    <p style="margin-top:16px;font-size:11px;color:var(--dim);letter-spacing:2px">iOS app · $25 per send · Up to 5 photos</p>
+  </div>
+
+  <!-- PCH humor beat -->
+  <div class="pch-section">
+    <div class="pch-inner">
+      <p class="pch-eyebrow">Not This</p>
+      <h2 class="pch-title">Nobody sends good mail anymore.</h2>
+      <p class="pch-body">
+        It's all bills. Marketing materials. The occasional Publishers Clearinghouse sweepstakes
+        that somehow still finds your mailbox. When was the last time you got something
+        worth keeping?
+      </p>
+      <img src="image_d3712423.png" alt="Publishers Clearinghouse — not quite the same thing" class="pch-img" />
+      <p class="pch-caption">Not quite the same thing.</p>
+      <button class="btn-ghost" onclick="showPage('goodmail')">WHAT IS GOOD MAIL →</button>
     </div>
   </div>
-  <a href="#waitlist" class="btn">JOIN THE WAITLIST</a>
-  <p class="hero-note">iOS app · $25 per send · Up to 5 photos</p>
+
+  <!-- Waitlist -->
+  <div class="waitlist-section" id="home-waitlist">
+    <div class="waitlist-inner">
+      <p class="waitlist-eyebrow">Early Access</p>
+      <h2 class="waitlist-title">Be first in line.</h2>
+      <p class="waitlist-sub">SnappingTurtle is coming soon to iOS. Join the waitlist and we'll let you know the moment it's ready.</p>
+      <div class="waitlist-form">
+        <input class="waitlist-input" type="email" id="waitlist-email" placeholder="your@email.com" />
+        <button class="waitlist-btn" onclick="joinWaitlist()">NOTIFY ME</button>
+      </div>
+      <div class="waitlist-result" id="waitlist-result"></div>
+    </div>
+  </div>
+
+  <footer>
+    <p class="footer-logo">✦ SNAPPINGTURTLE ✦</p>
+    <div class="footer-links">
+      <a onclick="showPage('home')">Home</a>
+      <a onclick="showPage('goodmail')">Good Mail</a>
+      <a onclick="showPage('pricing')">Pricing</a>
+      <a onclick="showPage('claim')">Damage Claim</a>
+      <a href="mailto:hello@snappingturtle.app">Contact</a>
+    </div>
+    <p class="footer-copy">© 2026 SNAPPINGTURTLE · ALL RIGHTS RESERVED · SNAPPINGTURTLE.APP</p>
+  </footer>
 </div>
 
-<!-- RITUAL SECTION -->
-<section id="ritual">
-  <div class="section-inner">
-    <p class="section-eyebrow">Why SnappingTurtle</p>
-    <h2 class="section-title">A ritual, not a novelty.</h2>
-    <p class="section-body">
-      Social media is infinite. The feed never ends. SnappingTurtle is the opposite — 
-      a deliberate, finite act of sending something real to someone who matters.
-      The constraints are the point.
+<!-- ══════════════════════════════════════════
+     GOOD MAIL PAGE
+══════════════════════════════════════════ -->
+<div id="page-goodmail" class="page">
+  <div class="goodmail-hero">
+    <p class="goodmail-eyebrow">✦ A FORGOTTEN EMOTION ✦</p>
+    <h1 class="goodmail-title">Good Mail.</h1>
+    <p class="goodmail-sub">
+      There used to be a feeling you got walking to the mailbox.
+      The chance that something good might be waiting.
+      SnappingTurtle brings that feeling back.
     </p>
-    <div class="ritual-grid">
-      <div class="ritual-item">
-        <p class="ritual-num">01</p>
-        <h3 class="ritual-heading">Anti-Flex</h3>
-        <p class="ritual-text">No likes. No followers. No algorithm. Just a photo in someone's hands. The gift is the attention, not the content.</p>
+  </div>
+
+  <div class="fridge-section">
+    <div class="fridge-inner">
+      <div class="fridge-label">
+        <h2>What makes Turtle Mail different.</h2>
+        <p>Pinned to the fridge. Not lost in the feed.</p>
       </div>
-      <div class="ritual-item">
-        <p class="ritual-num">02</p>
-        <h3 class="ritual-heading">Real Time Physical Syncing</h3>
-        <p class="ritual-text">You take a photo today. It arrives in their mailbox this week. Your digital life and their physical world, connected.</p>
-      </div>
-      <div class="ritual-item">
-        <p class="ritual-num">03</p>
-        <h3 class="ritual-heading">Fridge Photos, Not Artwork</h3>
-        <p class="ritual-text">Low friction. No framing, no printing, no trips to the pharmacy. Just the photo that made you smile, sent.</p>
-      </div>
-      <div class="ritual-item">
-        <p class="ritual-num">04</p>
-        <h3 class="ritual-heading">No Choice Paralysis</h3>
-        <p class="ritual-text">Fixed price. Fixed size. Up to five photos. The decision is already made. You just have to show up.</p>
-      </div>
-      <div class="ritual-item">
-        <p class="ritual-num">05</p>
-        <h3 class="ritual-heading">Nostalgic by Design</h3>
-        <p class="ritual-text">Physical mail carries weight that a text never will. Someone thought of you enough to send something real.</p>
-      </div>
-      <div class="ritual-item">
-        <p class="ritual-num">06</p>
-        <h3 class="ritual-heading">Lifetime Value</h3>
-        <p class="ritual-text">Birthdays. Anniversaries. Holidays. Tuesdays. Once you start sending Turtle Mail, you don't stop.</p>
+      <div class="polaroid-grid">
+
+        <div class="polaroid-wrap">
+          <div class="magnet red"></div>
+          <div class="polaroid">
+            <img src="TurtleMail.jpg" alt="Three taps" class="polaroid-img" />
+            <div class="polaroid-caption">
+              <div class="polaroid-title">Three Taps</div>
+              <div class="polaroid-text">Choose photos, pick a recipient, confirm. Under two minutes from your phone.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="polaroid-wrap">
+          <div class="magnet blue"></div>
+          <div class="polaroid">
+            <img src="WABAC_Machine.png" alt="The WABAC Machine" class="polaroid-img" />
+            <div class="polaroid-caption">
+              <div class="polaroid-title">The WABAC Machine</div>
+              <div class="polaroid-text">Your photo enters our print lab and emerges as a 4×6 gloss print at 300 DPI.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="polaroid-wrap">
+          <div class="magnet yellow"></div>
+          <div class="polaroid">
+            <div class="polaroid-placeholder">📬</div>
+            <div class="polaroid-caption">
+              <div class="polaroid-title">Real Mail</div>
+              <div class="polaroid-text">Not a notification. An actual envelope in an actual mailbox. Delivered by USPS.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="polaroid-wrap">
+          <div class="magnet green-m"></div>
+          <div class="polaroid">
+            <div class="polaroid-placeholder">💰</div>
+            <div class="polaroid-caption">
+              <div class="polaroid-title">One Fixed Price</div>
+              <div class="polaroid-text">$25 per send. Up to 5 photos. No subscriptions. No surprises.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="polaroid-wrap">
+          <div class="magnet orange"></div>
+          <div class="polaroid">
+            <div class="polaroid-placeholder">🔒</div>
+            <div class="polaroid-caption">
+              <div class="polaroid-title">Private by Default</div>
+              <div class="polaroid-text">Your address book lives on your device, PIN-protected. Photos deleted after delivery.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="polaroid-wrap">
+          <div class="magnet purple"></div>
+          <div class="polaroid">
+            <div class="polaroid-placeholder">🐢</div>
+            <div class="polaroid-caption">
+              <div class="polaroid-title">Slow on Purpose</div>
+              <div class="polaroid-text">Turtle Mail takes a few days. That anticipation is part of the gift.</div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
-</section>
 
-<!-- ABOUT / BENEFITS -->
-<section id="about">
-  <div class="section-inner">
-    <p class="section-eyebrow">The Benefits</p>
-    <h2 class="section-title">Built for people who care.</h2>
-    <p class="section-body">
-      SnappingTurtle is intentionally simple. Everything about the experience is designed 
-      to remove friction between the impulse to connect and the act of connecting.
-    </p>
-    <div class="benefits-grid">
-      <div class="benefit">
-        <div class="benefit-icon">📱</div>
-        <div class="benefit-title">Three Taps</div>
-        <p class="benefit-text">Choose photos, pick a recipient, confirm. The entire flow takes under two minutes from your phone.</p>
-      </div>
-      <div class="benefit">
-        <div class="benefit-icon">📸</div>
-        <div class="benefit-title">4×6 Gloss Prints</div>
-        <p class="benefit-text">300 DPI professional quality. The same size that's been going on refrigerators for fifty years.</p>
-      </div>
-      <div class="benefit">
-        <div class="benefit-icon">✉️</div>
-        <div class="benefit-title">We Handle Everything</div>
-        <p class="benefit-text">Print, envelope, stamp, delivery. You send it, we ship it. No errands, no printer ink, no post office.</p>
-      </div>
-      <div class="benefit">
-        <div class="benefit-icon">💰</div>
-        <div class="benefit-title">One Fixed Price</div>
-        <p class="benefit-text">$25 per send, up to 5 photos. No subscriptions, no tiers, no surprises. You know exactly what you're paying.</p>
-      </div>
-      <div class="benefit">
-        <div class="benefit-icon">🔒</div>
-        <div class="benefit-title">Private by Default</div>
-        <p class="benefit-text">Your address book lives on your device, PIN-protected. Your photos are deleted after delivery is confirmed.</p>
-      </div>
-      <div class="benefit">
-        <div class="benefit-icon">🐢</div>
-        <div class="benefit-title">Slow on Purpose</div>
-        <p class="benefit-text">Turtle Mail takes a few days. That anticipation is part of the gift. Some things are worth the wait.</p>
+  <!-- Intent section -->
+  <div class="intent-section">
+    <div class="intent-inner">
+      <div class="intent-grid">
+        <div class="intent-img-wrap">
+          <div class="intent-magnet"></div>
+          <img src="image_e9ac850c.png" alt="Someone smiling at Turtle Mail from the mailbox" class="intent-img" />
+        </div>
+        <div>
+          <p class="intent-eyebrow">The Difference</p>
+          <h2 class="intent-title">Intent changes everything.</h2>
+          <div class="intent-body">
+            <p>The electric company didn't think about you. The cable company didn't think about you. Publishers Clearinghouse definitely didn't think about you.</p>
+            <p><strong>Someone who sends Turtle Mail thought about you.</strong> They picked a photo. They typed your name. They pressed send. That's not nothing. That's everything.</p>
+            <p>In a world of automated everything, a deliberate act of sending something physical to someone you love is almost radical. Turtle Mail is that act.</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</section>
 
-<!-- PRICING -->
-<section id="pricing">
-  <div class="section-inner">
-    <p class="section-eyebrow">Pricing</p>
-    <h2 class="section-title">Simple. Fixed. Fair.</h2>
-    <p class="section-body">One price. No subscriptions. No hidden fees. Send when you want, as often as you want.</p>
+  <!-- Fridge closer -->
+  <div class="fridge-closer">
+    <div class="fridge-closer-inner">
+      <div class="closer-magnet"></div>
+      <img src="image_e9703635.png" alt="Cecil at the Beach on the fridge" class="closer-img" />
+      <h2 class="closer-title">This is where Turtle Mail ends up.</h2>
+      <p class="closer-body">
+        Not in the recycling bin. Not archived in a folder.
+        On the refrigerator. Where it stays for years.
+        Where someone sees it every morning with their coffee.
+      </p>
+      <button class="btn" onclick="showPage('home'); setTimeout(()=>document.getElementById('home-waitlist').scrollIntoView({behavior:'smooth'}),100)">GET EARLY ACCESS</button>
+    </div>
+  </div>
+
+  <footer>
+    <p class="footer-logo">✦ SNAPPINGTURTLE ✦</p>
+    <div class="footer-links">
+      <a onclick="showPage('home')">Home</a>
+      <a onclick="showPage('goodmail')">Good Mail</a>
+      <a onclick="showPage('pricing')">Pricing</a>
+      <a onclick="showPage('claim')">Damage Claim</a>
+      <a href="mailto:hello@snappingturtle.app">Contact</a>
+    </div>
+    <p class="footer-copy">© 2026 SNAPPINGTURTLE · ALL RIGHTS RESERVED · SNAPPINGTURTLE.APP</p>
+  </footer>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PRICING PAGE
+══════════════════════════════════════════ -->
+<div id="page-pricing" class="page">
+  <div class="pricing-hero">
+    <p class="pricing-eyebrow">Pricing</p>
+    <h1 class="pricing-title">Simple. Fixed. Fair.</h1>
+    <p class="pricing-sub">One price. No subscriptions. No hidden fees.<br>Send when you want, as often as you want.</p>
+  </div>
+  <div style="padding:0 24px">
     <div class="price-card">
       <div class="price-amount">$25</div>
       <p class="price-label">PER SEND</p>
@@ -293,181 +514,70 @@
         <li>4×6 gloss prints at 300 DPI</li>
         <li>Personal message included</li>
         <li>US delivery via USPS</li>
-        <li>Damage reprint guarantee</li>
         <li>No subscription required</li>
       </ul>
-      <a href="#waitlist" class="btn">GET EARLY ACCESS</a>
+      <button class="btn" onclick="showPage('home'); setTimeout(()=>document.getElementById('home-waitlist').scrollIntoView({behavior:'smooth'}),100)">GET EARLY ACCESS</button>
     </div>
   </div>
-</section>
-
-<!-- WAITLIST -->
-<section id="waitlist">
-  <div class="section-inner" style="text-align:center">
-    <p class="section-eyebrow">Early Access</p>
-    <h2 class="section-title">Be first in line.</h2>
-    <p class="section-body" style="margin: 0 auto 0;">
-      SnappingTurtle is coming soon to iOS. Join the waitlist and we'll let you know the moment it's ready.
-    </p>
-    <div class="waitlist-wrap">
-      <div class="waitlist-form">
-        <input class="waitlist-input" type="email" id="waitlist-email" placeholder="your@email.com" />
-        <button class="waitlist-btn" onclick="joinWaitlist()">NOTIFY ME</button>
-      </div>
-      <div class="waitlist-result" id="waitlist-result"></div>
+  <footer>
+    <p class="footer-logo">✦ SNAPPINGTURTLE ✦</p>
+    <div class="footer-links">
+      <a onclick="showPage('home')">Home</a>
+      <a onclick="showPage('goodmail')">Good Mail</a>
+      <a onclick="showPage('pricing')">Pricing</a>
+      <a onclick="showPage('claim')">Damage Claim</a>
+      <a href="mailto:hello@snappingturtle.app">Contact</a>
     </div>
-  </div>
-</section>
+    <p class="footer-copy">© 2026 SNAPPINGTURTLE · ALL RIGHTS RESERVED · SNAPPINGTURTLE.APP</p>
+  </footer>
+</div>
 
-<!-- DAMAGE CLAIM -->
-<section id="claim">
-  <div class="section-inner">
-    <p class="section-eyebrow">Damage Claim</p>
-    <h2 class="section-title">Something arrive damaged?</h2>
-    <p class="section-body">We stand behind every send. If your photos arrived damaged, we will reprint and reship them at no charge.</p>
+<!-- ══════════════════════════════════════════
+     DAMAGE CLAIM PAGE
+══════════════════════════════════════════ -->
+<div id="page-claim" class="page">
+  <div class="claim-hero">
+    <p class="claim-eyebrow">Damage Claim</p>
+    <h1 class="claim-title">Something arrive damaged?</h1>
+  </div>
+  <div class="claim-body-wrap">
     <div class="claim-card">
-      <p class="claim-policy">
-        Claims must be submitted within 48 hours of delivery confirmation.
-        Your order number can be found in your app after sending.
-        Approved reprints ship within 1–2 business days.
-      </p>
-      <label class="field-label" for="claim-order">ORDER NUMBER</label>
-      <input class="field-input" type="text" id="claim-order" placeholder="ST-1234567890" />
-      <label class="field-label" for="claim-name">YOUR NAME</label>
-      <input class="field-input" type="text" id="claim-name" placeholder="Full name" />
-      <label class="field-label" for="claim-desc">DESCRIBE THE DAMAGE</label>
-      <textarea class="field-input" id="claim-desc" placeholder="Please describe how the photos arrived damaged..."></textarea>
-      <button class="claim-btn" id="claim-btn" onclick="submitClaim()">SUBMIT CLAIM</button>
-      <div class="claim-result" id="claim-result"></div>
+      <p>If your photos arrived damaged due to mail carrier handling, we want to make it right. Please email us directly with the following information:</p>
+      <ul style="color:var(--brown);font-size:13px;line-height:24px;padding-left:20px;margin-bottom:16px">
+        <li>Your order number (begins with ST-)</li>
+        <li>Your name</li>
+        <li>A description of the damage</li>
+        <li>A photo of the damaged prints</li>
+      </ul>
+      <a href="mailto:customerservice@snappingturtle.app" class="claim-email-link">customerservice@snappingturtle.app</a>
+      <p>We will respond within 1 business day. Reprints are issued at our sole discretion upon verification of damage.</p>
+      <p class="claim-note">Claims must be submitted within 48 hours of delivery confirmation. One claim per order. SnappingTurtle reserves the right to review all claims before issuing a reprint.</p>
     </div>
   </div>
-</section>
-
-<!-- LEGAL -->
-<section id="legal">
-  <div class="section-inner">
-    <p class="section-eyebrow">Legal</p>
-    <h2 class="section-title">Terms & Privacy</h2>
-    <div class="tab-nav">
-      <button class="tab-btn active" onclick="showTab('tos')">Terms of Service</button>
-      <button class="tab-btn" onclick="showTab('privacy')">Privacy Policy</button>
+  <footer>
+    <p class="footer-logo">✦ SNAPPINGTURTLE ✦</p>
+    <div class="footer-links">
+      <a onclick="showPage('home')">Home</a>
+      <a onclick="showPage('goodmail')">Good Mail</a>
+      <a onclick="showPage('pricing')">Pricing</a>
+      <a onclick="showPage('claim')">Damage Claim</a>
+      <a href="mailto:hello@snappingturtle.app">Contact</a>
     </div>
-
-    <!-- TERMS OF SERVICE -->
-    <div class="tab-content active legal-content" id="tab-tos">
-      <p style="color:var(--dim);font-size:11px;letter-spacing:2px;margin-bottom:32px">Effective Date: June 2026</p>
-      <h2>Agreement to Terms</h2>
-      <p>By downloading, installing, or using the SnappingTurtle mobile application or website you agree to be bound by these Terms of Service. If you do not agree to these terms please do not use our service. You must be at least 18 years of age to use SnappingTurtle.</p>
-      <h2>The Service</h2>
-      <p>SnappingTurtle provides a mobile application that allows users to select photographs from their device, compose a personal message, select a delivery address, and send physical printed photographs by mail through our fulfillment partner Prodigi. The service is provided on a pay-per-send basis at $25.00 USD per order.</p>
-      <h2>User Responsibilities</h2>
-      <ul>
-        <li>The accuracy of all delivery addresses you enter into your address book. SnappingTurtle is not responsible for undeliverable mail resulting from incorrect addresses.</li>
-        <li>Ensuring you have the right to share and print any photographs you send through SnappingTurtle.</li>
-        <li>Ensuring the content of your personal messages is lawful and respectful.</li>
-        <li>Keeping your account PIN secure.</li>
-        <li>Obtaining consent from photograph subjects before sending their images to third parties.</li>
-      </ul>
-      <h2>Payments and Refunds</h2>
-      <p>All payments are processed securely through Stripe. All sales are final once an order has been submitted to our fulfillment partner for processing. Refunds may be issued at our sole discretion in cases of verified printing errors or non-delivery caused by our fulfillment partner.</p>
-      <p><strong>IMPORTANT: SnappingTurtle is not responsible for undeliverable, lost, or misdelivered mail resulting from incorrect addresses entered by the user.</strong></p>
-      <h2>Damage Claims & Reprints</h2>
-      <p>If your printed photos arrive damaged due to mail carrier handling, you may submit a damage claim at snappingturtle.app/claim or through the claim form on this website. The following conditions apply:</p>
-      <ul>
-        <li><strong>Claim window:</strong> Damage claims must be submitted within <strong>48 hours</strong> of confirmed delivery. Claims submitted after this window will not be eligible for a reprint.</li>
-        <li><strong>Image retention:</strong> Your uploaded photos are retained on our servers for a maximum of <strong>15 days</strong> following confirmed delivery to allow for reprint fulfillment. After this period, or after the 48-hour claim window closes with no claim submitted, your photos are permanently deleted from our servers.</li>
-        <li><strong>One claim per order:</strong> Only one damage claim may be submitted per order.</li>
-        <li><strong>Auto-approval:</strong> Valid claims submitted within the 48-hour window are automatically approved and a reprint order is placed immediately at no charge.</li>
-      </ul>
-      <h2>Prohibited Uses</h2>
-      <p>You may not use SnappingTurtle to send obscene, offensive, or sexually explicit content, threatening or harassing messages, content that infringes on intellectual property rights, or any content that violates applicable law.</p>
-      <h2>Third Party Services</h2>
-      <p>SnappingTurtle uses Prodigi for print and mail fulfillment, Stripe for payment processing, and Cloudinary for temporary image storage. Your use of these services is also subject to their respective terms of service and privacy policies.</p>
-      <h2>Disclaimer of Warranties</h2>
-      <p>SnappingTurtle is provided on an as-is and as-available basis without warranties of any kind. We do not guarantee specific delivery timeframes as these are determined by our fulfillment partner and postal services.</p>
-      <h2>Limitation of Liability</h2>
-      <p>To the fullest extent permitted by law, SnappingTurtle shall not be liable for any indirect, incidental, special, consequential, or punitive damages. Our total liability for any claim shall not exceed the amount you paid for the specific order giving rise to the claim.</p>
-      <h2>Intellectual Property</h2>
-      <p>The SnappingTurtle name, logo, The Instant Memory Man mascot, and all associated branding are the intellectual property of SnappingTurtle. You may not use, reproduce, or distribute our branding without prior written permission.</p>
-      <h2>Governing Law</h2>
-      <p>These Terms of Service are governed by the laws of the State of Florida, United States. Any disputes shall be resolved in the courts of the State of Florida.</p>
-      <h2>Contact</h2>
-      <p>For questions about these Terms of Service please contact us at <a href="mailto:legal@snappingturtle.app" style="color:var(--green)">legal@snappingturtle.app</a>.</p>
-      <p style="color:var(--dim);font-size:11px;margin-top:40px;letter-spacing:1px">SnappingTurtle · snappingturtle.app · © 2026 · All Rights Reserved</p>
-    </div>
-
-    <!-- PRIVACY POLICY -->
-    <div class="tab-content legal-content" id="tab-privacy">
-      <p style="color:var(--dim);font-size:11px;letter-spacing:2px;margin-bottom:32px">Effective Date: June 2026</p>
-      <h2>Introduction</h2>
-      <p>SnappingTurtle ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and protect your information when you use the SnappingTurtle mobile application and website at snappingturtle.app.</p>
-      <h2>Information We Collect</h2>
-      <p>Information you provide directly:</p>
-      <ul>
-        <li>Recipient mailing addresses that you manually enter into your address book</li>
-        <li>Personal messages you compose to accompany your photo sends</li>
-        <li>Payment information processed securely through Stripe — we never see or store your card details</li>
-        <li>Email address if you sign up for our launch waitlist</li>
-      </ul>
-      <h2>Photographs</h2>
-      <p>Photographs you select for sending are transmitted to Cloudinary (our temporary image storage provider) solely to fulfill your print order through Prodigi. Your photos are retained for a maximum of <strong>15 days following confirmed delivery</strong> to allow for damage claim reprints. After this period, or after the 48-hour damage claim window closes with no claim submitted, your photos are <strong>permanently and automatically deleted</strong> from our servers. We do not use your photographs for any other purpose.</p>
-      <h2>How We Use Your Information</h2>
-      <ul>
-        <li>To process and fulfill your photo mail orders through our print partner Prodigi</li>
-        <li>To process payments through Stripe</li>
-        <li>To communicate with you about your orders</li>
-        <li>To send waitlist and launch communications if you have opted in</li>
-        <li>To improve and maintain the app</li>
-      </ul>
-      <h2>How We Share Your Information</h2>
-      <p>We do not sell your personal information to any third party. We share your information only with:</p>
-      <ul>
-        <li><strong>Prodigi</strong> — our print and mail fulfillment partner. Prodigi receives recipient mailing addresses and photo files solely for the purpose of printing and mailing your order.</li>
-        <li><strong>Stripe</strong> — our payment processor. We never receive or store your full card details.</li>
-        <li><strong>Cloudinary</strong> — our temporary image storage provider. Images are automatically deleted after the retention period described above.</li>
-        <li><strong>Mailchimp</strong> — our email marketing platform, used only if you opt in to our waitlist.</li>
-      </ul>
-      <h2>Data Storage and Security</h2>
-      <p>Recipient addresses saved in your address book are stored locally on your device and are not transmitted to our servers except when required to fulfill an order. Your address book is protected by a user-defined PIN. We implement reasonable security measures to protect your information.</p>
-      <h2>Children's Privacy</h2>
-      <p>SnappingTurtle is not intended for use by children under the age of 18. We do not knowingly collect personal information from children under 18.</p>
-      <h2>Your Rights</h2>
-      <p>You have the right to access, correct, or delete your personal information. To exercise these rights please contact us at <a href="mailto:privacy@snappingturtle.app" style="color:var(--green)">privacy@snappingturtle.app</a>. We will respond within 30 days.</p>
-      <h2>Contact</h2>
-      <p>For privacy related questions please contact us at <a href="mailto:privacy@snappingturtle.app" style="color:var(--green)">privacy@snappingturtle.app</a>.</p>
-      <p style="color:var(--dim);font-size:11px;margin-top:40px;letter-spacing:1px">SnappingTurtle · snappingturtle.app · © 2026 · All Rights Reserved</p>
-    </div>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <p class="footer-logo">✦ SNAPPINGTURTLE ✦</p>
-  <div class="footer-links">
-    <a href="#about">About</a>
-    <a href="#pricing">Pricing</a>
-    <a href="#waitlist">Waitlist</a>
-    <a href="#claim">Damage Claim</a>
-    <a href="#legal">Terms</a>
-    <a href="#legal" onclick="showTab('privacy')">Privacy</a>
-    <a href="mailto:hello@snappingturtle.app">Contact</a>
-  </div>
-  <p class="footer-copy">© 2026 SNAPPINGTURTLE · ALL RIGHTS RESERVED · SNAPPINGTURTLE.APP</p>
-</footer>
+    <p class="footer-copy">© 2026 SNAPPINGTURTLE · ALL RIGHTS RESERVED · SNAPPINGTURTLE.APP</p>
+  </footer>
+</div>
 
 <script>
-  const BACKEND_URL = 'https://snappingturtle-backend-production.up.railway.app';
-  // ── Tab switching ──────────────────────────────────────────────────────────
-  function showTab(tab) {
-    document.querySelectorAll('.tab-btn').forEach((b, i) => {
-      b.classList.toggle('active', (i === 0 && tab === 'tos') || (i === 1 && tab === 'privacy'));
-    });
-    document.getElementById('tab-tos').classList.toggle('active', tab === 'tos');
-    document.getElementById('tab-privacy').classList.toggle('active', tab === 'privacy');
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    const map = { home: 0, goodmail: 1, pricing: 2, claim: 3 };
+    if (map[id] !== undefined) document.querySelectorAll('.nav-links a')[map[id]].classList.add('active');
+    window.scrollTo(0, 0);
   }
 
-  // ── Mailchimp waitlist ─────────────────────────────────────────────────────
-  async function joinWaitlist() {
+  function joinWaitlist() {
     const email = document.getElementById('waitlist-email').value.trim();
     const result = document.getElementById('waitlist-result');
     if (!email || !email.includes('@')) {
@@ -476,79 +586,16 @@
       result.textContent = 'Please enter a valid email address.';
       return;
     }
-    result.className = 'waitlist-result';
+    result.className = 'waitlist-result success';
     result.style.display = 'block';
-    result.textContent = 'Joining...';
-
-    try {
-      const response = await fetch(`${BACKEND_URL}/waitlist`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-      const data = await response.json();
-      if (data.success) {
-        result.className = 'waitlist-result success';
-        result.textContent = "✓ You're on the list. We'll be in touch.";
-        document.getElementById('waitlist-email').value = '';
-      } else {
-        result.className = 'waitlist-result error';
-        result.textContent = data.error || 'Something went wrong. Please try again.';
-      }
-    } catch (e) {
-      result.className = 'waitlist-result error';
-      result.textContent = 'Could not reach server. Please try again.';
-    }
+    result.textContent = "✓ You're on the list. We'll be in touch.";
+    document.getElementById('waitlist-email').value = '';
   }
 
-  document.getElementById('waitlist-email').addEventListener('keydown', (e) => {
+  document.getElementById('waitlist-email').addEventListener('keydown', e => {
     if (e.key === 'Enter') joinWaitlist();
   });
-
-  // ── Damage claim ───────────────────────────────────────────────────────────
-  async function submitClaim() {
-    const orderId = document.getElementById('claim-order').value.trim();
-    const claimantName = document.getElementById('claim-name').value.trim();
-    const description = document.getElementById('claim-desc').value.trim();
-    const btn = document.getElementById('claim-btn');
-    const result = document.getElementById('claim-result');
-
-    if (!orderId || !claimantName || !description) {
-      result.className = 'claim-result error';
-      result.style.display = 'block';
-      result.textContent = 'Please fill in all fields.';
-      return;
-    }
-
-    btn.disabled = true;
-    btn.textContent = 'SUBMITTING...';
-    result.style.display = 'none';
-
-    try {
-      const response = await fetch(`${BACKEND_URL}/claim-damage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId, claimantName, description }),
-      });
-      const data = await response.json();
-      if (data.success) {
-        result.className = 'claim-result success';
-        result.textContent = '✓ ' + data.message;
-        btn.textContent = 'CLAIM SUBMITTED';
-      } else {
-        result.className = 'claim-result error';
-        result.textContent = data.error || 'Something went wrong. Please try again.';
-        btn.disabled = false;
-        btn.textContent = 'SUBMIT CLAIM';
-      }
-    } catch (e) {
-      result.className = 'claim-result error';
-      result.textContent = 'Could not reach server. Please try again.';
-      btn.disabled = false;
-      btn.textContent = 'SUBMIT CLAIM';
-    }
-    result.style.display = 'block';
-  }
 </script>
 </body>
 </html>
+
