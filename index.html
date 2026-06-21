@@ -37,7 +37,6 @@
     .nav-links a { font-size: 10px; letter-spacing: 2px; color: var(--dim); text-transform: uppercase; transition: color 0.2s; cursor: pointer; white-space: nowrap; }
     .nav-links a:hover, .nav-links a.active { color: var(--cream); }
 
-    
     /* ── PAGES ── */
     .page { display: none; }
     .page.active { display: block; }
@@ -101,7 +100,7 @@
 
     /* Fairy lights banner */
     .fairy-banner { width: 100%; padding-top: 64px; }
-    .fairy-banner img { width: 100%; display: block; max-height: 50vh; object-fit: cover; object-position: center 20%; }
+    .fairy-banner { width: 100%; overflow: hidden; } .fairy-banner img { width: 100%; display: block; max-height: 340px; object-fit: contain; object-position: center center; background: #1a1e16; }
 
     /* Good mail hero */
     .goodmail-hero { text-align: center; padding: 60px 24px 50px; border-bottom: 1px solid rgba(255,255,255,0.07); }
@@ -617,4 +616,3 @@
 </script>
 </body>
 </html>
-
