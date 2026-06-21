@@ -100,7 +100,7 @@
 
     /* Fairy lights banner */
     .fairy-banner { width: 100%; padding-top: 64px; }
-    .fairy-banner img { width: 100%; display: block; max-height: 320px; object-fit: cover; object-position: center; }
+    .fairy-banner img { width: 100%; display: block; max-height: 480px; object-fit: cover; object-position: top; }
 
     /* Good mail hero */
     .goodmail-hero { text-align: center; padding: 60px 24px 50px; border-bottom: 1px solid rgba(255,255,255,0.07); }
@@ -109,8 +109,8 @@
     .goodmail-sub { color: #A0B090; font-size: 15px; line-height: 26px; max-width: 520px; margin: 0 auto; font-style: italic; }
 
     /* Pepé story strip */
-    .story-section { padding: 80px 24px; border-bottom: 1px solid rgba(255,255,255,0.07); }
-    .story-inner { max-width: 1100px; margin: 0 auto; }
+    .story-section { padding: 80px 40px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .story-inner { max-width: 1200px; margin: 0 auto; }
     .story-label { text-align: center; margin-bottom: 48px; }
     .story-label h2 { font-size: clamp(20px, 2.5vw, 32px); color: var(--fridge-cream); margin-bottom: 8px; }
     .story-label p { color: #7A8A6A; font-size: 12px; letter-spacing: 2px; font-style: italic; }
@@ -127,11 +127,11 @@
 
     /* Fridge polaroid benefits */
     .fridge-section { padding: 80px 24px; border-bottom: 1px solid rgba(255,255,255,0.07); }
-    .fridge-inner { max-width: 1060px; margin: 0 auto; }
+    .fridge-inner { max-width: 1200px; margin: 0 auto; }
     .fridge-label { text-align: center; margin-bottom: 56px; }
     .fridge-label h2 { font-size: clamp(20px, 2.5vw, 32px); color: var(--fridge-cream); margin-bottom: 8px; }
     .fridge-label p { color: #7A8A6A; font-size: 12px; letter-spacing: 2px; font-style: italic; }
-    .polaroid-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 48px 28px; align-items: start; }
+    .polaroid-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 56px 32px; align-items: start; }
     .polaroid-wrap { display: flex; flex-direction: column; align-items: center; }
     .magnet { width: 26px; height: 26px; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.5); margin-bottom: -13px; position: relative; z-index: 3; flex-shrink: 0; }
     .magnet.red { background: radial-gradient(circle at 35% 35%, #e05050, #8B1A1A); }
@@ -293,7 +293,6 @@
     </div>
   </div>
 
-  
   <div class="waitlist-section" id="home-waitlist">
     <div class="waitlist-inner">
       <p class="section-eyebrow">Early Access</p>
@@ -428,7 +427,7 @@
         <div class="polaroid-wrap">
           <div class="magnet orange"></div>
           <div class="polaroid">
-            <div class="polaroid-placeholder">🔒</div>
+            <img src="Privacy1.png" alt="Private by Default" class="polaroid-img" />
             <div class="polaroid-caption">
               <div class="polaroid-title">Private by Default</div>
               <div class="polaroid-text">PIN-protected address book. Photos deleted after delivery.</div>
@@ -438,7 +437,7 @@
         <div class="polaroid-wrap">
           <div class="magnet purple"></div>
           <div class="polaroid">
-            <div class="polaroid-placeholder">🐢</div>
+            <img src="Slow_On_Purpose.png" alt="Slow on Purpose" class="polaroid-img" />
             <div class="polaroid-caption">
               <div class="polaroid-title">Slow on Purpose</div>
               <div class="polaroid-text">Turtle Mail takes a few days. That anticipation is part of the gift.</div>
