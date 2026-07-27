@@ -168,7 +168,7 @@
 
     <div class="field">
       <label for="message-input">Message</label>
-      <textarea id="message-input" maxlength="300" placeholder="Write something personal..."></textarea>
+      <textarea id="message-input" maxlength="600" placeholder="Write something personal..."></textarea>
     </div>
     <div class="field">
       <label for="fromname-input">From (optional)</label>
@@ -237,6 +237,7 @@
     <div class="checkbox-row" id="agree-row">
       <div class="checkbox" id="agree-checkbox"></div>
       <p class="checkbox-label">
+        I agree to the <a href="/terms-of-sale.html" target="_blank" onclick="event.stopPropagation()" style="color:var(--green); text-decoration:underline;">Terms of Sale</a>.
         Because each item is custom printed on demand, all sales are final — we do not offer cash or credit refunds
         under any circumstances. Our fulfillment partner does not provide real-time delivery confirmation, so your
         estimated delivery date is calculated from your order's ship date, not verified after the fact. Shipping
@@ -290,13 +291,8 @@ const BACKEND_URL = "https://snappingturtle-backend-production.up.railway.app";
 const STRIPE_PUBLISHABLE_KEY = "pk_test_51TjOp4GfVvzrUyxJXFAM6E8d1HPpj2CvmW0SlQXnpI3a96HQ5j2FAcWjj3z4wksBSJI5ZoOSteBkZbx2XyD309uv00lKkmUsL8";
 
 const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
-const elements = stripe.elements();
-const cardElement = elements.create('card', {
-  style: {
-    base: { color: '#F5E9C8', fontFamily: 'monospace', fontSize: '15px', '::placeholder': { color: '#6B5830' } },
-    invalid: { color: '#CC2200' }
-  }
-});
+let elements = null;
+let paymentElement = null;
 
 let state = {
   rawPhotos: [],       // File objects, in original picked order
@@ -517,13 +513,52 @@ document.getElementById('agree-row').addEventListener('click', () => {
   document.getElementById('review-next-btn').disabled = !agreed;
 });
 
-document.getElementById('review-next-btn').addEventListener('click', () => {
-  showStep('step-payment');
-  cardElement.mount('#card-element');
-});
+document.getElementById('review-next-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('review-next-btn');
+  btn.disabled = true;
+  btn.textContent = 'Loading payment options…';
 
-cardElement.on('change', (event) => {
-  document.getElementById('card-errors').textContent = event.error ? event.error.message : '';
+  try {
+    const recipient = {
+      name: document.getElementById('r-name').value.trim(),
+      street: document.getElementById('r-street').value.trim(),
+      city: document.getElementById('r-city').value.trim(),
+      state: document.getElementById('r-state').value.trim().toUpperCase(),
+      zip: document.getElementById('r-zip').value.trim(),
+    };
+
+    const intentRes = await fetch(`${BACKEND_URL}/create-payment-intent`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ recipient }),
+    });
+    const intentData = await intentRes.json();
+    if (!intentData.clientSecret) throw new Error('Could not initialize payment.');
+
+    elements = stripe.elements({
+      clientSecret: intentData.clientSecret,
+      appearance: {
+        theme: 'night',
+        variables: {
+          colorBackground: '#1A1A18',
+          colorText: '#F5E9C8',
+          colorDanger: '#CC2200',
+          colorPrimary: '#C8E620',
+          fontFamily: 'monospace',
+          borderRadius: '0px',
+        },
+      },
+    });
+    paymentElement = elements.create('payment');
+    paymentElement.mount('#card-element');
+
+    showStep('step-payment');
+  } catch (err) {
+    alert(err.message || "Couldn't load payment options — please try again.");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Continue to Payment';
+  }
 });
 
 /* ---------- STEP 5: Payment + submission ---------- */
@@ -544,16 +579,12 @@ document.getElementById('pay-btn').addEventListener('click', async () => {
       zip: document.getElementById('r-zip').value.trim(),
     };
 
-    const intentRes = await fetch(`${BACKEND_URL}/create-payment-intent`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount: 2500, recipient }),
-    });
-    const intentData = await intentRes.json();
-    if (!intentData.clientSecret) throw new Error('Could not initialize payment.');
-
-    const { error, paymentIntent } = await stripe.confirmCardPayment(intentData.clientSecret, {
-      payment_method: { card: cardElement }
+    // redirect: 'if_required' keeps the customer on this page for card/Link/
+    // wallet payments (the normal case) — Stripe only redirects away if a
+    // genuinely redirect-based method were selected, which isn't offered here.
+    const { error, paymentIntent } = await stripe.confirmPayment({
+      elements,
+      redirect: 'if_required',
     });
 
     if (error) {
