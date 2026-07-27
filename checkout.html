@@ -7,6 +7,7 @@
 <meta name="description" content="Send real printed photos. $25. Up to 5 photos. Domestic delivery." />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/heic2any/0.0.1/index.min.js"></script>
 <script src="https://js.stripe.com/v3/"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -316,18 +317,62 @@ const photoInput = document.getElementById('photo-input');
 const photoGrid = document.getElementById('photo-grid');
 
 photoDrop.addEventListener('click', () => photoInput.click());
-photoInput.addEventListener('change', (e) => {
+function isHeic(file) {
+  const name = file.name.toLowerCase();
+  return file.type === 'image/heic' || file.type === 'image/heif' ||
+         name.endsWith('.heic') || name.endsWith('.heif');
+}
+
+photoInput.addEventListener('change', async (e) => {
   const incoming = Array.from(e.target.files);
-  for (const file of incoming) {
-    if (state.rawPhotos.length >= 5) break;
-    state.rawPhotos.push(file);
+  const room = Math.max(0, 5 - state.rawPhotos.length);
+  const toAdd = incoming.slice(0, room);
+  if (toAdd.length === 0) { photoInput.value = ''; return; }
+
+  const originalDropText = photoDrop.textContent;
+  photoDrop.textContent = 'Converting photos…';
+
+  for (const file of toAdd) {
+    if (isHeic(file)) {
+      // Browsers cannot natively decode HEIC (the default iPhone photo
+      // format) — this converts it to a real JPEG right away, so every
+      // later step (thumbnail preview, the Cropper.js crop tool, and the
+      // final exported image) works with a format the browser can
+      // actually handle. The server can decode HEIC fine on its own, but
+      // the crop step specifically happens in the browser, so this
+      // conversion has to happen here, not just server-side.
+      try {
+        const convertedBlob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 });
+        const convertedFile = new File(
+          [convertedBlob],
+          file.name.replace(/\.heic$/i, '.jpg').replace(/\.heif$/i, '.jpg'),
+          { type: 'image/jpeg' }
+        );
+        state.rawPhotos.push(convertedFile);
+      } catch (err) {
+        console.error('HEIC conversion failed:', err);
+        state.rawPhotos.push(file); // falls back to the placeholder in renderPhotoGrid
+      }
+    } else {
+      state.rawPhotos.push(file);
+    }
   }
+
+  photoDrop.textContent = originalDropText;
   renderPhotoGrid();
   photoInput.value = '';
 });
 
 function renderPhotoGrid() {
   photoGrid.innerHTML = state.rawPhotos.map((file, i) => {
+    if (isHeic(file)) {
+      // Browsers can't natively preview HEIC (the default iPhone photo
+      // format) inside an <img> tag — this isn't a bug, just a real
+      // limitation. The server CAN handle HEIC fine (pillow_heif is
+      // installed), so upload/moderation/printing all still work
+      // correctly — only the on-screen thumbnail preview is affected.
+      return `<div class="photo-thumb" style="display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--dim);font-size:10px;text-align:center;padding:6px;">📷<br>${file.name}<div class="remove" onclick="removePhoto(${i})">✕</div></div>`;
+    }
     const url = URL.createObjectURL(file);
     return `<div class="photo-thumb"><img src="${url}"><div class="remove" onclick="removePhoto(${i})">✕</div></div>`;
   }).join('');
