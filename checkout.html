@@ -7,7 +7,6 @@
 <meta name="description" content="Send real printed photos. $25. Up to 5 photos. Domestic delivery." />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/heic2any/0.0.1/index.min.js"></script>
 <script src="https://js.stripe.com/v3/"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -296,8 +295,10 @@ let elements = null;
 let paymentElement = null;
 
 let state = {
-  rawPhotos: [],       // File objects, in original picked order
-  croppedResults: [],  // {url, public_id} after upload, filled in at submit time
+  rawPhotos: [],         // File objects, in original picked order — kept only long enough to upload each one
+  originalUrls: [],      // hosted, server-converted (real JPEG) URL for each photo, once uploaded
+  originalPublicIds: [], // matching Cloudinary public_id for each, in case cleanup is ever needed
+  uploading: [],         // true/false per index, while that specific photo's upload is in flight
   cropIndex: 0,
   cropData: {},         // per-photo saved crop box + rotation, keyed by index
   orientation: {},      // per-photo 'landscape' or 'portrait', keyed by index
@@ -311,78 +312,21 @@ function showStep(id) {
   window.scrollTo(0, 0);
 }
 
-/* ---------- STEP 1: Photo picking ---------- */
+/* ---------- STEP 1: Photo picking ----------
+   Photos are uploaded to the server IMMEDIATELY on selection — not held as
+   local files until later. This is deliberate: the server already reliably
+   converts HEIC (the default iPhone photo format, confirmed working via a
+   real, completed order) using a proven Pillow-based pipeline. Browsers
+   themselves cannot reliably decode HEIC for preview or cropping — an
+   earlier attempt at a browser-side conversion library worked for some
+   HEIC files and silently failed on others. Uploading immediately and doing
+   every later step (thumbnail, crop, final export) against the resulting
+   hosted, guaranteed-real JPEG sidesteps that unreliability entirely. */
 const photoDrop = document.getElementById('photo-drop');
 const photoInput = document.getElementById('photo-input');
 const photoGrid = document.getElementById('photo-grid');
 
 photoDrop.addEventListener('click', () => photoInput.click());
-function isHeic(file) {
-  const name = file.name.toLowerCase();
-  return file.type === 'image/heic' || file.type === 'image/heif' ||
-         name.endsWith('.heic') || name.endsWith('.heif');
-}
-
-photoInput.addEventListener('change', async (e) => {
-  const incoming = Array.from(e.target.files);
-  const room = Math.max(0, 5 - state.rawPhotos.length);
-  const toAdd = incoming.slice(0, room);
-  if (toAdd.length === 0) { photoInput.value = ''; return; }
-
-  const originalDropText = photoDrop.textContent;
-  photoDrop.textContent = 'Converting photos…';
-
-  for (const file of toAdd) {
-    if (isHeic(file)) {
-      // Browsers cannot natively decode HEIC (the default iPhone photo
-      // format) — this converts it to a real JPEG right away, so every
-      // later step (thumbnail preview, the Cropper.js crop tool, and the
-      // final exported image) works with a format the browser can
-      // actually handle. The server can decode HEIC fine on its own, but
-      // the crop step specifically happens in the browser, so this
-      // conversion has to happen here, not just server-side.
-      try {
-        const convertedBlob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 });
-        const convertedFile = new File(
-          [convertedBlob],
-          file.name.replace(/\.heic$/i, '.jpg').replace(/\.heif$/i, '.jpg'),
-          { type: 'image/jpeg' }
-        );
-        state.rawPhotos.push(convertedFile);
-      } catch (err) {
-        console.error('HEIC conversion failed:', err);
-        state.rawPhotos.push(file); // falls back to the placeholder in renderPhotoGrid
-      }
-    } else {
-      state.rawPhotos.push(file);
-    }
-  }
-
-  photoDrop.textContent = originalDropText;
-  renderPhotoGrid();
-  photoInput.value = '';
-});
-
-function renderPhotoGrid() {
-  photoGrid.innerHTML = state.rawPhotos.map((file, i) => {
-    if (isHeic(file)) {
-      // Browsers can't natively preview HEIC (the default iPhone photo
-      // format) inside an <img> tag — this isn't a bug, just a real
-      // limitation. The server CAN handle HEIC fine (pillow_heif is
-      // installed), so upload/moderation/printing all still work
-      // correctly — only the on-screen thumbnail preview is affected.
-      return `<div class="photo-thumb" style="display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--dim);font-size:10px;text-align:center;padding:6px;">📷<br>${file.name}<div class="remove" onclick="removePhoto(${i})">✕</div></div>`;
-    }
-    const url = URL.createObjectURL(file);
-    return `<div class="photo-thumb"><img src="${url}"><div class="remove" onclick="removePhoto(${i})">✕</div></div>`;
-  }).join('');
-  document.getElementById('photos-next-btn').disabled = state.rawPhotos.length === 0;
-}
-
-function removePhoto(i) {
-  state.rawPhotos.splice(i, 1);
-  renderPhotoGrid();
-}
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
@@ -393,23 +337,82 @@ function fileToBase64(file) {
   });
 }
 
-// Small thumbnail for moderation only — keeps the request light.
-function makeThumbnail(file) {
-  return new Promise((resolve) => {
+photoInput.addEventListener('change', async (e) => {
+  const incoming = Array.from(e.target.files);
+  const room = Math.max(0, 5 - state.rawPhotos.length);
+  const toAdd = incoming.slice(0, room);
+  if (toAdd.length === 0) { photoInput.value = ''; return; }
+
+  for (const file of toAdd) {
+    const i = state.rawPhotos.length;
+    state.rawPhotos.push(file);
+    state.uploading[i] = true;
+    renderPhotoGrid();
+
+    try {
+      const base64 = await fileToBase64(file);
+      const uploadRes = await fetch(`${BACKEND_URL}/upload-photo`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ photoBase64: base64 }),
+      });
+      const uploadData = await uploadRes.json();
+      if (!uploadData.url) throw new Error(uploadData.error || 'Upload failed.');
+      state.originalUrls[i] = uploadData.url;
+      state.originalPublicIds[i] = uploadData.public_id;
+    } catch (err) {
+      console.error(`Upload failed for photo ${i}:`, err);
+      state.originalUrls[i] = null; // renderPhotoGrid shows this as a failed slot
+    }
+    state.uploading[i] = false;
+    renderPhotoGrid();
+  }
+
+  photoInput.value = '';
+});
+
+function renderPhotoGrid() {
+  photoGrid.innerHTML = state.rawPhotos.map((file, i) => {
+    if (state.uploading[i]) {
+      return `<div class="photo-thumb" style="display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:10px;">Uploading…</div>`;
+    }
+    if (!state.originalUrls[i]) {
+      return `<div class="photo-thumb" style="display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--red);font-size:10px;text-align:center;padding:6px;">Upload failed<div class="remove" onclick="removePhoto(${i})">✕</div></div>`;
+    }
+    return `<div class="photo-thumb"><img src="${state.originalUrls[i]}"><div class="remove" onclick="removePhoto(${i})">✕</div></div>`;
+  }).join('');
+
+  const anyUploading = state.uploading.some(u => u === true);
+  const anyFailed = state.originalUrls.some((u, idx) => !state.uploading[idx] && !u);
+  const hasPhotos = state.rawPhotos.length > 0;
+  document.getElementById('photos-next-btn').disabled = anyUploading || anyFailed || !hasPhotos;
+}
+
+function removePhoto(i) {
+  state.rawPhotos.splice(i, 1);
+  state.originalUrls.splice(i, 1);
+  state.originalPublicIds.splice(i, 1);
+  state.uploading.splice(i, 1);
+  renderPhotoGrid();
+}
+
+// Small thumbnail for moderation only — keeps the request light. Fetches
+// the already-uploaded, server-converted JPEG (never the raw original),
+// so this works correctly regardless of the photo's original format.
+function makeThumbnailFromUrl(url) {
+  return new Promise((resolve, reject) => {
     const img = new Image();
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const scale = Math.min(640 / img.width, 480 / img.height, 1);
-        canvas.width = img.width * scale;
-        canvas.height = img.height * scale;
-        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL('image/jpeg', 0.8));
-      };
-      img.src = e.target.result;
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const scale = Math.min(640 / img.width, 480 / img.height, 1);
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL('image/jpeg', 0.8));
     };
-    reader.readAsDataURL(file);
+    img.onerror = reject;
+    img.src = url;
   });
 }
 
@@ -419,7 +422,8 @@ document.getElementById('photos-next-btn').addEventListener('click', async () =>
   errEl.style.display = 'none';
 
   try {
-    const thumbnails = await Promise.all(state.rawPhotos.map(makeThumbnail));
+    const validUrls = state.originalUrls.filter(u => !!u);
+    const thumbnails = await Promise.all(validUrls.map(makeThumbnailFromUrl));
     const res = await fetch(`${BACKEND_URL}/moderate-photos`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -435,7 +439,7 @@ document.getElementById('photos-next-btn').addEventListener('click', async () =>
     }
 
     state.cropIndex = 0;
-    document.getElementById('crop-total').textContent = state.rawPhotos.length;
+    document.getElementById('crop-total').textContent = validUrls.length;
     showStep('step-crop');
     loadCropPhoto(0);
   } catch (err) {
@@ -451,15 +455,14 @@ let activeCropper = null; // the ONE currently-active Cropper.js instance — al
 function loadCropPhoto(i) {
   document.getElementById('crop-index').textContent = i + 1;
   const img = document.getElementById('cropper-image');
-  const file = state.rawPhotos[i];
 
   if (activeCropper) {
     activeCropper.destroy();
     activeCropper = null;
   }
 
-  const url = URL.createObjectURL(file);
-  img.src = url;
+  img.crossOrigin = 'anonymous'; // needed so getCroppedCanvas() can export a hosted, cross-origin image
+  img.src = state.originalUrls[i];
 
   img.onload = () => {
     const orientation = state.orientation[i] || (img.naturalWidth >= img.naturalHeight ? 'landscape' : 'portrait');
@@ -536,8 +539,8 @@ document.getElementById('details-next-btn').addEventListener('click', () => {
 
 /* ---------- STEP 4: Review ---------- */
 function renderReview() {
-  document.getElementById('review-thumbs').innerHTML = state.rawPhotos
-    .map(f => `<img src="${URL.createObjectURL(f)}">`).join('');
+  document.getElementById('review-thumbs').innerHTML = state.originalUrls
+    .map(url => `<img src="${url}">`).join('');
 
   const name = document.getElementById('r-name').value.trim();
   const street = document.getElementById('r-street').value.trim();
@@ -657,9 +660,8 @@ document.getElementById('pay-btn').addEventListener('click', async () => {
 // photo's SAVED crop data, not from a still-open editing instance.
 function generateFinalCrop(i) {
   return new Promise((resolve, reject) => {
-    const file = state.rawPhotos[i];
     const img = new Image();
-    const url = URL.createObjectURL(file);
+    img.crossOrigin = 'anonymous';
     img.onload = () => {
       img.style.position = 'fixed';
       img.style.left = '-9999px';
@@ -682,7 +684,7 @@ function generateFinalCrop(i) {
       });
     };
     img.onerror = reject;
-    img.src = url;
+    img.src = state.originalUrls[i];
   });
 }
 
