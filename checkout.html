@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Send Turtle Mail — SnappingTurtle</title>
+<meta name="description" content="Send real printed photos. $25. Up to 5 photos. Domestic delivery." />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
+<script src="https://js.stripe.com/v3/"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black: #0A0A08;
+    --green: #C8E620;
+    --cream: #F5E9C8;
+    --brown: #9A8A72;
+    --dim: #6B5830;
+    --border: #3A3020;
+    --red: #CC2200;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--cream); font-family: monospace; margin: 0; min-height: 100vh; }
+  a { color: inherit; }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 40px; border-bottom: 1px solid var(--border);
+    background: rgba(10,10,8,0.97); backdrop-filter: blur(8px);
+  }
+  .nav-logo { color: var(--green); font-size: 12px; letter-spacing: 4px; text-decoration: none; }
+
+  .wrap { max-width: 560px; margin: 0 auto; padding: 110px 24px 100px; }
+  .step { display: none; }
+  .step.active { display: block; }
+
+  .eyebrow { color: var(--green); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 14px; }
+  h1 { font-size: clamp(24px, 4vw, 34px); font-weight: bold; margin-bottom: 10px; letter-spacing: 0.5px; }
+  .sub { color: var(--brown); font-size: 13px; line-height: 22px; margin-bottom: 32px; font-style: italic; }
+
+  .field { margin-bottom: 18px; }
+  .field label { display: block; font-size: 10px; color: var(--green); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+  .field input, .field textarea, .field select {
+    width: 100%; background: #1A1A18; border: 1px solid var(--border);
+    color: var(--cream); padding: 13px 14px; font-size: 14px; font-family: monospace;
+  }
+  .field input:focus, .field textarea:focus { outline: none; border-color: var(--green); }
+  .field textarea { resize: vertical; min-height: 100px; }
+  .field .hint { font-size: 11px; color: var(--dim); margin-top: 6px; letter-spacing: 0.5px; }
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .row-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 14px; }
+
+  .btn { display: block; width: 100%; background: var(--red); color: var(--cream); padding: 16px; font-size: 13px; letter-spacing: 3px; font-weight: bold; font-family: monospace; cursor: pointer; border: none; text-align: center; text-transform: uppercase; transition: opacity 0.2s; }
+  .btn:hover { opacity: 0.85; }
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn-ghost { display: block; width: 100%; background: transparent; color: var(--cream); padding: 14px; font-size: 12px; letter-spacing: 2px; font-family: monospace; cursor: pointer; border: 1px solid var(--border); text-align: center; margin-top: 12px; }
+  .btn-ghost:hover { border-color: var(--cream); }
+
+  /* Photo picker */
+  .photo-drop {
+    border: 1px dashed var(--border); padding: 44px 20px; text-align: center;
+    color: var(--brown); cursor: pointer; margin-bottom: 20px; font-size: 13px;
+  }
+  .photo-drop:hover { border-color: var(--green); color: var(--green); }
+  .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; margin-bottom: 20px; }
+  .photo-thumb { position: relative; aspect-ratio: 1; overflow: hidden; border: 1px solid var(--border); }
+  .photo-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .photo-thumb .remove { position: absolute; top: 4px; right: 4px; background: rgba(10,10,8,0.85); color: var(--red); width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer; border: 1px solid var(--red); }
+
+  /* Crop step */
+  .crop-counter { color: var(--dim); font-size: 12px; letter-spacing: 1px; margin-bottom: 16px; }
+  .cropper-frame { width: 100%; height: 360px; background: #1A1A18; margin-bottom: 16px; }
+  .cropper-frame img { display: block; max-width: 100%; }
+  .crop-toolbar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .crop-tool-btn { flex: 1; min-width: 100px; background: transparent; border: 1px solid var(--border); color: var(--cream); padding: 10px 8px; font-size: 11px; letter-spacing: 1px; font-family: monospace; cursor: pointer; }
+  .crop-tool-btn:hover { border-color: var(--green); color: var(--green); }
+  .crop-nav { display: flex; gap: 10px; }
+  .crop-nav .btn, .crop-nav .btn-ghost { margin-top: 0; }
+
+  /* Review */
+  .review-block { border: 1px solid var(--border); padding: 20px; margin-bottom: 16px; }
+  .review-label { color: var(--green); font-size: 9px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px; }
+  .review-value { font-size: 13px; line-height: 20px; color: var(--brown); }
+  .review-thumbs { display: flex; gap: 8px; overflow-x: auto; }
+  .review-thumbs img { width: 70px; height: 70px; object-fit: cover; border: 1px solid var(--border); flex-shrink: 0; }
+
+  .checkbox-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 24px; cursor: pointer; }
+  .checkbox { width: 20px; height: 20px; border: 1px solid var(--green); flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; }
+  .checkbox.checked { background: var(--green); }
+  .checkbox.checked::after { content: '✓'; color: var(--black); font-size: 13px; font-weight: bold; }
+  .checkbox-label { font-size: 11px; line-height: 18px; color: var(--dim); }
+
+  .price-line { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .price-total { font-size: 32px; font-weight: bold; color: var(--green); }
+
+  /* Payment */
+  #card-element { background: #1A1A18; border: 1px solid var(--border); padding: 14px; margin-bottom: 20px; }
+  #card-errors { color: var(--red); font-size: 12px; margin-bottom: 16px; min-height: 16px; }
+
+  .status-note { border-left: 2px solid var(--green); padding-left: 14px; font-size: 12px; color: var(--dim); line-height: 20px; margin-bottom: 20px; }
+  .error-banner { border-left: 2px solid var(--red); padding-left: 14px; font-size: 13px; color: var(--cream); margin-bottom: 20px; }
+
+  .loader { text-align: center; padding: 60px 0; }
+  .loader-text { color: var(--brown); font-size: 13px; letter-spacing: 2px; font-style: italic; }
+
+  .confirm-icon { font-size: 56px; text-align: center; margin-bottom: 20px; }
+  .confirm-ref { color: var(--dim); font-size: 11px; text-align: center; letter-spacing: 1px; margin-top: 20px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">✦ SNAPPINGTURTLE ✦</a>
+</nav>
+
+<div class="wrap">
+
+  <!-- STEP 1: PHOTOS -->
+  <div class="step active" id="step-photos">
+    <p class="eyebrow">Step 1 of 5</p>
+    <h1>Choose your photos.</h1>
+    <p class="sub">Up to 5. Each one is checked automatically before you continue.</p>
+
+    <div class="photo-drop" id="photo-drop">Click to choose photos from your device</div>
+    <input type="file" id="photo-input" accept="image/*" multiple style="display:none;" />
+    <div class="photo-grid" id="photo-grid"></div>
+
+    <div id="photos-error" class="error-banner" style="display:none;"></div>
+    <button class="btn" id="photos-next-btn" disabled>Next — Frame Your Photos</button>
+  </div>
+
+  <!-- STEP 1b: MODERATING -->
+  <div class="step" id="step-moderating">
+    <div class="loader">
+      <p class="loader-text">Checking your photos…</p>
+    </div>
+  </div>
+
+  <!-- STEP 2: CROP -->
+  <div class="step" id="step-crop">
+    <p class="eyebrow">Step 2 of 5</p>
+    <h1>Frame your photo.</h1>
+    <p class="crop-counter">Photo <span id="crop-index">1</span> of <span id="crop-total">1</span></p>
+
+    <div class="cropper-frame">
+      <img id="cropper-image" src="" alt="" />
+    </div>
+
+    <div class="crop-toolbar">
+      <button class="crop-tool-btn" id="rotate-left-btn">↺ Rotate Left</button>
+      <button class="crop-tool-btn" id="rotate-right-btn">↻ Rotate Right</button>
+      <button class="crop-tool-btn" id="orientation-btn">⇄ Orientation</button>
+      <button class="crop-tool-btn" id="reset-crop-btn">Reset</button>
+    </div>
+
+    <div class="crop-nav">
+      <button class="btn-ghost" id="crop-prev-btn">← Previous</button>
+      <button class="btn" id="crop-next-btn">Next Photo →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: MESSAGE + RECIPIENT -->
+  <div class="step" id="step-details">
+    <p class="eyebrow">Step 3 of 5</p>
+    <h1>Your message.</h1>
+    <p class="sub">This prints on the card included with your photos.</p>
+
+    <div class="field">
+      <label for="message-input">Message</label>
+      <textarea id="message-input" maxlength="300" placeholder="Write something personal..."></textarea>
+    </div>
+    <div class="field">
+      <label for="fromname-input">From (optional)</label>
+      <input type="text" id="fromname-input" maxlength="60" placeholder="e.g. Love, Mom" />
+    </div>
+
+    <h1 style="margin-top:40px;">Who's it going to?</h1>
+    <p class="sub">Domestic (U.S.) delivery only.</p>
+
+    <div class="field">
+      <label for="r-name">Full name</label>
+      <input type="text" id="r-name" autocomplete="off" />
+    </div>
+    <div class="field">
+      <label for="r-street">Street address</label>
+      <input type="text" id="r-street" autocomplete="off" />
+    </div>
+    <div class="row-3">
+      <div class="field">
+        <label for="r-city">City</label>
+        <input type="text" id="r-city" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label for="r-state">State</label>
+        <input type="text" id="r-state" maxlength="2" style="text-transform:uppercase;" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label for="r-zip">Zip</label>
+        <input type="text" id="r-zip" autocomplete="off" />
+      </div>
+    </div>
+    <div class="field">
+      <label for="sender-email">Your email (optional)</label>
+      <input type="email" id="sender-email" placeholder="your@email.com" autocomplete="off" />
+      <p class="hint">Used only to send you an order confirmation.</p>
+    </div>
+
+    <button class="btn" id="details-next-btn">Next — Review</button>
+  </div>
+
+  <!-- STEP 4: REVIEW -->
+  <div class="step" id="step-review">
+    <p class="eyebrow">Step 4 of 5</p>
+    <h1>Review your order.</h1>
+
+    <div class="review-block">
+      <p class="review-label">Photos</p>
+      <div class="review-thumbs" id="review-thumbs"></div>
+    </div>
+
+    <div class="review-block">
+      <p class="review-label">Sending to</p>
+      <p class="review-value" id="review-recipient"></p>
+    </div>
+
+    <div class="review-block">
+      <p class="review-label">Message</p>
+      <p class="review-value" id="review-message"></p>
+    </div>
+
+    <div class="price-line">
+      <span style="font-size:12px; letter-spacing:2px; color:var(--dim);">TOTAL</span>
+      <span class="price-total">$25.00</span>
+    </div>
+
+    <div class="checkbox-row" id="agree-row">
+      <div class="checkbox" id="agree-checkbox"></div>
+      <p class="checkbox-label">
+        Because each item is custom printed on demand, all sales are final — we do not offer cash or credit refunds
+        under any circumstances. Our fulfillment partner does not provide real-time delivery confirmation, so your
+        estimated delivery date is calculated from your order's ship date, not verified after the fact. Shipping
+        damage or a package that never arrives can be reported within 48 hours of that estimated delivery date. I
+        confirm the recipient name and address are correct — SnappingTurtle cannot redirect or recover mail sent to
+        an incorrect address, and there are no refunds for undeliverable mail.
+      </p>
+    </div>
+
+    <button class="btn" id="review-next-btn" disabled>Continue to Payment</button>
+  </div>
+
+  <!-- STEP 5: PAYMENT -->
+  <div class="step" id="step-payment">
+    <p class="eyebrow">Step 5 of 5</p>
+    <h1>Payment.</h1>
+    <p class="sub">$25.00 — includes all applicable sales tax.</p>
+
+    <div id="card-element"></div>
+    <div id="card-errors"></div>
+
+    <button class="btn" id="pay-btn">Pay $25.00</button>
+  </div>
+
+  <!-- SENDING -->
+  <div class="step" id="step-sending">
+    <div class="loader">
+      <p class="loader-text" id="sending-text">Sending your Turtle Mail…</p>
+    </div>
+  </div>
+
+  <!-- CONFIRMATION -->
+  <div class="step" id="step-confirm">
+    <div class="confirm-icon">📬</div>
+    <h1 style="text-align:center;">Done.</h1>
+    <p class="sub" style="text-align:center;">Your Turtle Mail is on its way.</p>
+    <div class="status-note">
+      Your photos have shipped and are heading to the print lab, then to your recipient. Because our fulfillment
+      partner doesn't provide real-time delivery confirmation, we estimate delivery based on the ship date — you'll
+      see this reflected if you ever need to file a damage claim.
+    </div>
+    <p class="confirm-ref" id="confirm-order-id"></p>
+    <button class="btn" onclick="location.reload()" style="margin-top:24px;">Send Another</button>
+  </div>
+
+</div>
+
+<script>
+const BACKEND_URL = "https://snappingturtle-backend-production.up.railway.app";
+// Publishable key — safe to expose client-side by Stripe's own design (this is NOT a secret key).
+const STRIPE_PUBLISHABLE_KEY = "pk_test_51TjOp4GfVvzrUyxJXFAM6E8d1HPpj2CvmW0SlQXnpI3a96HQ5j2FAcWjj3z4wksBSJI5ZoOSteBkZbx2XyD309uv00lKkmUsL8";
+
+const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+const elements = stripe.elements();
+const cardElement = elements.create('card', {
+  style: {
+    base: { color: '#F5E9C8', fontFamily: 'monospace', fontSize: '15px', '::placeholder': { color: '#6B5830' } },
+    invalid: { color: '#CC2200' }
+  }
+});
+
+let state = {
+  rawPhotos: [],       // File objects, in original picked order
+  croppedResults: [],  // {url, public_id} after upload, filled in at submit time
+  cropIndex: 0,
+  cropData: {},         // per-photo saved crop box + rotation, keyed by index
+  orientation: {},      // per-photo 'landscape' or 'portrait', keyed by index
+  paymentIntentId: null,
+  clientSecret: null,
+};
+
+function showStep(id) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+/* ---------- STEP 1: Photo picking ---------- */
+const photoDrop = document.getElementById('photo-drop');
+const photoInput = document.getElementById('photo-input');
+const photoGrid = document.getElementById('photo-grid');
+
+photoDrop.addEventListener('click', () => photoInput.click());
+photoInput.addEventListener('change', (e) => {
+  const incoming = Array.from(e.target.files);
+  for (const file of incoming) {
+    if (state.rawPhotos.length >= 5) break;
+    state.rawPhotos.push(file);
+  }
+  renderPhotoGrid();
+  photoInput.value = '';
+});
+
+function renderPhotoGrid() {
+  photoGrid.innerHTML = state.rawPhotos.map((file, i) => {
+    const url = URL.createObjectURL(file);
+    return `<div class="photo-thumb"><img src="${url}"><div class="remove" onclick="removePhoto(${i})">✕</div></div>`;
+  }).join('');
+  document.getElementById('photos-next-btn').disabled = state.rawPhotos.length === 0;
+}
+
+function removePhoto(i) {
+  state.rawPhotos.splice(i, 1);
+  renderPhotoGrid();
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// Small thumbnail for moderation only — keeps the request light.
+function makeThumbnail(file) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const scale = Math.min(640 / img.width, 480 / img.height, 1);
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.8));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+document.getElementById('photos-next-btn').addEventListener('click', async () => {
+  showStep('step-moderating');
+  const errEl = document.getElementById('photos-error');
+  errEl.style.display = 'none';
+
+  try {
+    const thumbnails = await Promise.all(state.rawPhotos.map(makeThumbnail));
+    const res = await fetch(`${BACKEND_URL}/moderate-photos`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ photos: thumbnails }),
+    });
+    const data = await res.json();
+
+    if (!data.approved) {
+      showStep('step-photos');
+      errEl.textContent = data.message || 'One or more photos cannot be printed. Please choose different photos.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    state.cropIndex = 0;
+    document.getElementById('crop-total').textContent = state.rawPhotos.length;
+    showStep('step-crop');
+    loadCropPhoto(0);
+  } catch (err) {
+    showStep('step-photos');
+    errEl.textContent = "Couldn't check your photos — please try again.";
+    errEl.style.display = 'block';
+  }
+});
+
+/* ---------- STEP 2: Crop (Cropper.js — crop box, rotation, orientation, zoom) ---------- */
+let activeCropper = null; // the ONE currently-active Cropper.js instance — always destroyed before a new one is created
+
+function loadCropPhoto(i) {
+  document.getElementById('crop-index').textContent = i + 1;
+  const img = document.getElementById('cropper-image');
+  const file = state.rawPhotos[i];
+
+  if (activeCropper) {
+    activeCropper.destroy();
+    activeCropper = null;
+  }
+
+  const url = URL.createObjectURL(file);
+  img.src = url;
+
+  img.onload = () => {
+    const orientation = state.orientation[i] || (img.naturalWidth >= img.naturalHeight ? 'landscape' : 'portrait');
+    state.orientation[i] = orientation;
+    const aspect = orientation === 'landscape' ? 3 / 2 : 2 / 3;
+
+    activeCropper = new Cropper(img, {
+      aspectRatio: aspect,
+      viewMode: 1,
+      dragMode: 'move',
+      autoCropArea: 1,
+      background: false,
+      ready() {
+        if (state.cropData[i]) {
+          this.cropper.setData(state.cropData[i]);
+        }
+      }
+    });
+  };
+}
+
+function saveCurrentCrop() {
+  const i = state.cropIndex;
+  if (activeCropper) {
+    state.cropData[i] = activeCropper.getData(true);
+  }
+}
+
+document.getElementById('rotate-left-btn').addEventListener('click', () => {
+  activeCropper?.rotate(-90);
+});
+document.getElementById('rotate-right-btn').addEventListener('click', () => {
+  activeCropper?.rotate(90);
+});
+document.getElementById('reset-crop-btn').addEventListener('click', () => {
+  activeCropper?.reset();
+});
+document.getElementById('orientation-btn').addEventListener('click', () => {
+  const i = state.cropIndex;
+  state.orientation[i] = state.orientation[i] === 'landscape' ? 'portrait' : 'landscape';
+  delete state.cropData[i];
+  loadCropPhoto(i);
+});
+
+document.getElementById('crop-prev-btn').addEventListener('click', () => {
+  if (state.cropIndex === 0) return;
+  saveCurrentCrop();
+  state.cropIndex--;
+  loadCropPhoto(state.cropIndex);
+});
+document.getElementById('crop-next-btn').addEventListener('click', () => {
+  saveCurrentCrop();
+  if (state.cropIndex < state.rawPhotos.length - 1) {
+    state.cropIndex++;
+    loadCropPhoto(state.cropIndex);
+    document.getElementById('crop-next-btn').textContent = (state.cropIndex === state.rawPhotos.length - 1) ? 'Confirm — Next Step →' : 'Next Photo →';
+  } else {
+    showStep('step-details');
+  }
+});
+
+/* ---------- STEP 3: Message + Recipient ---------- */
+document.getElementById('details-next-btn').addEventListener('click', () => {
+  const required = ['r-name', 'r-street', 'r-city', 'r-state', 'r-zip'];
+  for (const id of required) {
+    if (!document.getElementById(id).value.trim()) {
+      alert('Please fill in the full recipient address before continuing.');
+      return;
+    }
+  }
+  renderReview();
+  showStep('step-review');
+});
+
+/* ---------- STEP 4: Review ---------- */
+function renderReview() {
+  document.getElementById('review-thumbs').innerHTML = state.rawPhotos
+    .map(f => `<img src="${URL.createObjectURL(f)}">`).join('');
+
+  const name = document.getElementById('r-name').value.trim();
+  const street = document.getElementById('r-street').value.trim();
+  const city = document.getElementById('r-city').value.trim();
+  const st = document.getElementById('r-state').value.trim().toUpperCase();
+  const zip = document.getElementById('r-zip').value.trim();
+  document.getElementById('review-recipient').textContent = `${name} — ${street}, ${city}, ${st} ${zip}`;
+
+  const msg = document.getElementById('message-input').value.trim();
+  document.getElementById('review-message').textContent = msg || '(no message)';
+}
+
+const agreeCheckbox = document.getElementById('agree-checkbox');
+let agreed = false;
+document.getElementById('agree-row').addEventListener('click', () => {
+  agreed = !agreed;
+  agreeCheckbox.classList.toggle('checked', agreed);
+  document.getElementById('review-next-btn').disabled = !agreed;
+});
+
+document.getElementById('review-next-btn').addEventListener('click', () => {
+  showStep('step-payment');
+  cardElement.mount('#card-element');
+});
+
+cardElement.on('change', (event) => {
+  document.getElementById('card-errors').textContent = event.error ? event.error.message : '';
+});
+
+/* ---------- STEP 5: Payment + submission ---------- */
+let payProcessing = false;
+document.getElementById('pay-btn').addEventListener('click', async () => {
+  if (payProcessing) return;
+  payProcessing = true;
+  const payBtn = document.getElementById('pay-btn');
+  payBtn.disabled = true;
+  payBtn.textContent = 'Processing…';
+
+  try {
+    const recipient = {
+      name: document.getElementById('r-name').value.trim(),
+      street: document.getElementById('r-street').value.trim(),
+      city: document.getElementById('r-city').value.trim(),
+      state: document.getElementById('r-state').value.trim().toUpperCase(),
+      zip: document.getElementById('r-zip').value.trim(),
+    };
+
+    const intentRes = await fetch(`${BACKEND_URL}/create-payment-intent`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: 2500, recipient }),
+    });
+    const intentData = await intentRes.json();
+    if (!intentData.clientSecret) throw new Error('Could not initialize payment.');
+
+    const { error, paymentIntent } = await stripe.confirmCardPayment(intentData.clientSecret, {
+      payment_method: { card: cardElement }
+    });
+
+    if (error) {
+      document.getElementById('card-errors').textContent = error.message;
+      payBtn.disabled = false;
+      payBtn.textContent = 'Pay $25.00';
+      payProcessing = false;
+      return;
+    }
+
+    showStep('step-sending');
+    await completeOrder(paymentIntent.id, recipient);
+  } catch (err) {
+    document.getElementById('card-errors').textContent = err.message || 'Something went wrong.';
+    payBtn.disabled = false;
+    payBtn.textContent = 'Pay $25.00';
+    payProcessing = false;
+  }
+});
+
+// Recreates a temporary, offscreen Cropper instance for one photo, applies
+// its saved crop data, exports the final cropped image, then cleans up.
+// This is necessary because only ONE Cropper instance is ever kept alive at
+// a time (see loadCropPhoto above) — final images are generated from each
+// photo's SAVED crop data, not from a still-open editing instance.
+function generateFinalCrop(i) {
+  return new Promise((resolve, reject) => {
+    const file = state.rawPhotos[i];
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      img.style.position = 'fixed';
+      img.style.left = '-9999px';
+      img.style.maxWidth = 'none';
+      document.body.appendChild(img);
+
+      const tempCropper = new Cropper(img, {
+        aspectRatio: state.orientation[i] === 'landscape' ? 3 / 2 : 2 / 3,
+        viewMode: 1,
+        ready() {
+          if (state.cropData[i]) {
+            this.cropper.setData(state.cropData[i]);
+          }
+          const canvas = this.cropper.getCroppedCanvas({ width: 1800, height: 1200 });
+          const base64 = canvas.toDataURL('image/jpeg', 0.92);
+          this.cropper.destroy();
+          document.body.removeChild(img);
+          resolve(base64);
+        }
+      });
+    };
+    img.onerror = reject;
+    img.src = url;
+  });
+}
+
+async function completeOrder(paymentIntentId, recipient) {
+  try {
+    const uploadedUrls = [];
+    const uploadedPublicIds = [];
+
+    for (let i = 0; i < state.rawPhotos.length; i++) {
+      const base64 = await generateFinalCrop(i);
+
+      const uploadRes = await fetch(`${BACKEND_URL}/upload-photo`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ photoBase64: base64 }),
+      });
+      const uploadData = await uploadRes.json();
+      if (uploadData.url) uploadedUrls.push(uploadData.url);
+      if (uploadData.public_id) uploadedPublicIds.push(uploadData.public_id);
+    }
+
+    if (uploadedUrls.length === 0) throw new Error('Could not upload photos.');
+
+    const message = document.getElementById('message-input').value.trim();
+    const fromName = document.getElementById('fromname-input').value.trim();
+    const senderEmail = document.getElementById('sender-email').value.trim();
+
+    const orderRes = await fetch(`${BACKEND_URL}/submit-order`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        photos: uploadedUrls,
+        photoPublicIds: uploadedPublicIds,
+        recipient,
+        message,
+        fromName: fromName || null,
+        senderEmail: senderEmail || null,
+        paymentIntentId,
+      }),
+    });
+    const orderData = await orderRes.json();
+
+    if (orderData.success) {
+      document.getElementById('confirm-order-id').textContent = `Order: ${orderData.orderId || ''}`;
+      showStep('step-confirm');
+    } else {
+      throw new Error(orderData.error || 'Could not submit order.');
+    }
+  } catch (err) {
+    document.getElementById('sending-text').textContent = `Something went wrong: ${err.message}`;
+  }
+}
+
+</script>
+</body>
+</html>
