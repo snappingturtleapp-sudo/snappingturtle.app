@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Damage Claim — SnappingTurtle</title>
-  <meta name="description" content="Report a damaged or missing SnappingTurtle package." />
+  <title>The Legend of Turtle Island — SnappingTurtle</title>
+  <meta name="description" content="The ancient legends behind SnappingTurtle." />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -22,60 +22,43 @@
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 16px 40px; border-bottom: 1px solid var(--border);
-      background: rgba(10,10,8,0.97); backdrop-filter: blur(8px);
+      padding: 16px 40px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,10,8,0.97);
+      backdrop-filter: blur(8px);
     }
     .nav-logo { color: var(--green); font-size: 12px; letter-spacing: 4px; }
     .nav-links { display: flex; gap: 24px; }
     .nav-links a { font-size: 10px; letter-spacing: 2px; color: var(--dim); text-transform: uppercase; transition: color 0.2s; }
     .nav-links a:hover { color: var(--cream); }
-
-    .page-hero { padding: 140px 24px 50px; text-align: center; border-bottom: 1px solid var(--border); }
+    .page-hero { padding: 140px 24px 60px; text-align: center; border-bottom: 1px solid var(--border); }
     .eyebrow { color: var(--green); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 14px; }
-    .page-title { font-size: clamp(28px, 4vw, 48px); font-weight: bold; letter-spacing: 1px; margin-bottom: 10px; }
-    .page-sub { color: var(--brown); font-size: 13px; line-height: 22px; max-width: 480px; margin: 0 auto; font-style: italic; }
-
-    .content { max-width: 560px; margin: 0 auto; padding: 50px 24px 100px; }
-
-    .info-box { border-left: 3px solid var(--green); padding: 18px 22px; margin-bottom: 32px; background: rgba(200,230,32,0.04); }
-    .info-box p { color: var(--brown); font-size: 12px; line-height: 20px; margin-bottom: 8px; }
-    .info-box p:last-child { margin-bottom: 0; }
-    .info-box strong { color: var(--cream); }
-
-    .field { margin-bottom: 20px; }
-    .field label { display: block; font-size: 10px; color: var(--green); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
-    .field input, .field textarea {
-      width: 100%; background: #1A1A18; border: 1px solid var(--border);
-      color: var(--cream); padding: 13px 14px; font-size: 14px; font-family: monospace;
-    }
-    .field input:focus, .field textarea:focus { outline: none; border-color: var(--green); }
-    .field textarea { resize: vertical; min-height: 90px; }
-    .field .hint { font-size: 11px; color: var(--dim); margin-top: 6px; letter-spacing: 0.5px; }
-
-    .photo-drop {
-      border: 1px dashed var(--border); padding: 36px 20px; text-align: center;
-      color: var(--brown); cursor: pointer; margin-bottom: 12px; font-size: 13px;
-    }
-    .photo-drop:hover { border-color: var(--green); color: var(--green); }
-    .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; margin-bottom: 20px; }
-    .photo-thumb { position: relative; aspect-ratio: 1; overflow: hidden; border: 1px solid var(--border); }
-    .photo-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .photo-thumb .remove { position: absolute; top: 4px; right: 4px; background: rgba(10,10,8,0.85); color: var(--red); width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer; border: 1px solid var(--red); }
-
-    .btn { display: block; width: 100%; background: var(--red); color: var(--cream); padding: 16px; font-size: 13px; letter-spacing: 3px; font-weight: bold; font-family: monospace; cursor: pointer; border: none; text-align: center; text-transform: uppercase; transition: opacity 0.2s; }
-    .btn:hover { opacity: 0.85; }
-    .btn:disabled { opacity: 0.35; cursor: not-allowed; }
-
-    .status-line { padding: 14px 16px; border-radius: 0; font-size: 13px; margin-top: 20px; display: none; }
-    .status-success { background: rgba(200,230,32,0.06); border: 1px solid var(--green); color: var(--green); }
-    .status-error { background: rgba(204,34,0,0.06); border: 1px solid var(--red); color: var(--cream); }
-
-    footer { padding: 44px 40px; text-align: center; border-top: 1px solid var(--border); }
-    .footer-logo { color: var(--green); font-size: 10px; letter-spacing: 4px; margin-bottom: 18px; }
-    .footer-links { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 18px; }
-    .footer-links a { font-size: 10px; color: var(--dim); letter-spacing: 2px; text-transform: uppercase; }
+    .page-title { font-size: clamp(28px, 4vw, 52px); font-weight: bold; letter-spacing: 1px; margin-bottom: 10px; }
+    .page-sub { color: var(--brown); font-size: 13px; letter-spacing: 2px; font-style: italic; }
+    .content { max-width: 760px; margin: 0 auto; padding: 60px 24px 100px; }
+    footer { border-top: 1px solid var(--border); padding: 48px 24px; text-align: center; }
+    .footer-logo { color: var(--green); font-size: 11px; letter-spacing: 6px; margin-bottom: 20px; }
+    .footer-links { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
+    .footer-links a { font-size: 10px; letter-spacing: 2px; color: var(--dim); text-transform: uppercase; }
     .footer-links a:hover { color: var(--cream); }
-    .footer-copy { font-size: 9px; color: var(--border); letter-spacing: 2px; }
+    .footer-copy { color: var(--dim); font-size: 10px; letter-spacing: 2px; }
+
+    /* Legend content — contrast and size corrected (same fix applied to Turtle Mail):
+       primary reading text lightened from --brown to a more legible tone,
+       and small labels bumped up in size. */
+    .legend-intro { color: #C4B79E; font-size: 16px; line-height: 29px; font-style: italic; max-width: 600px; margin: 0 auto 48px; text-align: center; }
+    .legend-chapter { margin-bottom: 72px; }
+    .chapter-flag { display: inline-block; color: var(--green); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; border: 1px solid var(--border); padding: 6px 14px; margin-bottom: 20px; }
+    .legend-chapter h2 { font-size: clamp(20px, 2.5vw, 32px); color: var(--cream); margin-bottom: 20px; line-height: 1.2; }
+    .legend-chapter p { color: #C4B79E; font-size: 15px; line-height: 29px; margin-bottom: 16px; }
+    .legend-chapter ul { color: #C4B79E; font-size: 15px; line-height: 29px; margin: 0 0 16px 20px; }
+    .legend-chapter li { margin-bottom: 12px; }
+    .legend-chapter strong { color: var(--cream); }
+    .sacred-list { list-style: none; margin-left: 0 !important; }
+    .sacred-list li { padding: 16px 0; border-bottom: 1px solid var(--border); }
+    .sacred-list li:last-child { border-bottom: none; }
+    .sacred-label { color: var(--green); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; display: block; margin-bottom: 6px; }
+    .chapter-divider { border: none; border-top: 1px solid var(--border); margin: 64px 0; }
 </style>
 </head>
 <body>
@@ -91,59 +74,94 @@
 </nav>
 
 <div class="page-hero">
-  <p class="eyebrow">Support</p>
-  <h1 class="page-title">Something arrive damaged?</h1>
-  <p class="page-sub">Tell us what happened — a real person reviews every claim.</p>
+  <p class="eyebrow">The Legend</p>
+  <h1 class="page-title">Turtle Island</h1>
+  <p class="page-sub">The ancient wisdom behind SnappingTurtle.</p>
 </div>
-
 <div class="content">
 
-  <div class="info-box">
-    <p><strong>On delivery timing:</strong> we don't control your carrier and can't predict exactly when your package will arrive. But once it does, the tracking link included with your order shows the real, exact delivery time — not an estimate. The 48-hour window below starts from that real moment, as shown on your own tracking page.</p>
-    <p><strong>Filing window:</strong> claims can be submitted within 48 hours of that real delivery time.</p>
-    <p><strong>Response time:</strong> we review every claim personally and will reply with our decision within 48 hours.</p>
-    <p><strong>Your email:</strong> by providing it below, you consent to us using it only to reply to this specific claim — never for anything else.</p>
-  </div>
+<p class="legend-intro">Across every civilization that has lived beside rivers, oceans, and marshes, the turtle has been revered as a keeper of time, a carrier of the world, and a bridge between heaven and earth. This is the legend that inspired SnappingTurtle.</p>
 
-  <form id="claim-form">
-    <div class="field">
-      <label for="order-id">Order Number</label>
-      <input type="text" id="order-id" placeholder="ST-1785196220468" required />
-      <p class="hint">Found on your order confirmation or packing slip.</p>
-    </div>
+<div class="legend-chapter">
+  <span class="chapter-flag">North America</span>
+  <h2>The Legend of Turtle Island</h2>
+  <p>In the creation cosmologies of the Haudenosaunee (Iroquois) and Anishinaabe (Ojibwe/Chippewa) nations, North America is known as <strong>Turtle Island</strong>.</p>
+  <p>According to these oral traditions, a great flood once covered the world. A benevolent turtle offered the surface of its massive shell to hold a small handful of mud retrieved from the deep waters. That bit of soil grew and expanded on the turtle's back to eventually form the vast continents we walk on today.</p>
+  <p>Because of their massive size, prehistoric appearance, and the way algae and mud accumulate on their shells to resemble moving land, snapping turtles are recognized as the physical inspiration for this foundational legend.</p>
+</div>
 
-    <div class="field">
-      <label for="claimant-name">Your Name</label>
-      <input type="text" id="claimant-name" autocomplete="off" required />
-    </div>
+<div class="legend-chapter">
+  <span class="chapter-flag">Sacred Teachings</span>
+  <h2>The Calendar on the Shell</h2>
+  <p>Beyond creation stories, the physical anatomy of the turtle shell serves as a sacred calendar:</p>
+  <ul class="sacred-list">
+    <li><span class="sacred-label">The 13 Moons</span>A turtle's carapace features exactly <strong>13 large scales (scutes)</strong> at its center. To many First Nations, these represent the 13 lunar cycles of the year.</li>
+    <li><span class="sacred-label">The 28-Day Cycle</span>Surrounding those larger scutes are <strong>28 smaller perimeter scales</strong> — mirroring the 28 days between each moon cycle. A natural, structural calendar built onto the animal's back.</li>
+  </ul>
+  <p>They are universally revered as symbols of patience, resilience, and longevity, reminding humans to walk gently and in balance with the earth.</p>
+</div>
 
-    <div class="field">
-      <label for="contact-email">Your Email</label>
-      <input type="email" id="contact-email" placeholder="your@email.com" autocomplete="off" required />
-      <p class="hint">We'll send our decision here.</p>
-    </div>
+<hr class="chapter-divider" />
 
-    <div class="field">
-      <label for="how-occurred">How did the damage happen?</label>
-      <textarea id="how-occurred" required></textarea>
-    </div>
+<div class="legend-chapter">
+  <span class="chapter-flag">China</span>
+  <h2>The Four Benevolent Animals</h2>
+  <p>In Chinese folklore, the turtle is deeply revered as the ultimate symbol of <strong>longevity, wisdom, and cosmic order</strong>. In the ancient Book of Rites, the turtle ranks as one of the Four Benevolent Animals (Sì Líng), alongside the Dragon, the Phoenix, and the Qilin — and it is the only real, living animal among them.</p>
+  <p>It was believed that when an emperor ruled with virtue, divine turtles would emerge from the waters as an auspicious sign from the heavens.</p>
+</div>
 
-    <div class="field">
-      <label for="description">Describe the damage</label>
-      <textarea id="description" required></textarea>
-    </div>
+<div class="legend-chapter">
+  <span class="chapter-flag">Chinese Philosophy</span>
+  <h2>A Living Model of the Universe</h2>
+  <p>To ancient Chinese philosophers, a turtle's anatomy was a literal micro-cosmic model of existence:</p>
+  <ul class="sacred-list">
+    <li><span class="sacred-label">The Shell (Carapace)</span>The rounded, domed top represents the <strong>vault of the heavens</strong>.</li>
+    <li><span class="sacred-label">The Underside (Plastron)</span>The flat bottom represents the <strong>expanse of the earth</strong>.</li>
+    <li><span class="sacred-label">The Body</span>The turtle moving between the two embodies the balance of <strong>Yin and Yang</strong>, bridging heaven and earth.</li>
+  </ul>
+</div>
 
-    <div class="field">
-      <label>Photos of the damage</label>
-      <p class="hint" style="margin-top:0; margin-bottom:10px;">Include both the damaged item and the damaged envelope or packaging. Your email app will open with everything else filled in — attach these photos there before sending.</p>
-      <div class="photo-drop" id="photo-drop">Click to select photos (for your reference before attaching)</div>
-      <input type="file" id="photo-input" accept="image/*" multiple style="display:none;" />
-      <div class="photo-grid" id="photo-grid"></div>
-    </div>
+<div class="legend-chapter">
+  <span class="chapter-flag">Chinese Mythology</span>
+  <h2>Xuanwu — The Black Tortoise of the North</h2>
+  <p>In Chinese astronomy and Taoism, the turtle is personified as <strong>Xuanwu</strong> (the Dark Warrior) — one of the Four Symbols guarding the cardinal directions, assigned to rule over the North, winter, and the element of water. Xuanwu is depicted as a massive tortoise entwined with a serpent, revered for guarding against evil spirits and bringing stability.</p>
+</div>
 
-    <button type="submit" class="btn" id="submit-btn">Open Email to Submit Claim</button>
-    <div class="status-line" id="status-line"></div>
-  </form>
+<div class="legend-chapter">
+  <span class="chapter-flag">Chinese Folklore</span>
+  <h2>Bixi — The Dragon's Son</h2>
+  <p>Chinese folklore features <strong>Bixi</strong>, born as one of the nine sons of the Dragon King. Bixi has the body of a massive turtle and the head of a dragon. Because turtles are renowned for their strength and ability to carry impossibly heavy burdens, stone carvings of Bixi are placed at the base of imperial tombs and sacred monuments throughout China to ensure they stand strong for centuries.</p>
+</div>
+
+<div class="legend-chapter">
+  <span class="chapter-flag">Feng Shui</span>
+  <h2>The Lo Shu Square</h2>
+  <p>In Feng Shui, the turtle is considered one of the most sacred anchors of energy — representing protection, wealth, longevity, and career progression. The practice of Feng Shui itself is said to have originated when a mystical turtle emerged from the Yellow River carrying on its shell a perfect 3×3 mathematical grid, later known as the <strong>Lo Shu Square</strong>. Each row, column, and diagonal sums to 15 — a number used to track the 15 days between each lunar phase.</p>
+</div>
+
+<hr class="chapter-divider" />
+
+<div class="legend-chapter">
+  <span class="chapter-flag">Japan</span>
+  <h2>Kame — The 10,000 Year Creature</h2>
+  <p>In Japan, the turtle (Kame) is perhaps the most universally beloved symbol of longevity. A famous proverb states: <em>"Tsuru wa sennen, Kame wa mannen"</em> — the crane lives for 1,000 years, but <strong>the turtle lives for 10,000</strong>.</p>
+  <p>The Minogame — a legendary turtle so ancient that long strands of trailing algae grow from its shell like the white beard of a sage — is the ultimate symbol of prosperity and deep wisdom. Images of the Minogame appear at weddings to bless new couples with long life.</p>
+  <p>The turtle shell pattern (Kikkō) — the hexagonal geometry of the carapace — is woven into traditional kimonos, samurai armor, and sacred textiles as a protective blessing.</p>
+</div>
+
+<hr class="chapter-divider" />
+
+<div class="legend-chapter">
+  <span class="chapter-flag">Haudenosaunee Ceremony</span>
+  <h2>The Snapping Turtle Rattle</h2>
+  <p>Among the Haudenosaunee, the snapping turtle rattle (<em>Kanyáhte' ká'nowa'</em>) is a deeply sacred ceremonial instrument. Its construction unites the three kingdoms of creation into one object:</p>
+  <ul class="sacred-list">
+    <li><span class="sacred-label">The Animal Kingdom</span>The snapping turtle shell itself.</li>
+    <li><span class="sacred-label">The Plant Kingdom</span>The wooden handle, or corn kernels placed inside.</li>
+    <li><span class="sacred-label">The Mineral Kingdom</span>Small river pebbles or quartz crystals that create the sound.</li>
+  </ul>
+  <p>Because the turtle carries the earth on its back, shaking the rattle is seen as a way to communicate directly with the ancestral spirit world — to cut through distraction, clear the mind, and align participants with the natural movements of the seasons and stars.</p>
+</div>
 
 </div>
 
@@ -159,73 +177,34 @@
   <p class="footer-copy">© 2026 SNAPPINGTURTLE · ALL RIGHTS RESERVED · SNAPPINGTURTLE.APP</p>
 </footer>
 
+
+<!-- IDENTICAL HONEYPOT + RATE LIMITER TRAP (verbatim, per site-wide rule) -->
+<div style="display: none; tab-index: -1;" aria-hidden="true">
+  <label for="website_secondary">Secondary Security Check Item Fields</label>
+  <input type="text" id="website_secondary" name="website_secondary" autocomplete="off" oninput="interceptBillboardBotAttack()">
+</div>
+
 <script>
-const CLAIMS_EMAIL = "damage_claims@snappingturtle.app";
-
-const photoDrop = document.getElementById('photo-drop');
-const photoInput = document.getElementById('photo-input');
-const photoGrid = document.getElementById('photo-grid');
-let photoFiles = [];
-
-photoDrop.addEventListener('click', () => photoInput.click());
-photoInput.addEventListener('change', (e) => {
-  const incoming = Array.from(e.target.files);
-  for (const file of incoming) {
-    if (photoFiles.length >= 3) break;
-    photoFiles.push(file);
-  }
-  renderPhotoGrid();
-  photoInput.value = '';
+let landingClickTimestamps = [];
+document.addEventListener("DOMContentLoaded", () => {
+    window.addEventListener("click", () => {
+        const now = Date.now();
+        landingClickTimestamps.push(now);
+        landingClickTimestamps = landingClickTimestamps.filter(t => now - t < 5000);
+        if (landingClickTimestamps.length > 20) {
+            alert("Rapid interaction threshold exceeded. Protective security cooldown active.");
+            window.location.href = "https://snappingturtle.app";
+        }
+    });
 });
 
-function renderPhotoGrid() {
-  photoGrid.innerHTML = photoFiles.map((file, i) => {
-    const url = URL.createObjectURL(file);
-    return `<div class="photo-thumb"><img src="${url}"><div class="remove" onclick="removeClaimPhoto(${i})">✕</div></div>`;
-  }).join('');
+function interceptBillboardBotAttack() {
+    const triggerVal = document.getElementById("website_secondary").value;
+    if (triggerVal) {
+        console.warn("⚠️ Bot screening triggered on static landing node. Evacuating browser context.");
+        window.location.href = "https://snappingturtle.app";
+    }
 }
-function removeClaimPhoto(i) {
-  photoFiles.splice(i, 1);
-  renderPhotoGrid();
-}
-
-// No backend, no database — this builds a pre-filled email and hands it to
-// the customer's own email app to actually send. Nothing here is ever
-// stored or transmitted through our own servers. A mailto link cannot
-// attach files programmatically, so photos are picked here only as a
-// visual checklist — the customer attaches them manually once their email
-// app opens.
-document.getElementById('claim-form').addEventListener('submit', (e) => {
-  e.preventDefault();
-
-  const orderId = document.getElementById('order-id').value.trim();
-  const claimantName = document.getElementById('claimant-name').value.trim();
-  const contactEmail = document.getElementById('contact-email').value.trim();
-  const howOccurred = document.getElementById('how-occurred').value.trim();
-  const description = document.getElementById('description').value.trim();
-
-  const subject = `Damage Claim — Order ${orderId}`;
-  const body =
-`Order number: ${orderId}
-Name: ${claimantName}
-Email: ${contactEmail}
-
-How the damage happened:
-${howOccurred}
-
-Description of the damage:
-${description}
-
-(Remember to attach your photos before sending — ${photoFiles.length} selected for reference.)`;
-
-  const mailtoUrl = `mailto:${CLAIMS_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  window.location.href = mailtoUrl;
-
-  const statusEl = document.getElementById('status-line');
-  statusEl.style.display = 'block';
-  statusEl.className = 'status-line status-success';
-  statusEl.textContent = "Your email app should now be open with everything filled in — attach your photos, then send.";
-});
 </script>
 </body>
 </html>

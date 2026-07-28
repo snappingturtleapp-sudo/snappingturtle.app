@@ -333,5 +333,34 @@
   <p class="footer-copy">© 2026 SNAPPINGTURTLE · ALL RIGHTS RESERVED · SNAPPINGTURTLE.APP</p>
 </footer>
 
+
+<!-- IDENTICAL HONEYPOT + RATE LIMITER TRAP (verbatim, per site-wide rule) -->
+<div style="display: none; tab-index: -1;" aria-hidden="true">
+  <label for="website_secondary">Secondary Security Check Item Fields</label>
+  <input type="text" id="website_secondary" name="website_secondary" autocomplete="off" oninput="interceptBillboardBotAttack()">
+</div>
+
+<script>
+let landingClickTimestamps = [];
+document.addEventListener("DOMContentLoaded", () => {
+    window.addEventListener("click", () => {
+        const now = Date.now();
+        landingClickTimestamps.push(now);
+        landingClickTimestamps = landingClickTimestamps.filter(t => now - t < 5000);
+        if (landingClickTimestamps.length > 20) {
+            alert("Rapid interaction threshold exceeded. Protective security cooldown active.");
+            window.location.href = "https://snappingturtle.app";
+        }
+    });
+});
+
+function interceptBillboardBotAttack() {
+    const triggerVal = document.getElementById("website_secondary").value;
+    if (triggerVal) {
+        console.warn("⚠️ Bot screening triggered on static landing node. Evacuating browser context.");
+        window.location.href = "https://snappingturtle.app";
+    }
+}
+</script>
 </body>
 </html>

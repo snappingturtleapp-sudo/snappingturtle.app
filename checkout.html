@@ -112,6 +112,7 @@
 
 <nav>
   <a href="/" class="nav-logo">✦ SNAPPINGTURTLE ✦</a>
+  <a href="/" style="font-size:10px; letter-spacing:2px; color:var(--dim); text-transform:uppercase;">Home</a>
 </nav>
 
 <div class="wrap">
@@ -285,7 +286,35 @@
 
 </div>
 
+
+<!-- IDENTICAL HONEYPOT + RATE LIMITER TRAP (verbatim, per site-wide rule) -->
+<div style="display: none; tab-index: -1;" aria-hidden="true">
+  <label for="website_secondary">Secondary Security Check Item Fields</label>
+  <input type="text" id="website_secondary" name="website_secondary" autocomplete="off" oninput="interceptBillboardBotAttack()">
+</div>
+
 <script>
+let landingClickTimestamps = [];
+document.addEventListener("DOMContentLoaded", () => {
+    window.addEventListener("click", () => {
+        const now = Date.now();
+        landingClickTimestamps.push(now);
+        landingClickTimestamps = landingClickTimestamps.filter(t => now - t < 5000);
+        if (landingClickTimestamps.length > 20) {
+            alert("Rapid interaction threshold exceeded. Protective security cooldown active.");
+            window.location.href = "https://snappingturtle.app";
+        }
+    });
+});
+
+function interceptBillboardBotAttack() {
+    const triggerVal = document.getElementById("website_secondary").value;
+    if (triggerVal) {
+        console.warn("⚠️ Bot screening triggered on static landing node. Evacuating browser context.");
+        window.location.href = "https://snappingturtle.app";
+    }
+}
+
 const BACKEND_URL = "https://snappingturtle-backend-production.up.railway.app";
 // Publishable key — safe to expose client-side by Stripe's own design (this is NOT a secret key).
 const STRIPE_PUBLISHABLE_KEY = "pk_test_51TjOp4GfVvzrUyxJXFAM6E8d1HPpj2CvmW0SlQXnpI3a96HQ5j2FAcWjj3z4wksBSJI5ZoOSteBkZbx2XyD309uv00lKkmUsL8";
