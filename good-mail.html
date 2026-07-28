@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Good Mail — SnappingTurtle</title>
+  <meta name="description" content="There used to be a feeling you got walking to the mailbox. SnappingTurtle brings that feeling back." />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #0A0A08;
+      --green: #C8E620;
+      --cream: #F5E9C8;
+      --brown: #9A8A72;
+      --dim: #6B5830;
+      --border: #3A3020;
+      --red: #CC2200;
+      --avocado-dark: #252B20;
+      --fridge-cream: #E8E0C8;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--avocado-dark); color: var(--cream); font-family: monospace; margin: 0; }
+    a { color: inherit; text-decoration: none; }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 40px; border-bottom: 1px solid var(--border);
+      background: rgba(10,10,8,0.97); backdrop-filter: blur(8px);
+    }
+    .nav-logo { color: var(--green); font-size: 12px; letter-spacing: 4px; }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { font-size: 10px; letter-spacing: 2px; color: var(--dim); text-transform: uppercase; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--cream); }
+
+    .btn { display: inline-block; background: var(--red); color: var(--cream); padding: 15px 44px; font-size: 12px; letter-spacing: 4px; font-weight: bold; font-family: monospace; cursor: pointer; border: none; transition: opacity 0.2s; }
+    .btn:hover { opacity: 0.85; }
+
+    .fairy-banner { width: 100%; padding-top: 64px; overflow: hidden; }
+    .fairy-banner img { width: 100%; display: block; max-height: 340px; object-fit: contain; object-position: center center; background: #1a1e16; }
+
+    .goodmail-hero { text-align: center; padding: 60px 24px 50px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .goodmail-eyebrow { color: var(--green); font-size: 11px; letter-spacing: 6px; margin-bottom: 16px; }
+    .goodmail-title { font-size: clamp(48px, 8vw, 100px); font-weight: bold; color: var(--fridge-cream); margin-bottom: 16px; line-height: 1; }
+    .goodmail-sub { color: #A0B090; font-size: 15px; line-height: 26px; max-width: 520px; margin: 0 auto; font-style: italic; }
+
+    .story-section { padding: 80px 40px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .story-inner { max-width: 1200px; margin: 0 auto; }
+    .story-label { text-align: center; margin-bottom: 48px; }
+    .story-label h2 { font-size: clamp(20px, 2.5vw, 32px); color: var(--fridge-cream); margin-bottom: 8px; }
+    .story-label p { color: #7A8A6A; font-size: 12px; letter-spacing: 2px; font-style: italic; }
+    .story-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+    .story-frame { display: flex; flex-direction: column; align-items: center; }
+    .story-frame-num { color: var(--green); font-size: 10px; letter-spacing: 3px; margin-bottom: 10px; }
+    .story-polaroid { background: white; padding: 10px 10px 44px; box-shadow: 4px 6px 20px rgba(0,0,0,0.5); width: 100%; }
+    .story-frame:nth-child(1) .story-polaroid { transform: rotate(-2deg); }
+    .story-frame:nth-child(2) .story-polaroid { transform: rotate(1.5deg); }
+    .story-frame:nth-child(3) .story-polaroid { transform: rotate(-1deg); }
+    .story-frame:nth-child(4) .story-polaroid { transform: rotate(2deg); }
+    .story-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+    .story-caption { padding-top: 10px; text-align: center; font-family: 'Courier New', monospace; font-size: 10px; color: #444; font-style: italic; line-height: 1.5; }
+
+    .fridge-section { padding: 80px 24px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .fridge-inner { max-width: 1200px; margin: 0 auto; }
+    .fridge-label { text-align: center; margin-bottom: 56px; }
+    .fridge-label h2 { font-size: clamp(20px, 2.5vw, 32px); color: var(--fridge-cream); margin-bottom: 8px; }
+    .fridge-label p { color: #7A8A6A; font-size: 12px; letter-spacing: 2px; font-style: italic; }
+    .polaroid-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 56px 32px; align-items: start; }
+    .polaroid-wrap { display: flex; flex-direction: column; align-items: center; }
+    .magnet { width: 26px; height: 26px; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.5); margin-bottom: -13px; position: relative; z-index: 3; flex-shrink: 0; }
+    .magnet.red { background: radial-gradient(circle at 35% 35%, #e05050, #8B1A1A); }
+    .magnet.blue { background: radial-gradient(circle at 35% 35%, #5090e0, #1A3A8B); }
+    .magnet.yellow { background: radial-gradient(circle at 35% 35%, #e0d050, #8B7A1A); }
+    .magnet.green-m { background: radial-gradient(circle at 35% 35%, #50c050, #1A6B1A); }
+    .magnet.orange { background: radial-gradient(circle at 35% 35%, #e08030, #8B4A1A); }
+    .magnet.purple { background: radial-gradient(circle at 35% 35%, #a050e0, #4A1A8B); }
+    .polaroid { background: white; padding: 12px 12px 44px; box-shadow: 4px 6px 18px rgba(0,0,0,0.4); max-width: 300px; width: 100%; }
+    .polaroid-wrap:nth-child(1) .polaroid { transform: rotate(-2.5deg); }
+    .polaroid-wrap:nth-child(2) .polaroid { transform: rotate(1.8deg); }
+    .polaroid-wrap:nth-child(3) .polaroid { transform: rotate(-1.2deg); }
+    .polaroid-wrap:nth-child(4) .polaroid { transform: rotate(2.8deg); }
+    .polaroid-wrap:nth-child(5) .polaroid { transform: rotate(-0.8deg); }
+    .polaroid-wrap:nth-child(6) .polaroid { transform: rotate(1.5deg); }
+    .polaroid-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; background: #e8e8e8; }
+    .polaroid-caption { padding-top: 8px; text-align: center; font-family: 'Courier New', monospace; }
+    .polaroid-title { font-size: 11px; font-weight: bold; color: #222; margin-bottom: 3px; letter-spacing: 0.5px; }
+    .polaroid-text { font-size: 9px; color: #666; line-height: 1.5; }
+
+    .intent-section { padding: 80px 24px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .intent-inner { max-width: 860px; margin: 0 auto; }
+    .intent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+    .intent-img-wrap { position: relative; display: flex; justify-content: center; }
+    .intent-magnet { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); width: 28px; height: 28px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #e05050, #8B1A1A); box-shadow: 0 2px 8px rgba(0,0,0,0.4); z-index: 3; }
+    .intent-img { width: 100%; max-width: 460px; border: 14px solid white; box-shadow: 6px 8px 24px rgba(0,0,0,0.5); transform: rotate(-1.5deg); }
+    .intent-eyebrow { color: var(--green); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 14px; }
+    .intent-title { font-size: clamp(22px, 3vw, 36px); font-weight: bold; margin-bottom: 20px; line-height: 1.2; color: var(--fridge-cream); }
+    .intent-body { color: #A0B090; font-size: 14px; line-height: 25px; }
+    .intent-body p { margin-bottom: 14px; }
+    .intent-body strong { color: var(--fridge-cream); }
+
+    .wabac-section { padding: 80px 24px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .wabac-inner { max-width: 860px; margin: 0 auto; }
+    .wabac-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+    .wabac-img-wrap { position: relative; display: flex; justify-content: center; order: 2; }
+    .wabac-magnet { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); width: 28px; height: 28px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #5090e0, #1A3A8B); box-shadow: 0 2px 8px rgba(0,0,0,0.4); z-index: 3; }
+    .wabac-img { width: 100%; max-width: 460px; border: 14px solid white; box-shadow: 6px 8px 24px rgba(0,0,0,0.5); transform: rotate(1.5deg); }
+    .wabac-copy { order: 1; }
+    .wabac-eyebrow { color: var(--green); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 14px; }
+    .wabac-title { font-size: clamp(22px, 3vw, 36px); font-weight: bold; margin-bottom: 20px; line-height: 1.2; color: var(--fridge-cream); }
+    .wabac-body { color: #A0B090; font-size: 14px; line-height: 25px; }
+    .wabac-body p { margin-bottom: 14px; }
+    .wabac-body strong { color: var(--fridge-cream); }
+
+    .mom-section { padding: 80px 24px; text-align: center; }
+    .mom-inner { max-width: 600px; margin: 0 auto; }
+    .mom-magnet { width: 30px; height: 30px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #50c050, #1A6B1A); box-shadow: 0 2px 8px rgba(0,0,0,0.4); margin: 0 auto; margin-bottom: -15px; position: relative; z-index: 3; }
+    .mom-img { width: min(560px, 90vw); border: 14px solid white; box-shadow: 6px 8px 30px rgba(0,0,0,0.6); transform: rotate(0.5deg); margin: 0 auto 44px; display: block; }
+    .mom-title { font-size: clamp(22px, 3vw, 36px); font-weight: bold; color: var(--fridge-cream); margin-bottom: 14px; }
+    .mom-body { color: #A0B090; font-size: 15px; line-height: 26px; font-style: italic; margin-bottom: 36px; }
+
+    footer { padding: 44px 40px; text-align: center; border-top: 1px solid var(--border); background: var(--black); }
+    .footer-logo { color: var(--green); font-size: 10px; letter-spacing: 4px; margin-bottom: 18px; }
+    .footer-links { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 18px; }
+    .footer-links a { font-size: 10px; color: var(--dim); letter-spacing: 2px; text-transform: uppercase; }
+    .footer-links a:hover { color: var(--cream); }
+    .footer-copy { font-size: 9px; color: var(--border); letter-spacing: 2px; }
+
+    @media (max-width: 720px) {
+      nav { padding: 12px 16px; }
+      .nav-links { gap: 10px; }
+      .nav-links a { font-size: 9px; letter-spacing: 1px; }
+      .story-strip { grid-template-columns: repeat(2, 1fr); }
+      .intent-grid, .wabac-grid { grid-template-columns: 1fr; }
+      .wabac-img-wrap { order: 1; }
+      .wabac-copy { order: 2; }
+    }
+    @media (max-width: 480px) {
+      .story-strip { grid-template-columns: 1fr 1fr; gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo" onclick="window.location.href='/'">✦ SNAPPINGTURTLE ✦</span>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/legend.html">The Legend</a>
+    <a href="/privacy.html">Privacy</a>
+    <a href="/terms.html">Terms of Sale</a>
+  </div>
+</nav>
+
+<div class="fairy-banner">
+  <img src="FairyLights1.png" alt="SnappingTurtle — Memories" />
+</div>
+
+<div class="goodmail-hero">
+  <p class="goodmail-eyebrow">✦ A FORGOTTEN EMOTION ✦</p>
+  <h1 class="goodmail-title">Good Mail.</h1>
+  <p class="goodmail-sub">There used to be a feeling you got walking to the mailbox. The chance that something good might be waiting. SnappingTurtle brings that feeling back.</p>
+</div>
+
+<div class="story-section">
+  <div class="story-inner">
+    <div class="story-label">
+      <h2>A true story.</h2>
+      <p>What happens when Turtle Mail arrives.</p>
+    </div>
+    <div class="story-strip">
+      <div class="story-frame">
+        <p class="story-frame-num">I.</p>
+        <div class="story-polaroid">
+          <img src="Floor1.jpg" alt="The envelope opens and the message is read" class="story-img" />
+          <p class="story-caption">The envelope opens. The message is read. Hearts everywhere.</p>
+        </div>
+      </div>
+      <div class="story-frame">
+        <p class="story-frame-num">II.</p>
+        <div class="story-polaroid">
+          <img src="Floor2.jpg" alt="Overwhelmed, surrounded by photos" class="story-img" />
+          <p class="story-caption">Overwhelmed. Surrounded by photos. Completely smitten.</p>
+        </div>
+      </div>
+      <div class="story-frame">
+        <p class="story-frame-num">III.</p>
+        <div class="story-polaroid">
+          <img src="Phone1.jpg" alt="The photos started a real conversation" class="story-img" />
+          <p class="story-caption">L'amour au téléphone. The photos started a real conversation.</p>
+        </div>
+      </div>
+      <div class="story-frame">
+        <p class="story-frame-num">IV.</p>
+        <div class="story-polaroid">
+          <img src="Refrigerator3.jpg" alt="On the fridge with a turtle magnet" class="story-img" />
+          <p class="story-caption">Paris, Mon Amour! 2024. On the fridge. With a turtle magnet.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="fridge-section">
+  <div class="fridge-inner">
+    <div class="fridge-label">
+      <h2>What makes Turtle Mail different.</h2>
+      <p>Pinned to the fridge. Not lost in the feed.</p>
+    </div>
+    <div class="polaroid-grid">
+      <div class="polaroid-wrap">
+        <div class="magnet red"></div>
+        <div class="polaroid">
+          <img src="TurtleMail.jpg" alt="Three taps" class="polaroid-img" />
+          <div class="polaroid-caption">
+            <div class="polaroid-title">Three Taps</div>
+            <div class="polaroid-text">Choose photos, pick a recipient, confirm. Under two minutes.</div>
+          </div>
+        </div>
+      </div>
+      <div class="polaroid-wrap">
+        <div class="magnet blue"></div>
+        <div class="polaroid">
+          <img src="WABAC_Machine.jpg" alt="The Magic Memory Machine" class="polaroid-img" />
+          <div class="polaroid-caption">
+            <div class="polaroid-title">The Magic Memory Machine</div>
+            <div class="polaroid-text">Your photo becomes a 4×6 gloss print at 300 DPI. Professional quality.</div>
+          </div>
+        </div>
+      </div>
+      <div class="polaroid-wrap">
+        <div class="magnet yellow"></div>
+        <div class="polaroid">
+          <img src="Mailbox1.png" alt="Real mail" class="polaroid-img" />
+          <div class="polaroid-caption">
+            <div class="polaroid-title">Real Mail</div>
+            <div class="polaroid-text">Not a notification. An actual envelope in an actual mailbox.</div>
+          </div>
+        </div>
+      </div>
+      <div class="polaroid-wrap">
+        <div class="magnet green-m"></div>
+        <div class="polaroid">
+          <img src="Price1.png" alt="One Fixed Price" class="polaroid-img" />
+          <div class="polaroid-caption">
+            <div class="polaroid-title">One Fixed Price</div>
+            <div class="polaroid-text">$25 per send. Up to 5 photos. No subscriptions. No surprises.</div>
+          </div>
+        </div>
+      </div>
+      <div class="polaroid-wrap">
+        <div class="magnet orange"></div>
+        <div class="polaroid">
+          <img src="Privacy1.jpg" alt="Private by Default" class="polaroid-img" />
+          <div class="polaroid-caption">
+            <div class="polaroid-title">Private by Default</div>
+            <div class="polaroid-text">Recipient information is never stored on our servers. Photos are stored securely for 30 days, then permanently deleted.</div>
+          </div>
+        </div>
+      </div>
+      <div class="polaroid-wrap">
+        <div class="magnet purple"></div>
+        <div class="polaroid">
+          <img src="Slow_On_Purpose.png" alt="Slow on Purpose" class="polaroid-img" />
+          <div class="polaroid-caption">
+            <div class="polaroid-title">Slow on Purpose</div>
+            <div class="polaroid-text">Turtle Mail takes a few days. That anticipation is part of the gift.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="intent-section">
+  <div class="intent-inner">
+    <div class="intent-grid">
+      <div class="intent-img-wrap">
+        <div class="intent-magnet"></div>
+        <img src="Intent1.png" alt="Intent changes everything" class="intent-img" />
+      </div>
+      <div>
+        <p class="intent-eyebrow">The Difference</p>
+        <h2 class="intent-title">Intent changes everything.</h2>
+        <div class="intent-body">
+          <p>The electric company didn't think about you. The cable company didn't think about you. The coupon mailer definitely didn't think about you.</p>
+          <p><strong>Someone who sends Turtle Mail thought about you.</strong> They picked a photo. They typed your name. They pressed send. That's not nothing. That's everything.</p>
+          <p>In a world of automated everything, a deliberate act of sending something physical is almost radical. Turtle Mail is that act.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wabac-section">
+  <div class="wabac-inner">
+    <div class="wabac-grid">
+      <div class="wabac-copy">
+        <p class="wabac-eyebrow">The Ritual</p>
+        <h2 class="wabac-title">A ritual, not a novelty.</h2>
+        <div class="wabac-body">
+          <p>Birthdays. Anniversaries. Holidays. Tuesdays. Once you start sending Turtle Mail you don't stop.</p>
+          <p><strong>The constraints are the point.</strong> Fixed price. Fixed size. Up to five photos. The decision is already made. You just have to show up.</p>
+          <p>Frame it as a ritual and it becomes one. The fridge fills up. The memories accumulate. Someone is looking at your photo right now.</p>
+        </div>
+      </div>
+      <div class="wabac-img-wrap">
+        <div class="wabac-magnet"></div>
+        <img src="Refrigerator2.png" alt="Turtle Mail delivery" class="wabac-img" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mom-section">
+  <div class="mom-inner">
+    <div class="mom-magnet"></div>
+    <img src="Refrigerator1.png" alt="Someone is looking at your photo right now" class="mom-img" />
+    <h2 class="mom-title">Someone is looking at your photo right now.</h2>
+    <p class="mom-body">Not in the recycling bin. Not archived in a folder. On the refrigerator. Where it stays for years. Where someone sees it every morning with their coffee.</p>
+    <a href="/checkout.html"><button class="btn">SEND TURTLE MAIL →</button></a>
+  </div>
+</div>
+
+<footer>
+  <p class="footer-logo">✦ SNAPPINGTURTLE ✦</p>
+  <div class="footer-links">
+    <a href="/">Home</a>
+    <a href="/legend.html">The Legend</a>
+    <a href="/privacy.html">Privacy Policy</a>
+    <a href="/terms.html">Terms of Sale</a>
+    <a href="mailto:hello@snappingturtle.app">Contact</a>
+  </div>
+  <p class="footer-copy">© 2026 SNAPPINGTURTLE · ALL RIGHTS RESERVED · SNAPPINGTURTLE.APP</p>
+</footer>
+
+</body>
+</html>
