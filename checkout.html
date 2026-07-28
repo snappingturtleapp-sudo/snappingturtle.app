@@ -58,15 +58,18 @@
   .btn-ghost:hover { border-color: var(--cream); }
 
   /* Photo picker */
-  .photo-drop {
-    border: 1px dashed var(--border); padding: 44px 20px; text-align: center;
-    color: var(--brown); cursor: pointer; margin-bottom: 20px; font-size: 13px;
-  }
-  .photo-drop:hover { border-color: var(--green); color: var(--green); }
   .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; margin-bottom: 20px; }
-  .photo-thumb { position: relative; aspect-ratio: 1; overflow: hidden; border: 1px solid var(--border); }
+  .photo-thumb { position: relative; aspect-ratio: 1; overflow: hidden; border: 1.5px dashed var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .photo-thumb.has-image { border-style: solid; cursor: default; }
   .photo-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .photo-thumb .remove { position: absolute; top: 4px; right: 4px; background: rgba(10,10,8,0.85); color: var(--red); width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer; border: 1px solid var(--red); }
+  .photo-thumb .placeholder { font-size: 10px; color: var(--dim); text-align: center; padding: 0 4px; }
+  .photo-thumb .badge { position: absolute; bottom: 0; left: 0; right: 0; font-size: 9px; text-align: center; padding: 3px 2px; }
+  .photo-thumb.state-checking { border-color: var(--dim); }
+  .photo-thumb.state-checking .badge { background: var(--dim); color: var(--black); }
+  .photo-thumb.state-approved .badge { background: var(--green); color: var(--black); }
+  .photo-thumb.state-rejected { border-color: var(--red); }
+  .photo-thumb.state-rejected .badge { background: var(--red); color: var(--cream); }
+  .photo-thumb .remove { position: absolute; top: 4px; right: 4px; background: rgba(10,10,8,0.85); color: var(--red); width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer; border: 1px solid var(--red); z-index: 2; }
 
   /* Crop step */
   .crop-counter { color: var(--dim); font-size: 12px; letter-spacing: 1px; margin-bottom: 16px; }
@@ -77,6 +80,10 @@
   .crop-tool-btn:hover { border-color: var(--green); color: var(--green); }
   .crop-nav { display: flex; gap: 10px; }
   .crop-nav .btn, .crop-nav .btn-ghost { margin-top: 0; }
+  .crop-preview-row { display: flex; align-items: center; gap: 12px; margin-top: 4px; margin-bottom: 20px; }
+  .crop-preview-box { width: 90px; height: 60px; overflow: hidden; border: 1px solid var(--border); background: #1A1A18; flex-shrink: 0; }
+  .crop-preview-box img { display: block; }
+  .crop-preview-label { font-size: 11px; color: var(--dim); }
 
   /* Review */
   .review-block { border: 1px solid var(--border); padding: 20px; margin-bottom: 16px; }
@@ -121,21 +128,17 @@
   <div class="step active" id="step-photos">
     <p class="eyebrow">Step 1 of 5</p>
     <h1>Choose your photos.</h1>
-    <p class="sub">Up to 5. Each one is checked automatically before you continue.</p>
+    <p class="sub">1 to 5 photos. Each one is checked automatically before you continue.</p>
 
-    <div class="photo-drop" id="photo-drop">Click to choose photos from your device</div>
-    <input type="file" id="photo-input" accept="image/*" multiple style="display:none;" />
+    <button type="button" class="btn-ghost" id="choose-all-btn" style="width:100%; margin-bottom:14px;">Choose all 5 from your device →</button>
+    <input type="file" id="multi-photo-input" accept="image/*" multiple style="display:none;" />
+    <p class="hint" style="margin-top:-6px; margin-bottom:14px;">Or tap an individual slot below to replace just one photo.</p>
+
     <div class="photo-grid" id="photo-grid"></div>
 
     <div id="photos-error" class="error-banner" style="display:none;"></div>
-    <button class="btn" id="photos-next-btn" disabled>Next — Frame Your Photos</button>
-  </div>
-
-  <!-- STEP 1b: MODERATING -->
-  <div class="step" id="step-moderating">
-    <div class="loader">
-      <p class="loader-text">Checking your photos…</p>
-    </div>
+    <button class="btn" id="check-photos-btn" disabled style="margin-top:16px;">Check &amp; Preview Photos</button>
+    <button class="btn" id="photos-next-btn" disabled style="margin-top:10px;">Next — Frame Your Photos</button>
   </div>
 
   <!-- STEP 2: CROP -->
@@ -153,6 +156,11 @@
       <button class="crop-tool-btn" id="rotate-right-btn">↻ Rotate Right</button>
       <button class="crop-tool-btn" id="orientation-btn">⇄ Orientation</button>
       <button class="crop-tool-btn" id="reset-crop-btn">Reset</button>
+    </div>
+
+    <div class="crop-preview-row">
+      <span class="crop-preview-label">Print preview:</span>
+      <div class="crop-preview-box" id="crop-preview-box"></div>
     </div>
 
     <div class="crop-nav">
@@ -324,13 +332,9 @@ let elements = null;
 let paymentElement = null;
 
 let state = {
-  rawPhotos: [],         // File objects, in original picked order — kept only long enough to upload each one
-  originalUrls: [],      // hosted, server-converted (real JPEG) URL for each photo, once uploaded
-  originalPublicIds: [], // matching Cloudinary public_id for each, in case cleanup is ever needed
-  uploading: [],         // true/false per index, while that specific photo's upload is in flight
-  cropIndex: 0,
-  cropData: {},         // per-photo saved crop box + rotation, keyed by index
-  orientation: {},      // per-photo 'landscape' or 'portrait', keyed by index
+  imageResults: null,   // [{url, public_id}, ...] — only ever populated once ALL staged photos pass moderation together
+  cropData: [null, null, null, null, null], // Cropper.js getData() output per photo — numbers only, never a canvas export
+  currentCropIndex: 0,
   paymentIntentId: null,
   clientSecret: null,
 };
@@ -341,23 +345,40 @@ function showStep(id) {
   window.scrollTo(0, 0);
 }
 
-/* ---------- STEP 1: Photo picking ----------
-   Photos are uploaded to the server IMMEDIATELY on selection — not held as
-   local files until later. This is deliberate: the server already reliably
-   converts HEIC (the default iPhone photo format, confirmed working via a
-   real, completed order) using a proven Pillow-based pipeline. Browsers
-   themselves cannot reliably decode HEIC for preview or cropping — an
-   earlier attempt at a browser-side conversion library worked for some
-   HEIC files and silently failed on others. Uploading immediately and doing
-   every later step (thumbnail, crop, final export) against the resulting
-   hosted, guaranteed-real JPEG sidesteps that unreliability entirely. */
-const photoDrop = document.getElementById('photo-drop');
-const photoInput = document.getElementById('photo-input');
+/* ---------- STEP 1: Photo picking — mirrors Turtle Mail's real, proven flow ----------
+   Photos are staged purely client-side (as base64) — nothing is uploaded
+   yet. ALL staged photos are sent together in ONE call to /process-images,
+   which moderates and uploads in a single atomic step: a rejected photo
+   is never uploaded, never hosted anywhere, never shown. Only approved
+   photos come back with real URLs at all. */
 const photoGrid = document.getElementById('photo-grid');
+const slotStaged = [null, null, null, null, null];
 
-photoDrop.addEventListener('click', () => photoInput.click());
+for (let i = 0; i < 5; i++) {
+  const slot = document.createElement('div');
+  slot.className = 'photo-thumb';
+  slot.innerHTML = `<div class="placeholder">Photo ${i + 1}</div><img style="display:none;"><div class="badge" style="display:none;"></div>`;
+  photoGrid.appendChild(slot);
 
-function fileToBase64(file) {
+  const hiddenInput = document.createElement('input');
+  hiddenInput.type = 'file';
+  hiddenInput.accept = 'image/*';
+  hiddenInput.style.display = 'none';
+  slot.appendChild(hiddenInput);
+
+  slot.addEventListener('click', () => { if (!slot.classList.contains('has-image')) hiddenInput.click(); });
+  hiddenInput.addEventListener('change', e => { if (e.target.files[0]) stagePhoto(i, e.target.files[0]); });
+}
+
+const multiInput = document.getElementById('multi-photo-input');
+document.getElementById('choose-all-btn').addEventListener('click', () => multiInput.click());
+multiInput.addEventListener('change', e => {
+  const files = Array.from(e.target.files).slice(0, 5);
+  files.forEach((file, i) => stagePhoto(i, file));
+  multiInput.value = '';
+});
+
+function readAsDataURL(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
@@ -366,157 +387,160 @@ function fileToBase64(file) {
   });
 }
 
-photoInput.addEventListener('change', async (e) => {
-  const incoming = Array.from(e.target.files);
-  const room = Math.max(0, 5 - state.rawPhotos.length);
-  const toAdd = incoming.slice(0, room);
-  if (toAdd.length === 0) { photoInput.value = ''; return; }
+function showPhotosError(msg) {
+  const errEl = document.getElementById('photos-error');
+  errEl.textContent = msg;
+  errEl.style.display = 'block';
+}
+function clearPhotosError() {
+  document.getElementById('photos-error').style.display = 'none';
+}
 
-  for (const file of toAdd) {
-    const i = state.rawPhotos.length;
-    state.rawPhotos.push(file);
-    state.uploading[i] = true;
-    renderPhotoGrid();
+async function stagePhoto(index, file) {
+  const slotEl = photoGrid.children[index];
+  const badge = slotEl.querySelector('.badge');
+  const placeholder = slotEl.querySelector('.placeholder');
 
-    try {
-      const base64 = await fileToBase64(file);
-      const uploadRes = await fetch(`${BACKEND_URL}/upload-photo`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ photoBase64: base64 }),
-      });
-      const uploadData = await uploadRes.json();
-      if (!uploadData.url) throw new Error(uploadData.error || 'Upload failed.');
-      state.originalUrls[i] = uploadData.url;
-      state.originalPublicIds[i] = uploadData.public_id;
-    } catch (err) {
-      console.error(`Upload failed for photo ${i}:`, err);
-      state.originalUrls[i] = null; // renderPhotoGrid shows this as a failed slot
+  const dataUrl = await readAsDataURL(file);
+  slotStaged[index] = { dataUrl };
+
+  slotEl.className = 'photo-thumb';
+  badge.style.display = 'block';
+  badge.textContent = 'Staged';
+  placeholder.style.display = 'block';
+  placeholder.textContent = `Ready: ${file.name}`;
+
+  const stagedCount = slotStaged.filter(s => s).length;
+  document.getElementById('check-photos-btn').disabled = stagedCount < 1;
+}
+
+document.getElementById('check-photos-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('check-photos-btn');
+  btn.disabled = true;
+  btn.textContent = 'Checking your photos…';
+  clearPhotosError();
+
+  const stagedIndices = [];
+  for (let i = 0; i < 5; i++) {
+    if (slotStaged[i]) {
+      stagedIndices.push(i);
+      const slotEl = photoGrid.children[i];
+      slotEl.className = 'photo-thumb state-checking';
+      const badge = slotEl.querySelector('.badge');
+      badge.style.display = 'block';
+      badge.textContent = 'Checking…';
     }
-    state.uploading[i] = false;
-    renderPhotoGrid();
   }
 
-  photoInput.value = '';
-});
-
-function renderPhotoGrid() {
-  photoGrid.innerHTML = state.rawPhotos.map((file, i) => {
-    if (state.uploading[i]) {
-      return `<div class="photo-thumb" style="display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:10px;">Uploading…</div>`;
-    }
-    if (!state.originalUrls[i]) {
-      return `<div class="photo-thumb" style="display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--red);font-size:10px;text-align:center;padding:6px;">Upload failed<div class="remove" onclick="removePhoto(${i})">✕</div></div>`;
-    }
-    return `<div class="photo-thumb"><img src="${state.originalUrls[i]}"><div class="remove" onclick="removePhoto(${i})">✕</div></div>`;
-  }).join('');
-
-  const anyUploading = state.uploading.some(u => u === true);
-  const anyFailed = state.originalUrls.some((u, idx) => !state.uploading[idx] && !u);
-  const hasPhotos = state.rawPhotos.length > 0;
-  document.getElementById('photos-next-btn').disabled = anyUploading || anyFailed || !hasPhotos;
-}
-
-function removePhoto(i) {
-  state.rawPhotos.splice(i, 1);
-  state.originalUrls.splice(i, 1);
-  state.originalPublicIds.splice(i, 1);
-  state.uploading.splice(i, 1);
-  renderPhotoGrid();
-}
-
-// Small thumbnail for moderation only — keeps the request light. Fetches
-// the already-uploaded, server-converted JPEG (never the raw original),
-// so this works correctly regardless of the photo's original format.
-function makeThumbnailFromUrl(url) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const scale = Math.min(640 / img.width, 480 / img.height, 1);
-      canvas.width = img.width * scale;
-      canvas.height = img.height * scale;
-      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-      resolve(canvas.toDataURL('image/jpeg', 0.8));
-    };
-    img.onerror = reject;
-    img.src = url;
-  });
-}
-
-document.getElementById('photos-next-btn').addEventListener('click', async () => {
-  showStep('step-moderating');
-  const errEl = document.getElementById('photos-error');
-  errEl.style.display = 'none';
-
   try {
-    const validUrls = state.originalUrls.filter(u => !!u);
-    const thumbnails = await Promise.all(validUrls.map(makeThumbnailFromUrl));
-    const res = await fetch(`${BACKEND_URL}/moderate-photos`, {
+    const photos = stagedIndices.map(i => slotStaged[i].dataUrl);
+    const res = await fetch(`${BACKEND_URL}/process-images`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ photos: thumbnails }),
+      body: JSON.stringify({ photos }),
     });
-    const data = await res.json();
+    const result = await res.json();
 
-    if (!data.approved) {
-      showStep('step-photos');
-      errEl.textContent = data.message || 'One or more photos cannot be printed. Please choose different photos.';
-      errEl.style.display = 'block';
+    if (!res.ok || !result.approved) {
+      const flaggedSet = new Set((result.flagged_indexes || []).map(i => stagedIndices[i]));
+      stagedIndices.forEach(i => {
+        const slotEl = photoGrid.children[i];
+        const badge = slotEl.querySelector('.badge');
+        const placeholder = slotEl.querySelector('.placeholder');
+        if (flaggedSet.has(i)) {
+          slotEl.className = 'photo-thumb state-rejected';
+          badge.textContent = 'Flagged';
+          placeholder.style.display = 'block';
+          placeholder.textContent = 'Flagged — choose a different photo.';
+        } else {
+          slotEl.className = 'photo-thumb';
+          badge.textContent = 'Staged';
+        }
+      });
+      showPhotosError(result.error || (flaggedSet.size ? `${flaggedSet.size} photo(s) flagged — swap and check again.` : "These photos couldn't be approved."));
+      btn.textContent = 'Check & Preview Photos';
+      btn.disabled = false;
       return;
     }
 
-    state.cropIndex = 0;
-    document.getElementById('crop-total').textContent = validUrls.length;
-    showStep('step-crop');
-    loadCropPhoto(0);
+    state.imageResults = result.results;
+    stagedIndices.forEach((i, resultIdx) => {
+      const slotEl = photoGrid.children[i];
+      const img = slotEl.querySelector('img');
+      const badge = slotEl.querySelector('.badge');
+      const placeholder = slotEl.querySelector('.placeholder');
+      slotEl.className = 'photo-thumb has-image state-approved';
+      img.src = result.results[resultIdx].url;
+      img.style.display = 'block';
+      placeholder.style.display = 'none';
+      badge.textContent = 'Approved';
+    });
+    btn.textContent = `${stagedIndices.length} photo(s) approved ✓`;
+    document.getElementById('photos-next-btn').disabled = false;
   } catch (err) {
-    showStep('step-photos');
-    errEl.textContent = "Couldn't check your photos — please try again.";
-    errEl.style.display = 'block';
+    stagedIndices.forEach(i => photoGrid.children[i].className = 'photo-thumb state-rejected');
+    showPhotosError("Couldn't reach the server to check these photos. Try again.");
+    btn.textContent = 'Check & Preview Photos';
+    btn.disabled = false;
   }
 });
 
-/* ---------- STEP 2: Crop (Cropper.js — crop box, rotation, orientation, zoom) ---------- */
-let activeCropper = null; // the ONE currently-active Cropper.js instance — always destroyed before a new one is created
+document.getElementById('photos-next-btn').addEventListener('click', () => {
+  clearPhotosError();
+  document.getElementById('crop-total').textContent = state.imageResults.length;
+  showStep('step-crop');
+  loadCropperForIndex(0);
+});
 
-function loadCropPhoto(i) {
-  document.getElementById('crop-index').textContent = i + 1;
-  const img = document.getElementById('cropper-image');
+/* ---------- STEP 2: Crop & Rotate ----------
+   Cropper.js drives the interactive UI, but we never export its canvas as
+   the final image — that would risk downscaling below print resolution
+   and skip real color management. We only capture the NUMBERS (rotation
+   angle, crop rectangle) via getData(). The actual pixel-level crop and
+   sRGB color management happen server-side, in /finalize-crops. */
+let activeCropper = null;
+
+function loadCropperForIndex(index) {
+  const url = state.imageResults[index].url;
+  const lastIndex = state.imageResults.length - 1;
+  document.getElementById('crop-index').textContent = index + 1;
+  document.getElementById('crop-prev-btn').disabled = (index === 0);
+  document.getElementById('crop-next-btn').textContent = (index === lastIndex) ? 'Confirm — Next Step →' : 'Next Photo →';
+
+  const imgEl = document.getElementById('cropper-image');
 
   if (activeCropper) {
     activeCropper.destroy();
     activeCropper = null;
   }
+  imgEl.src = url;
 
-  img.crossOrigin = 'anonymous'; // needed so getCroppedCanvas() can export a hosted, cross-origin image
-  img.src = state.originalUrls[i];
-
-  img.onload = () => {
-    const orientation = state.orientation[i] || (img.naturalWidth >= img.naturalHeight ? 'landscape' : 'portrait');
-    state.orientation[i] = orientation;
-    const aspect = orientation === 'landscape' ? 3 / 2 : 2 / 3;
-
-    activeCropper = new Cropper(img, {
-      aspectRatio: aspect,
+  imgEl.onload = () => {
+    activeCropper = new Cropper(imgEl, {
       viewMode: 1,
-      dragMode: 'move',
       autoCropArea: 1,
-      background: false,
+      aspectRatio: NaN, // set correctly once we know the image's natural size, below
+      preview: '#crop-preview-box',
       ready() {
-        if (state.cropData[i]) {
-          this.cropper.setData(state.cropData[i]);
+        const imgData = activeCropper.getImageData();
+        const isLandscape = imgData.naturalWidth >= imgData.naturalHeight;
+        activeCropper.setAspectRatio(isLandscape ? 1.5 : (2 / 3));
+        if (state.cropData[index]) {
+          activeCropper.setData(state.cropData[index]);
+        } else {
+          // Capture Cropper's own sensible default immediately — guarantees
+          // every displayed photo always has valid crop data, even one the
+          // customer never manually adjusted before clicking "Confirm crops."
+          state.cropData[index] = activeCropper.getData();
         }
       }
     });
   };
 }
 
-function saveCurrentCrop() {
-  const i = state.cropIndex;
+function saveCurrentCropData() {
   if (activeCropper) {
-    state.cropData[i] = activeCropper.getData(true);
+    state.cropData[state.currentCropIndex] = activeCropper.getData();
   }
 }
 
@@ -526,30 +550,62 @@ document.getElementById('rotate-left-btn').addEventListener('click', () => {
 document.getElementById('rotate-right-btn').addEventListener('click', () => {
   activeCropper?.rotate(90);
 });
+document.getElementById('orientation-btn').addEventListener('click', () => {
+  if (!activeCropper) return;
+  const current = activeCropper.getData().width / activeCropper.getData().height;
+  activeCropper.setAspectRatio(current > 1 ? (2 / 3) : 1.5);
+});
 document.getElementById('reset-crop-btn').addEventListener('click', () => {
   activeCropper?.reset();
 });
-document.getElementById('orientation-btn').addEventListener('click', () => {
-  const i = state.cropIndex;
-  state.orientation[i] = state.orientation[i] === 'landscape' ? 'portrait' : 'landscape';
-  delete state.cropData[i];
-  loadCropPhoto(i);
-});
 
 document.getElementById('crop-prev-btn').addEventListener('click', () => {
-  if (state.cropIndex === 0) return;
-  saveCurrentCrop();
-  state.cropIndex--;
-  loadCropPhoto(state.cropIndex);
+  saveCurrentCropData();
+  state.currentCropIndex = Math.max(0, state.currentCropIndex - 1);
+  loadCropperForIndex(state.currentCropIndex);
 });
-document.getElementById('crop-next-btn').addEventListener('click', () => {
-  saveCurrentCrop();
-  if (state.cropIndex < state.rawPhotos.length - 1) {
-    state.cropIndex++;
-    loadCropPhoto(state.cropIndex);
-    document.getElementById('crop-next-btn').textContent = (state.cropIndex === state.rawPhotos.length - 1) ? 'Confirm — Next Step →' : 'Next Photo →';
-  } else {
+document.getElementById('crop-next-btn').addEventListener('click', async () => {
+  saveCurrentCropData();
+
+  if (state.currentCropIndex < state.imageResults.length - 1) {
+    state.currentCropIndex++;
+    loadCropperForIndex(state.currentCropIndex);
+    return;
+  }
+
+  // Last photo — finalize all crops server-side before moving on.
+  const unvisitedCount = state.cropData.slice(0, state.imageResults.length).filter(d => !d).length;
+  if (unvisitedCount > 0) {
+    alert(`You still have ${unvisitedCount} photo(s) left to review — use "Next Photo" to see each one before confirming.`);
+    return;
+  }
+
+  const btn = document.getElementById('crop-next-btn');
+  btn.disabled = true;
+  btn.textContent = 'Finalizing your crops…';
+
+  const crops = state.imageResults.map((r, i) => ({ url: r.url, cropData: state.cropData[i] }));
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/finalize-crops`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ crops }),
+    });
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      throw new Error(errBody.error || `Finalizing crops failed with status ${res.status}`);
+    }
+    const data = await res.json();
+    state.imageResults = data.results; // final, print-ready versions replace the pre-crop originals
+
+    btn.disabled = false;
+    btn.textContent = 'Confirm — Next Step →';
     showStep('step-details');
+  } catch (err) {
+    alert(err.message || "Couldn't finalize your crops. Please try again.");
+    btn.disabled = false;
+    btn.textContent = 'Confirm — Next Step →';
   }
 });
 
@@ -568,8 +624,8 @@ document.getElementById('details-next-btn').addEventListener('click', () => {
 
 /* ---------- STEP 4: Review ---------- */
 function renderReview() {
-  document.getElementById('review-thumbs').innerHTML = state.originalUrls
-    .map(url => `<img src="${url}">`).join('');
+  document.getElementById('review-thumbs').innerHTML = state.imageResults
+    .map(r => `<img src="${r.url}">`).join('');
 
   const name = document.getElementById('r-name').value.trim();
   const street = document.getElementById('r-street').value.trim();
@@ -682,61 +738,11 @@ document.getElementById('pay-btn').addEventListener('click', async () => {
   }
 });
 
-// Recreates a temporary, offscreen Cropper instance for one photo, applies
-// its saved crop data, exports the final cropped image, then cleans up.
-// This is necessary because only ONE Cropper instance is ever kept alive at
-// a time (see loadCropPhoto above) — final images are generated from each
-// photo's SAVED crop data, not from a still-open editing instance.
-function generateFinalCrop(i) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      img.style.position = 'fixed';
-      img.style.left = '-9999px';
-      img.style.maxWidth = 'none';
-      document.body.appendChild(img);
-
-      const tempCropper = new Cropper(img, {
-        aspectRatio: state.orientation[i] === 'landscape' ? 3 / 2 : 2 / 3,
-        viewMode: 1,
-        ready() {
-          if (state.cropData[i]) {
-            this.cropper.setData(state.cropData[i]);
-          }
-          const canvas = this.cropper.getCroppedCanvas({ width: 1800, height: 1200 });
-          const base64 = canvas.toDataURL('image/jpeg', 0.92);
-          this.cropper.destroy();
-          document.body.removeChild(img);
-          resolve(base64);
-        }
-      });
-    };
-    img.onerror = reject;
-    img.src = state.originalUrls[i];
-  });
-}
-
+// Photos are already fully finalized (moderated, uploaded, cropped, and
+// color-managed) before this point is ever reached — completeOrder() just
+// submits the already-final imageResults directly, no further image work.
 async function completeOrder(paymentIntentId, recipient) {
   try {
-    const uploadedUrls = [];
-    const uploadedPublicIds = [];
-
-    for (let i = 0; i < state.rawPhotos.length; i++) {
-      const base64 = await generateFinalCrop(i);
-
-      const uploadRes = await fetch(`${BACKEND_URL}/upload-photo`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ photoBase64: base64 }),
-      });
-      const uploadData = await uploadRes.json();
-      if (uploadData.url) uploadedUrls.push(uploadData.url);
-      if (uploadData.public_id) uploadedPublicIds.push(uploadData.public_id);
-    }
-
-    if (uploadedUrls.length === 0) throw new Error('Could not upload photos.');
-
     const message = document.getElementById('message-input').value.trim();
     const fromName = document.getElementById('fromname-input').value.trim();
     const senderEmail = document.getElementById('sender-email').value.trim();
@@ -745,8 +751,8 @@ async function completeOrder(paymentIntentId, recipient) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        photos: uploadedUrls,
-        photoPublicIds: uploadedPublicIds,
+        photos: state.imageResults.map(r => r.url),
+        photoPublicIds: state.imageResults.map(r => r.public_id),
         recipient,
         message,
         fromName: fromName || null,
