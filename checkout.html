@@ -759,6 +759,23 @@ async function completeOrder(paymentIntentId, recipient) {
     if (orderData.success) {
       document.getElementById('confirm-order-id').textContent = `Order: ${orderData.orderId || ''}`;
       showStep('step-confirm');
+
+      // If this page was opened from the SnappingTurtle app, hand control
+      // back automatically with the real order ID attached. Harmless if
+      // opened directly in a normal browser — the redirect simply won't
+      // go anywhere, and the manual link below still works either way.
+      const appReturnUrl = `snappingturtle://checkout-return?orderId=${encodeURIComponent(orderData.orderId || '')}`;
+      setTimeout(() => { window.location.href = appReturnUrl; }, 2500);
+
+      const confirmStep = document.getElementById('step-confirm');
+      const returnLink = document.createElement('a');
+      returnLink.href = appReturnUrl;
+      returnLink.textContent = 'Return to App';
+      returnLink.className = 'btn-ghost';
+      returnLink.style.display = 'block';
+      returnLink.style.marginTop = '12px';
+      returnLink.style.textAlign = 'center';
+      confirmStep.appendChild(returnLink);
     } else {
       throw new Error(orderData.error || 'Could not submit order.');
     }
