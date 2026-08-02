@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Independent Contractor Agreement — SnappingTurtle App</title>
+<style>
+  :root {
+    --bg: #1A1A18; --panel: #232320; --cream: #F5E9C8; --cream-dim: #A89F82;
+    --accent: #C8E620; --danger: #CC2200; --line: #3A3A34;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--cream); font-family: 'Courier New', Courier, monospace; line-height: 1.6; }
+  .wrap { max-width: 700px; margin: 0 auto; padding: 48px 20px 80px; }
+  .eyebrow { text-transform: uppercase; letter-spacing: 0.12em; font-size: 12px; color: var(--accent); margin: 0 0 8px; }
+  h1 { font-size: 24px; margin: 0 0 4px; }
+  h3 { font-size: 15px; color: var(--accent); margin: 24px 0 8px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .sub { color: var(--cream-dim); font-size: 14px; margin: 0 0 24px; }
+  .panel { background: var(--panel); border: 1px solid var(--line); padding: 24px; margin-bottom: 20px; }
+  .contract-scroll { max-height: 420px; overflow-y: auto; padding-right: 12px; font-size: 13px; color: var(--cream-dim); }
+  .contract-scroll p { margin: 0 0 14px; }
+  .contract-scroll .highlight { color: var(--accent); font-weight: bold; }
+  .contract-scroll::-webkit-scrollbar { width: 8px; }
+  .contract-scroll::-webkit-scrollbar-thumb { background: var(--line); }
+
+  .field label { display: block; font-size: 12px; color: var(--cream-dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .field input { width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--line); color: var(--cream); font-family: inherit; font-size: 14px; }
+  .field input:focus { outline: none; border-color: var(--accent); }
+  .required-star { color: var(--accent); }
+
+  .certify-box { display: flex; align-items: flex-start; gap: 12px; cursor: pointer; user-select: none; padding: 4px; margin-top: 20px; }
+  .checkbox { flex-shrink: 0; width: 22px; height: 22px; border: 2px solid var(--accent); margin-top: 2px; position: relative; }
+  .checkbox.checked::after { content: ''; position: absolute; left: 4px; top: 0px; width: 6px; height: 12px; border-right: 3px solid var(--accent); border-bottom: 3px solid var(--accent); transform: rotate(45deg); }
+  .certify-text { font-size: 14px; }
+  .certify-text ol { margin: 8px 0 0; padding-left: 20px; color: var(--cream-dim); font-size: 13px; }
+
+  .btn { display: block; width: 100%; margin-top: 20px; padding: 14px; background: var(--accent); color: #1A1A18; border: none; font-family: inherit; font-weight: bold; font-size: 14px; letter-spacing: 0.03em; text-transform: uppercase; cursor: pointer; }
+  .btn:disabled { background: #555; color: #999; cursor: not-allowed; }
+  .error-text { color: var(--danger); font-size: 13px; margin-top: 10px; display: none; }
+  .state-message { text-align: center; padding: 60px 20px; }
+  .success-mark { font-size: 40px; color: var(--accent); margin-bottom: 16px; }
+  footer { text-align: center; color: var(--cream-dim); font-size: 12px; margin-top: 40px; }
+</style>
+</head>
+<body>
+
+<div class="wrap" id="app">
+  <div class="state-message"><p>Loading…</p></div>
+</div>
+
+<script>
+const BACKEND_URL = 'https://snappingturtle-backend-production.up.railway.app';
+const params = new URLSearchParams(window.location.search);
+const accessToken = params.get('access_token');
+const app = document.getElementById('app');
+const CURRENT_YEAR = new Date().getFullYear();
+
+function renderError(message) {
+  app.innerHTML = `<div class="state-message"><h1>This link isn't available</h1><p>${message}</p><footer>SnappingTurtle App</footer></div>`;
+}
+
+function renderSuccess(year) {
+  app.innerHTML = `
+    <div class="state-message">
+      <div class="success-mark">✓</div>
+      <h1>Agreement signed</h1>
+      <p>You're all set for ${year} — your dashboard and promo code are active. Thanks for being part of the SnappingTurtle App influencer program.</p>
+      <footer>SnappingTurtle App</footer>
+    </div>`;
+}
+
+function contractHtml(legalNamePlaceholder) {
+  return `
+    <p>This ${CURRENT_YEAR} Influencer Agreement (hereinafter "Agreement") is made between General Adjuster Incorporated d/b/a SnappingTurtle App (hereinafter "Company" or "SnappingTurtle App") and <span class="highlight" id="name-in-contract">${legalNamePlaceholder}</span> as an Influencer (hereinafter "Contractor") (collectively "Parties").</p>
+    <p>The Company is engaged in the business of printing user supplied digital images and retains the service of Contractor for promoting printed photos to their "Followers" (hereinafter "Clients").</p>
+    <p><b>PLEASE READ THIS CAREFULLY.</b></p>
+    <p>Upon completion of your review of this agreement, please fill in the required fields, sign electronically below, and upload your signed document into your ProfileGorilla profile in the Billing Information and Required Documents section under "Upload Contractor Agreement." Contractors without SnappingTurtle App ProfileGorilla profiles should contact customer_service@turtlemail.app for assistance.</p>
+
+    <h3>Temporary Engagement</h3>
+    <p>Upon acceptance, Contractor will be engaged on a temporary basis by Company to promote SnappingTurtle App and the "Product." The standard retail price of the Product is fixed at $25.00 USD. Company reserves the right to modify the Product pricing at any time, but any changes will be reflected in the internal dashboard.</p>
+
+    <h3>Independent Contractor</h3>
+    <p>Contractor shall be compensated when Company receives a payment request from Contractor.</p>
+    <p><b>Payment Requests:</b> Once your internal portal dashboard reflects 100 or more valid sales, you may submit a digital payment request through the portal. Company will process approved payouts through its internal accounting systems using the legal Name and Address provided by you during registration.</p>
+    <p><b>The Threshold:</b> Commissions are accumulated in your internal dashboard. No payouts will be initiated, issued, or authorized until you have successfully accumulated a minimum of one hundred (100) valid, un-refunded product sales (the "$100 Payout Threshold").</p>
+
+    <h3>Commission Structure and Tracking</h3>
+    <p><b>Commission Rate:</b> Company will pay Creator a flat commission of $1.00 USD for every valid, fully paid retail sale of the Product directly attributed to Creator's unique assigned promotional code or tracking link.</p>
+    <p><b>Tracking:</b> Sales are tracked exclusively by Company's internal portal database. A sale is considered valid only after the customer's payment clears, the order ships, and the standard refund window has expired.</p>
+
+    <h3>Hard Expiration and Non-Renewal</h3>
+    <p><b>Termination Date:</b> Regardless of your signup date, this Agreement will automatically expire on December 31 at 11:59 PM of the current calendar year.</p>
+    <p><b>No Auto-Renewal:</b> This Agreement does not automatically renew. Upon expiration, your assigned dashboard access token and promotional codes will be automatically deactivated.</p>
+    <p><b>Re-activation:</b> To continue participating in the program for the following calendar year, you must log into clickwrap.html, submit your active access token, and digitally accept the updated Terms and Conditions for that new calendar year.</p>
+
+    <h3>Information Requirements &amp; Accuracy</h3>
+    <p>To participate in this program and receive funds, you must provide your true, legal first and last name, and your current physical mailing address. Providing false names, aliases, PO boxes, or incorrect addresses constitutes a material breach of this contract and is grounds for immediate termination and forfeiture of accumulated commissions.</p>
+
+    <h3>Termination at Will</h3>
+    <p>Either party may terminate this agreement at any time, with or without cause, by providing written notice or by deactivating the account. If you terminate prior to reaching the 100-unit sale threshold, all pending un-issued commissions are forfeited.</p>
+
+    <h3>Date of Agreement</h3>
+    <p>This Agreement becomes effective as of the date of the execution of the digital gatekeeping mechanism: the digital agreement is embedded directly into the signup flow, making it impossible to create an account without encountering the terms. The system logs the user's IP address, time, date, and specific version of the agreement accepted, creating a permanent, legally binding audit trail. Once the user completes the digital action, the software immediately unlocks their tracking dashboard access token.</p>
+    <p>Either party may elect to terminate this Agreement following seven (7) days written notice, to be delivered via email to terminate_agreement@turtlemail.app. Company reserves the right to immediately terminate this Agreement if, in the sole discretion of Company, immediate termination is in the best interests of the general public.</p>
+
+    <h3>Severability</h3>
+    <p>Company and Contractor have attempted to limit the provisions of this Agreement so that it applies only to the extent necessary to protect legitimate business interests as governed by the applicable law. If any provision or portion of a provision of this Agreement is determined invalid or unenforceable by any court of competent jurisdiction, then such provision shall be construed and limited to the extent necessary, or severed if necessary, in order to eliminate such invalidity or unenforceability. Remaining provisions or portions of provisions of this Agreement shall continue to be valid and enforceable and shall not be affected by any such determination.</p>
+
+    <h3>Direct Deposit</h3>
+    <p>SnappingTurtle App issues payments through QuickBooks Bill Pay via secure ACH direct deposit. QuickBooks will email you a secure, one-time link to enter your own banking details directly with QuickBooks — SnappingTurtle App and its staff never see, collect, store, or have access to your bank account or routing numbers at any time.</p>
+
+    <h3>Equal Opportunity Employer</h3>
+    <p>SnappingTurtle App is an Equal Opportunity Employer. This means that we will extend equal opportunity to all individuals without regard for race, religion, color, sex, national origin, age, disability, handicaps or veteran status. This policy affirms SnappingTurtle App's commitment to the principles of fair employment and the elimination of discriminatory practices that might exist. We encourage all contractors to take advantage of opportunities for promotion as they occur.</p>
+
+    <h3>Confidentiality</h3>
+    <p>SnappingTurtle App requires all contractors and employees to abide by confidentiality agreements as a condition of this agreement. As a Contractor, you may have access to information which is confidential and/or intended for company use only. All contractors are required to maintain such information in strict confidence.</p>
+
+    <h3>IT Security Awareness</h3>
+    <p>IT Security Awareness is everyone's business at SnappingTurtle App. It is your responsibility to secure company and client information and resources in order to protect the privacy of our clients and the company against unauthorized access, distribution/sharing, and modification/destruction.</p>
+    <p>A breach of security could not only damage the SnappingTurtle App reputation and hurt an individual contractor or client; it could lead to civil or criminal liability and punishment. Information violations are breaches of SnappingTurtle App information security policies, procedures, or guidelines. Information violations can occur knowingly, willfully, or through negligence.</p>
+    <p>Security incidents are activities that threaten information resources or violate security policies. SnappingTurtle App reserves the right to monitor use of IT resources, including but not limited to: computers, fax machines, e-mails, voicemails or instant messaging sent or received, network connectivity, use of internet, software programs, and downloading or uploading of databases.</p>
+    <p>Contractors should set their own personal computer to lock or time out after a short period of inactivity when it will be left unattended. This is a recommended personal device practice, not a control enforced by SnappingTurtle App's software — you are responsible for physically safeguarding any device where your access token is entered.</p>
+    <p>While a username establishes the identity of the user for the computer or system, the access token, which is known only to the authorized user, authenticates that the user is who they claim to be. This means that its function is to "prove to the system that you are who you say you are." Contractors are mandated to store their access tokens in a safe place. Your dashboard has been configured to prompt you for your access token each time you access it.</p>
+    <p>SnappingTurtle App Contractors shall adhere to the following: do not share your access token with anyone, including System Administrator; do not include your access token in an e-mail; do not let others stand over your shoulder as you enter your access token; do not write access tokens down on post-it notes.</p>
+    <p>As a Contractor of SnappingTurtle App, you are responsible for your account credentials — your user ID and access token — so always maintain control and protect them; do not allow others to use your account credentials; do not disclose your access token to anyone. SnappingTurtle App recognizes the importance of safeguarding our clients' information, and any violation of an IT Policy will result in the immediate termination of a Contractor.</p>
+
+    <h3>Sexual Harassment</h3>
+    <p>SnappingTurtle App will not, under any circumstances, condone or tolerate conduct which may constitute sexual harassment on the part of its management, supervisors, non-management personnel, or Contractors. It is our policy that all Contractors have the right to work in an environment free from any type of illegal discrimination, including sexual harassment. Any Contractor found to be engaged in the conduct of sexual harassment will be subject to immediate discipline up to and including discharge.</p>
+    <p>Sexual harassment is defined as: making submission to unwelcome sexual advances or requests for sexual favors a term or condition of engagement; basing a decision on submission to or rejection of unwelcome sexual advances, requests for sexual favors, or verbal or physical contact of a sexual nature; or creating an intimidating, hostile, or offensive working environment through verbal actions (including calling contractors by terms of endearment, or using vulgar, kidding, or demeaning language) or physical conduct which interferes with a contractor's work performance.</p>
+
+    <h3>Entire Agreement</h3>
+    <p>This Agreement sets forth all the covenants, promises, agreements, conditions, and understandings between the Parties concerning this work, and there are no covenants, promises, agreements, conditions, or understandings, either oral or written, between them other than as are herein set forth. Contractor has not relied upon any representation of Company or any of its agents, other than any items contained in this Agreement, as an inducement to enter into this Agreement. No alteration, amendment, change, or addition to this Agreement shall be binding upon Company or Contractor unless reduced to writing and signed by each party. This Agreement is neither transferable nor assignable to any other person.</p>
+
+    <h3>Governing Law</h3>
+    <p>This Agreement shall be governed by and construed according to and enforced in accordance with the laws of the State of Florida, excluding that body of laws dealing with conflicts of laws.</p>
+
+    <p>I have familiarized myself with the contents of this agreement. By my signature below, I acknowledge, understand, accept, and agree to comply with the information contained in the General Adjuster Incorporated d/b/a SnappingTurtle App agreement provided to me by the Company. I understand this agreement is not intended to cover every situation which may arise, but is simply a general guide to the goals, policies, practices, benefits, and expectations of the Company.</p>
+    <p>I understand that this Contractor agreement is not a contract of employment and should not be deemed as such, and that I am a contractor at will.</p>
+  `;
+}
+
+function renderAgreement(prefillName) {
+  app.innerHTML = `
+    <p class="eyebrow">Independent Contractor Agreement — ${CURRENT_YEAR}</p>
+    <h1>Review &amp; sign your agreement</h1>
+    <p class="sub">Read the full agreement below, then complete both required fields to activate your account.</p>
+
+    <div class="panel">
+      <div class="field">
+        <label for="legal-name-input">Legal name <span class="required-star">*required*</span></label>
+        <input type="text" id="legal-name-input" autocomplete="off" placeholder="Your true, legal first and last name" value="${prefillName || ''}" />
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="contract-scroll" id="contract-scroll">${contractHtml('_______ENTER_LEGAL_NAME________')}</div>
+    </div>
+
+    <div class="panel">
+      <div class="certify-box" id="certify-box">
+        <div class="checkbox" id="checkbox"></div>
+        <div class="certify-text">
+          [ ] I explicitly agree to the Terms and Conditions listed above.
+          <ol>
+            <li>I have read, understood, and agree to be bound by every clause of this Independent Contractor Agreement.</li>
+            <li>The Name provided above is my true, legal name.</li>
+            <li>I understand this contract expires on December 31, ${CURRENT_YEAR} and will not automatically renew.</li>
+          </ol>
+        </div>
+      </div>
+      <button class="btn" id="submit-btn" disabled>Accept &amp; Submit Agreement</button>
+      <p class="error-text" id="error-text"></p>
+    </div>
+
+    <footer>SnappingTurtle App</footer>
+  `;
+
+  const nameInput = document.getElementById('legal-name-input');
+  const nameInContract = document.getElementById('name-in-contract');
+  const checkbox = document.getElementById('checkbox');
+  const submitBtn = document.getElementById('submit-btn');
+  const errorText = document.getElementById('error-text');
+  let checked = false;
+
+  function refreshGate() {
+    const nameFilled = nameInput.value.trim().length > 0;
+    submitBtn.disabled = !(nameFilled && checked);
+    nameInContract.textContent = nameFilled ? nameInput.value.trim() : '_______ENTER_LEGAL_NAME________';
+  }
+
+  nameInput.addEventListener('input', refreshGate);
+  document.getElementById('certify-box').addEventListener('click', () => {
+    checked = !checked;
+    checkbox.classList.toggle('checked', checked);
+    refreshGate();
+  });
+  refreshGate();
+
+  submitBtn.addEventListener('click', async () => {
+    const legalName = nameInput.value.trim();
+    if (!legalName || !checked) return;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+    errorText.style.display = 'none';
+    try {
+      const res = await fetch(`${BACKEND_URL}/influencer/sign-agreement`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ access_token: accessToken, legal_name: legalName }),
+      });
+      const data = await res.json();
+      if (data.status === 'signed') {
+        renderSuccess(data.agreement_year);
+      } else {
+        throw new Error(data.error || 'Could not submit agreement.');
+      }
+    } catch (err) {
+      errorText.textContent = err.message || 'Something went wrong — please try again.';
+      errorText.style.display = 'block';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Accept & Submit Agreement';
+    }
+  });
+}
+
+async function init() {
+  if (!accessToken) {
+    renderError('This link is missing your access token. Please use the exact link provided to you, or enter your token on your dashboard first.');
+    return;
+  }
+  try {
+    const res = await fetch(`${BACKEND_URL}/influencer/dashboard?access_token=${encodeURIComponent(accessToken)}`);
+    const data = await res.json();
+    if (data.error) {
+      renderError('That access token was not recognized.');
+      return;
+    }
+    renderAgreement(data.legal_name);
+  } catch (err) {
+    renderAgreement('');
+  }
+}
+
+init();
+</script>
+
+</body>
+</html>

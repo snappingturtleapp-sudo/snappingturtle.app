@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Influencer Dashboard — SnappingTurtle App</title>
+<style>
+  :root {
+    --bg: #1A1A18;
+    --panel: #232320;
+    --cream: #F5E9C8;
+    --cream-dim: #A89F82;
+    --accent: #C8E620;
+    --danger: #CC2200;
+    --line: #3A3A34;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'Courier New', Courier, monospace;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 20px 80px;
+  }
+
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 12px;
+    color: var(--accent);
+    margin: 0 0 8px;
+  }
+
+  h1 { font-size: 26px; margin: 0 0 4px; }
+  h2 { font-size: 15px; margin: 0 0 14px; color: var(--cream); text-transform: uppercase; letter-spacing: 0.05em; }
+  .sub { color: var(--cream-dim); font-size: 14px; margin: 0 0 32px; }
+
+  .panel { background: var(--panel); border: 1px solid var(--line); padding: 22px; margin-bottom: 20px; }
+
+  /* --- login gate --- */
+  .field label { display: block; font-size: 12px; color: var(--cream-dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .field input {
+    width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--line);
+    color: var(--cream); font-family: inherit; font-size: 14px;
+  }
+  .field input:focus { outline: none; border-color: var(--accent); }
+
+  /* --- metrics grid --- */
+  .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+  .metric-box { background: var(--panel); border: 1px solid var(--line); padding: 18px; text-align: center; }
+  .metric-value { font-size: 26px; font-weight: bold; color: var(--accent); }
+  .metric-label { font-size: 11px; color: var(--cream-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
+
+  @media (max-width: 520px) {
+    .metrics-grid { grid-template-columns: 1fr; }
+  }
+
+  /* --- progress bar --- */
+  .progress-track { background: var(--bg); border: 1px solid var(--line); height: 22px; position: relative; overflow: hidden; }
+  .progress-fill { background: var(--accent); height: 100%; transition: width 0.4s ease; }
+  .progress-text { font-size: 13px; color: var(--cream-dim); margin-top: 8px; }
+
+  /* --- bucket rows --- */
+  .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+  .row:last-child { border-bottom: none; }
+  .row .label { color: var(--cream-dim); }
+  .row .value { font-weight: bold; }
+
+  .btn {
+    display: block; width: 100%; margin-top: 16px; padding: 14px; background: var(--accent);
+    color: #1A1A18; border: none; font-family: inherit; font-weight: bold; font-size: 14px;
+    letter-spacing: 0.03em; text-transform: uppercase; cursor: pointer;
+  }
+  .btn:disabled { background: #555; color: #999; cursor: not-allowed; }
+  .btn-msg { font-size: 12px; color: var(--cream-dim); margin-top: 8px; text-align: center; }
+
+  /* --- payout history --- */
+  .payout-item { padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .payout-item:last-child { border-bottom: none; }
+  .payout-top { display: flex; justify-content: space-between; align-items: baseline; }
+  .payout-id { font-size: 14px; }
+  .payout-amount { font-weight: bold; color: var(--accent); }
+  .payout-meta { font-size: 12px; color: var(--cream-dim); margin-top: 4px; }
+  .status-badge {
+    display: inline-block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em;
+    padding: 2px 8px; border: 1px solid var(--cream-dim); color: var(--cream-dim); margin-left: 8px;
+  }
+  .status-badge.paid { border-color: var(--accent); color: var(--accent); }
+  .payout-link { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--accent); font-size: 12px; }
+  .payout-link:hover { color: var(--cream); border-color: var(--cream); }
+  .empty-note { color: var(--cream-dim); font-size: 13px; }
+
+  .status-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+  .status-light-wrap { display: flex; align-items: center; gap: 8px; flex-shrink: 0; padding-top: 6px; }
+  .status-light { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .status-light-label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold; }
+
+  .tx-table { font-size: 12px; }
+  .tx-row {
+    display: grid; grid-template-columns: 1.4fr 0.8fr 1.1fr 1fr 1fr;
+    gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); align-items: center;
+  }
+  .tx-row:last-child { border-bottom: none; }
+  .tx-head { color: var(--cream-dim); text-transform: uppercase; letter-spacing: 0.04em; font-size: 10px; border-bottom: 1px solid var(--accent); }
+  .tx-table .status-badge { margin-left: 0; }
+
+  @media (max-width: 560px) {
+    .tx-row { grid-template-columns: 1fr 1fr; }
+    .tx-head { display: none; }
+    .tx-row span:nth-child(1) { grid-column: 1 / -1; font-weight: bold; }
+  }
+
+  .state-message { text-align: center; padding: 60px 20px; }
+  .error-text { color: var(--danger); font-size: 13px; margin-top: 10px; display: none; }
+
+  footer { text-align: center; color: var(--cream-dim); font-size: 12px; margin-top: 40px; }
+</style>
+</head>
+<body>
+
+<div class="wrap" id="app">
+  <div class="state-message"><p>Loading…</p></div>
+</div>
+
+<script>
+const BACKEND_URL = 'https://snappingturtle-backend-production.up.railway.app';
+const MIN_ELIGIBLE_SALES = 100;
+
+const app = document.getElementById('app');
+
+function getTokenFromUrl() {
+  return new URLSearchParams(window.location.search).get('access_token');
+}
+
+function renderLoginGate(errorMsg) {
+  app.innerHTML = `
+    <p class="eyebrow">Influencer Dashboard</p>
+    <h1>Enter your access token</h1>
+    <p class="sub">This is the token you received when you joined the SnappingTurtle influencer program.</p>
+    <div class="panel">
+      <div class="field">
+        <label for="token-input">Access token</label>
+        <input type="text" id="token-input" autocomplete="off" placeholder="Paste your access token" />
+      </div>
+      <button class="btn" id="open-btn">Open dashboard</button>
+      <p class="error-text" id="login-error">${errorMsg || ''}</p>
+    </div>
+    <footer>SnappingTurtle App</footer>
+  `;
+  if (errorMsg) document.getElementById('login-error').style.display = 'block';
+
+  document.getElementById('open-btn').addEventListener('click', () => {
+    const token = document.getElementById('token-input').value.trim();
+    if (!token) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set('access_token', token);
+    window.location.href = url.toString();
+  });
+}
+
+function fmtMoney(n) { return '$' + Number(n).toFixed(2); }
+
+function fmtDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+function payoutStatusLabel(status) {
+  return status;
+}
+
+function renderDashboard(data, accessToken) {
+  const clearedTowardGoal = Math.min(data.cleared_balance, MIN_ELIGIBLE_SALES);
+  const pct = Math.round((clearedTowardGoal / MIN_ELIGIBLE_SALES) * 100);
+
+  const payoutsHtml = (data.payouts && data.payouts.length)
+    ? data.payouts.map(p => `
+        <div class="payout-item">
+          <div class="payout-top">
+            <span class="payout-id">${p.id}<span class="status-badge ${p.status === 'Paid' ? 'paid' : ''}">${payoutStatusLabel(p.status)}</span></span>
+            <span class="payout-amount">${fmtMoney(p.total_amount)}</span>
+          </div>
+          <div class="payout-meta">
+            Requested ${fmtDate(p.created_at)}
+            ${p.paid_at ? ' · Paid ' + fmtDate(p.paid_at) : ''}
+            ${p.pdf_statement_url ? ' · <a class="payout-link" href="' + p.pdf_statement_url + '" target="_blank" rel="noopener">View statement (PDF)</a>' : ''}
+          </div>
+        </div>
+      `).join('')
+    : '<p class="empty-note">No payout requests yet. Once you reach 100 cleared sales, you can request your first payment.</p>';
+
+  const statusColor = data.account_active ? 'var(--accent)' : 'var(--danger)';
+  const statusLabel = data.account_active ? 'Active' : 'Inactive';
+  const joinedDate = fmtDate(data.created_at);
+  const agreementLine = data.account_active
+    ? `Agreement on file for ${new Date(data.contractor_agreement_signed_at || Date.now()).getFullYear()}`
+    : `<a class="payout-link" href="agreement.html?access_token=${encodeURIComponent(accessToken)}">Sign this year's agreement to reactivate your account →</a>`;
+
+  const transactionsHtml = (data.transactions && data.transactions.length)
+    ? `<div class="tx-table">
+        <div class="tx-row tx-head">
+          <span>Order #</span><span>Amount</span><span>State</span><span>Created</span><span>Cleared</span>
+        </div>
+        ${data.transactions.map(t => `
+          <div class="tx-row">
+            <span>${t.st_order_id}</span>
+            <span>${fmtMoney(t.commission_amount)}</span>
+            <span><span class="status-badge ${t.status === 'Paid' ? 'paid' : ''}">${t.status}</span></span>
+            <span>${fmtDate(t.created_at)}</span>
+            <span>${t.cleared_at ? fmtDate(t.cleared_at) : '—'}</span>
+          </div>
+        `).join('')}
+      </div>`
+    : '<p class="empty-note">No orders yet. Once someone uses your promo code, it will show up here.</p>';
+
+  app.innerHTML = `
+    <p class="eyebrow">Influencer Dashboard</p>
+    <div class="status-header">
+      <div>
+        <h1>${data.legal_name}</h1>
+        <p class="sub">Promo code ${data.promo_code} · Joined ${joinedDate}</p>
+      </div>
+      <div class="status-light-wrap">
+        <span class="status-light" style="background:${statusColor}"></span>
+        <span class="status-light-label" style="color:${statusColor}">${statusLabel}</span>
+      </div>
+    </div>
+    <p class="sub" style="margin-top:-20px;">${agreementLine}</p>
+
+    <div class="metrics-grid">
+      <div class="metric-box">
+        <div class="metric-value">${data.total_referrals}</div>
+        <div class="metric-label">Total Referrals</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-value">${fmtMoney(data.total_earnings)}</div>
+        <div class="metric-label">Total Earnings Paid</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-value">${data.cleared_balance}/${MIN_ELIGIBLE_SALES}</div>
+        <div class="metric-label">Toward Next Payout</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Next Milestone Progress</h2>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <p class="progress-text">${clearedTowardGoal} / ${MIN_ELIGIBLE_SALES} sales cleared</p>
+    </div>
+
+    <div class="panel">
+      <h2>Earnings Breakdown</h2>
+      <div class="row"><span class="label">Pending (within last 30 days)</span><span class="value">${data.pending_balance}</span></div>
+      <div class="row"><span class="label">Cleared (30+ days, ready toward payout)</span><span class="value">${data.cleared_balance}</span></div>
+      <div class="row"><span class="label">Locked for review (in an active payout request)</span><span class="value">${data.locked_for_review}</span></div>
+      <button class="btn" id="request-payment-btn" ${data.request_payment_enabled ? '' : 'disabled'}>
+        ${data.request_payment_enabled ? 'Request payment' : `Request payment (need ${MIN_ELIGIBLE_SALES - data.cleared_balance} more cleared sales)`}
+      </button>
+      <p class="btn-msg" id="request-msg"></p>
+    </div>
+
+    <div class="panel">
+      <h2>All Orders (Promo Code Redemptions)</h2>
+      ${transactionsHtml}
+    </div>
+
+    <div class="panel">
+      <h2>Payout History &amp; Documents</h2>
+      ${payoutsHtml}
+    </div>
+
+    <footer>SnappingTurtle App — questions? Reply to any statement email you've received.</footer>
+  `;
+
+  const btn = document.getElementById('request-payment-btn');
+  if (data.request_payment_enabled) {
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      btn.textContent = 'Submitting…';
+      const msg = document.getElementById('request-msg');
+      try {
+        const res = await fetch(`${BACKEND_URL}/influencer/request-payment`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ access_token: accessToken }),
+        });
+        const result = await res.json();
+        if (result.error) {
+          msg.textContent = result.error;
+          btn.disabled = false;
+          btn.textContent = 'Request payment';
+          return;
+        }
+        msg.textContent = `Requested ${fmtMoney(result.total_amount)} across ${result.sale_count} sales. You'll receive an email once your statement is ready to review.`;
+        await loadDashboard(accessToken);
+      } catch (err) {
+        msg.textContent = 'Something went wrong — please try again.';
+        btn.disabled = false;
+        btn.textContent = 'Request payment';
+      }
+    });
+  }
+}
+
+async function loadDashboard(accessToken) {
+  try {
+    const res = await fetch(`${BACKEND_URL}/influencer/dashboard?access_token=${encodeURIComponent(accessToken)}`);
+    const data = await res.json();
+    if (data.error) {
+      renderLoginGate('That access token was not recognized. Please check it and try again.');
+      return;
+    }
+    renderDashboard(data, accessToken);
+  } catch (err) {
+    app.innerHTML = `<div class="state-message"><p>We could not load your dashboard right now. Please try again in a moment.</p></div>`;
+  }
+}
+
+function init() {
+  const token = getTokenFromUrl();
+  if (!token) {
+    renderLoginGate();
+    return;
+  }
+  loadDashboard(token);
+}
+
+init();
+</script>
+
+</body>
+</html>
