@@ -214,6 +214,11 @@
       <input type="email" id="sender-email" placeholder="your@email.com" autocomplete="off" />
       <p class="hint">Used only to send you an order confirmation.</p>
     </div>
+    <div class="field">
+      <label for="promo-code-input">Promo code (optional)</label>
+      <input type="text" id="promo-code-input" placeholder="e.g. SARAH2026" autocomplete="off" />
+      <p class="hint" id="promo-code-hint"></p>
+    </div>
 
     <button class="btn" id="details-next-btn">Next — Review</button>
   </div>
@@ -610,6 +615,29 @@ document.getElementById('crop-next-btn').addEventListener('click', async () => {
 });
 
 /* ---------- STEP 3: Message + Recipient ---------- */
+document.getElementById('promo-code-input').addEventListener('blur', async () => {
+  const code = document.getElementById('promo-code-input').value.trim().toUpperCase();
+  const hintEl = document.getElementById('promo-code-hint');
+  hintEl.textContent = '';
+  hintEl.style.color = '';
+  if (!code) return;
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/promo-code/validate?code=${encodeURIComponent(code)}`);
+    const data = await res.json();
+    if (data.found && !data.active) {
+      hintEl.textContent = 'This promo code is no longer active — your order will still go through, but no commission will be applied.';
+      hintEl.style.color = 'var(--red)';
+    } else if (data.found && data.active) {
+      hintEl.textContent = 'Promo code applied.';
+      hintEl.style.color = 'var(--green)';
+    }
+    // data.found === false: no message at all, per spec — silent no-op.
+  } catch (err) {
+    // Network hiccup on a non-critical check — never block checkout over this.
+  }
+});
+
 document.getElementById('details-next-btn').addEventListener('click', () => {
   const required = ['r-name', 'r-street', 'r-city', 'r-state', 'r-zip'];
   for (const id of required) {
@@ -746,6 +774,7 @@ async function completeOrder(paymentIntentId, recipient) {
     const message = document.getElementById('message-input').value.trim();
     const fromName = document.getElementById('fromname-input').value.trim();
     const senderEmail = document.getElementById('sender-email').value.trim();
+    const promoCode = document.getElementById('promo-code-input').value.trim();
 
     const orderRes = await fetch(`${BACKEND_URL}/submit-order`, {
       method: 'POST',
@@ -758,6 +787,7 @@ async function completeOrder(paymentIntentId, recipient) {
         fromName: fromName || null,
         senderEmail: senderEmail || null,
         paymentIntentId,
+        promoCode: promoCode || null,
       }),
     });
     const orderData = await orderRes.json();
