@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Statement Review &amp; Approval — SnappingTurtle App</title>
+<style>
+  :root {
+    --bg: #1A1A18;
+    --panel: #232320;
+    --cream: #F5E9C8;
+    --cream-dim: #A89F82;
+    --accent: #C8E620;
+    --danger: #CC2200;
+    --line: #3A3A34;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'Courier New', Courier, monospace;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  .wrap {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 48px 20px 80px;
+  }
+
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 12px;
+    color: var(--accent);
+    margin: 0 0 8px;
+  }
+
+  h1 {
+    font-size: 26px;
+    margin: 0 0 4px;
+    color: var(--cream);
+  }
+
+  .sub {
+    color: var(--cream-dim);
+    font-size: 14px;
+    margin: 0 0 32px;
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 14px;
+  }
+  .row:last-child { border-bottom: none; }
+  .row .label { color: var(--cream-dim); }
+  .row .value { text-align: right; }
+
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 16px;
+    margin-top: 8px;
+    border-top: 2px solid var(--accent);
+    font-size: 18px;
+    font-weight: bold;
+  }
+  .total-row .value { color: var(--accent); }
+
+  .pdf-link {
+    display: inline-block;
+    margin-top: 16px;
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--accent);
+    font-size: 14px;
+  }
+  .pdf-link:hover { color: var(--cream); border-color: var(--cream); }
+
+  .certify-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+    padding: 4px;
+  }
+
+  .checkbox {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--accent);
+    margin-top: 2px;
+    position: relative;
+  }
+  .checkbox.checked::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 0px;
+    width: 6px;
+    height: 12px;
+    border-right: 3px solid var(--accent);
+    border-bottom: 3px solid var(--accent);
+    transform: rotate(45deg);
+  }
+
+  .certify-text {
+    font-size: 14px;
+    color: var(--cream);
+  }
+  .certify-text b { color: var(--accent); }
+
+  .btn {
+    display: block;
+    width: 100%;
+    margin-top: 24px;
+    padding: 14px;
+    background: var(--accent);
+    color: #1A1A18;
+    border: none;
+    font-family: inherit;
+    font-weight: bold;
+    font-size: 15px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .btn:disabled {
+    background: #555;
+    color: #999;
+    cursor: not-allowed;
+  }
+
+  .state-message {
+    text-align: center;
+    padding: 60px 20px;
+  }
+  .state-message h1 { margin-bottom: 12px; }
+  .state-message p { color: var(--cream-dim); font-size: 14px; }
+
+  .success-mark {
+    font-size: 40px;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+
+  .error-text {
+    color: var(--danger);
+    font-size: 13px;
+    margin-top: 10px;
+    display: none;
+  }
+
+  footer {
+    text-align: center;
+    color: var(--cream-dim);
+    font-size: 12px;
+    margin-top: 48px;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap" id="app">
+  <div class="state-message"><p>Loading your statement…</p></div>
+</div>
+
+<script>
+const BACKEND_URL = 'https://snappingturtle-backend-production.up.railway.app';
+
+const params = new URLSearchParams(window.location.search);
+const accessToken = params.get('access_token');
+const payoutId = params.get('payout_id');
+
+const app = document.getElementById('app');
+
+function renderError(message) {
+  app.innerHTML = `
+    <div class="state-message">
+      <h1>This link isn't available</h1>
+      <p>${message}</p>
+      <footer>SnappingTurtle App</footer>
+    </div>`;
+}
+
+function renderSuccess() {
+  app.innerHTML = `
+    <div class="state-message">
+      <div class="success-mark">✓</div>
+      <h1>Statement approved</h1>
+      <p>Thanks — your commission is now confirmed and queued for payment on the next payout cycle (the 1st or 15th of the month).</p>
+      <footer>SnappingTurtle App</footer>
+    </div>`;
+}
+
+function renderStatement(payout) {
+  app.innerHTML = `
+    <p class="eyebrow">Statement Review &amp; Approval</p>
+    <h1>Payout ${payout.id}</h1>
+    <p class="sub">${payout.influencer_name} — Promo code ${payout.promo_code}</p>
+
+    <div class="panel">
+      <div class="row"><span class="label">Influencer</span><span class="value">${payout.influencer_name}</span></div>
+      <div class="row"><span class="label">Promo code</span><span class="value">${payout.promo_code}</span></div>
+      <div class="row"><span class="label">Payout ID</span><span class="value">${payout.id}</span></div>
+      <div class="total-row"><span>Total owed</span><span class="value">$${Number(payout.total_amount).toFixed(2)}</span></div>
+      ${payout.pdf_statement_url ? `<a class="pdf-link" href="${payout.pdf_statement_url}" target="_blank" rel="noopener">View the full itemized statement (PDF) →</a>` : ''}
+    </div>
+
+    <div class="panel">
+      <div class="certify-box" id="certify-box">
+        <div class="checkbox" id="checkbox"></div>
+        <div class="certify-text">
+          By checking this box, I certify that I have reviewed this statement, I agree that the
+          total commission owed for Payout <b>${payout.id}</b> is <b>$${Number(payout.total_amount).toFixed(2)}</b>,
+          and I accept this as full payment for this period.
+        </div>
+      </div>
+      <button class="btn" id="submit-btn" disabled>Approve statement</button>
+      <p class="error-text" id="error-text"></p>
+    </div>
+
+    <footer>SnappingTurtle App — questions? Reply to the email you received.</footer>
+  `;
+
+  let checked = false;
+  const checkbox = document.getElementById('checkbox');
+  const submitBtn = document.getElementById('submit-btn');
+  const errorText = document.getElementById('error-text');
+
+  document.getElementById('certify-box').addEventListener('click', () => {
+    checked = !checked;
+    checkbox.classList.toggle('checked', checked);
+    submitBtn.disabled = !checked;
+  });
+
+  submitBtn.addEventListener('click', async () => {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+    errorText.style.display = 'none';
+    try {
+      const res = await fetch(`${BACKEND_URL}/influencer/clickwrap-sign`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ access_token: accessToken, payout_id: payoutId }),
+      });
+      const data = await res.json();
+      if (data.status === 'signed') {
+        renderSuccess();
+      } else {
+        throw new Error(data.error || 'Could not submit approval.');
+      }
+    } catch (err) {
+      errorText.textContent = err.message || 'Something went wrong — please try again.';
+      errorText.style.display = 'block';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Approve statement';
+    }
+  });
+}
+
+async function init() {
+  if (!accessToken || !payoutId) {
+    renderError('This link is missing required information. Please use the exact link from your email.');
+    return;
+  }
+  try {
+    const res = await fetch(`${BACKEND_URL}/influencer/payout-details?access_token=${encodeURIComponent(accessToken)}&payout_id=${encodeURIComponent(payoutId)}`);
+    const data = await res.json();
+    if (data.error) {
+      renderError('This statement has already been approved, or this link is no longer valid.');
+      return;
+    }
+    renderStatement(data);
+  } catch (err) {
+    renderError('We could not load your statement right now. Please try again in a moment.');
+  }
+}
+
+init();
+</script>
+
+</body>
+</html>
