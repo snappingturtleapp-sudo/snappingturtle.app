@@ -231,7 +231,10 @@ function renderDashboard(data) {
     label.style.color = 'var(--accent)';
     label.textContent = 'Active';
     const year = data.contractor_agreement_signed_at ? new Date(data.contractor_agreement_signed_at).getFullYear() : new Date().getFullYear();
-    agreementLine.innerHTML = `Agreement on file for ${year}`;
+    const pdfLink = data.agreement_pdf_url
+      ? ` · <a class="payout-link" href="${data.agreement_pdf_url}" target="_blank" rel="noopener">View your signed agreement (PDF)</a>`
+      : '';
+    agreementLine.innerHTML = `Agreement on file for ${year}${pdfLink}`;
   } else {
     light.style.background = 'var(--danger)';
     label.style.color = 'var(--danger)';
