@@ -696,6 +696,9 @@ document.getElementById('review-next-btn').addEventListener('click', async () =>
     const intentData = await intentRes.json();
     if (!intentData.clientSecret) throw new Error('Could not initialize payment.');
 
+    const totalDisplay = (intentData.totalCents / 100).toFixed(2);
+    document.getElementById('pay-btn').textContent = `Pay $${totalDisplay}`;
+
     elements = stripe.elements({
       clientSecret: intentData.clientSecret,
       appearance: {
