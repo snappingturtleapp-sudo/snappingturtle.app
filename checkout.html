@@ -245,7 +245,7 @@
 
     <div class="price-line">
       <span style="font-size:12px; letter-spacing:2px; color:var(--dim);">TOTAL</span>
-      <span class="price-total">$25.00</span>
+      <span class="price-total">$25.00 + tax</span>
     </div>
 
     <div class="checkbox-row" id="agree-row">
@@ -268,7 +268,7 @@
   <div class="step" id="step-payment">
     <p class="eyebrow">Step 5 of 5</p>
     <h1>Payment.</h1>
-    <p class="sub">$25.00 — includes all applicable sales tax.</p>
+    <p class="sub" id="payment-total-sub">$25.00 + applicable sales tax.</p>
 
     <div id="card-element"></div>
     <div id="card-errors"></div>
@@ -696,8 +696,9 @@ document.getElementById('review-next-btn').addEventListener('click', async () =>
     const intentData = await intentRes.json();
     if (!intentData.clientSecret) throw new Error('Could not initialize payment.');
 
-    const totalDisplay = (intentData.totalCents / 100).toFixed(2);
-    document.getElementById('pay-btn').textContent = `Pay $${totalDisplay}`;
+    currentTotalDisplay = (intentData.totalCents / 100).toFixed(2);
+    document.getElementById('payment-total-sub').textContent = `$${currentTotalDisplay} — $25.00 plus applicable sales tax.`;
+    document.getElementById('pay-btn').textContent = `Pay $${currentTotalDisplay}`;
 
     elements = stripe.elements({
       clientSecret: intentData.clientSecret,
@@ -727,6 +728,7 @@ document.getElementById('review-next-btn').addEventListener('click', async () =>
 
 /* ---------- STEP 5: Payment + submission ---------- */
 let payProcessing = false;
+let currentTotalDisplay = '25.00';
 document.getElementById('pay-btn').addEventListener('click', async () => {
   if (payProcessing) return;
   payProcessing = true;
@@ -754,7 +756,7 @@ document.getElementById('pay-btn').addEventListener('click', async () => {
     if (error) {
       document.getElementById('card-errors').textContent = error.message;
       payBtn.disabled = false;
-      payBtn.textContent = 'Pay $25.00';
+      payBtn.textContent = `Pay $${currentTotalDisplay}`;
       payProcessing = false;
       return;
     }
@@ -764,7 +766,7 @@ document.getElementById('pay-btn').addEventListener('click', async () => {
   } catch (err) {
     document.getElementById('card-errors').textContent = err.message || 'Something went wrong.';
     payBtn.disabled = false;
-    payBtn.textContent = 'Pay $25.00';
+    payBtn.textContent = `Pay $${currentTotalDisplay}`;
     payProcessing = false;
   }
 });
