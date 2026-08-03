@@ -161,8 +161,8 @@ function parseBoldLeadin(text) {
 function contractHtml(sections) {
   let html = '';
   sections.intro.forEach(para => {
-    const withName = para.split('{LEGAL_NAME}').join('<span class="highlight" id="name-in-contract">_______ENTER_LEGAL_NAME________</span>');
-    html += `<p>${parseBoldLeadin(withName)}</p>`;
+    const rendered = parseBoldLeadin(para).split('{LEGAL_NAME}').join('<span class="highlight" id="name-in-contract">_______ENTER_LEGAL_NAME________</span>');
+    html += `<p>${rendered}</p>`;
   });
   sections.sections.forEach(([heading, paras]) => {
     html += `<h3>${escapeHtml(heading)}</h3>`;
