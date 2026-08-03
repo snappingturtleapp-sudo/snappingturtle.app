@@ -118,6 +118,12 @@ function interceptBillboardBotAttack() {
       <input type="email" id="email" autocomplete="off" />
     </div>
     <div class="field">
+      <label for="promo-code">Promo code <span class="required-star">*required*</span></label>
+      <input type="text" id="promo-code" maxlength="18" autocomplete="off" placeholder="e.g. NACHO2026" style="text-transform:uppercase;" />
+      <p class="sub" style="margin:6px 0 0;font-size:12px;">Up to 18 characters. Pick something your followers will remember — this cannot be changed after your account is created.</p>
+      <p class="sub" id="promo-code-hint" style="margin:4px 0 0;font-size:12px;"></p>
+    </div>
+    <div class="field">
       <label for="mailing-address">Physical mailing address <span class="required-star">*required*</span></label>
       <input type="text" id="mailing-address" autocomplete="off" />
     </div>
@@ -171,6 +177,34 @@ function showSuccess() {
     </div>`;
 }
 
+let promoCodeAvailable = false;
+document.getElementById('promo-code').addEventListener('blur', async () => {
+  const input = document.getElementById('promo-code');
+  const hint = document.getElementById('promo-code-hint');
+  const code = input.value.trim().toUpperCase();
+  input.value = code;
+  promoCodeAvailable = false;
+  hint.textContent = '';
+  hint.style.color = '';
+  if (!code) return;
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/influencer/check-promo-code?code=${encodeURIComponent(code)}`);
+    const data = await res.json();
+    if (data.available) {
+      promoCodeAvailable = true;
+      hint.textContent = '✓ Available';
+      hint.style.color = 'var(--accent)';
+    } else {
+      hint.textContent = data.reason || 'Not available.';
+      hint.style.color = 'var(--danger)';
+    }
+  } catch (err) {
+    hint.textContent = 'Could not check availability — please try again.';
+    hint.style.color = 'var(--danger)';
+  }
+});
+
 document.getElementById('apply-btn').addEventListener('click', async () => {
   const btn = document.getElementById('apply-btn');
   const errorText = document.getElementById('error-text');
@@ -178,14 +212,21 @@ document.getElementById('apply-btn').addEventListener('click', async () => {
 
   const legalName = document.getElementById('legal-name').value.trim();
   const email = document.getElementById('email').value.trim();
+  const promoCode = document.getElementById('promo-code').value.trim().toUpperCase();
   const mailingAddress = document.getElementById('mailing-address').value.trim();
   const instagram = document.getElementById('instagram').value.trim();
   const tiktok = document.getElementById('tiktok').value.trim();
   const youtube = document.getElementById('youtube').value.trim();
   const followerTier = document.getElementById('follower-tier').value;
 
-  if (!legalName || !email || !mailingAddress || !followerTier) {
+  if (!legalName || !email || !promoCode || !mailingAddress || !followerTier) {
     errorText.textContent = 'Please fill in all required fields.';
+    errorText.style.display = 'block';
+    return;
+  }
+
+  if (!promoCodeAvailable) {
+    errorText.textContent = 'Please choose an available promo code before applying (click out of the field to check).';
     errorText.style.display = 'block';
     return;
   }
@@ -204,7 +245,7 @@ document.getElementById('apply-btn').addEventListener('click', async () => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        legal_name: legalName, email, mailing_address: mailingAddress,
+        legal_name: legalName, email, promo_code: promoCode, mailing_address: mailingAddress,
         instagram: instagram || null, tiktok: tiktok || null, youtube: youtube || null,
         follower_tier: followerTier,
       }),
