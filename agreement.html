@@ -319,6 +319,10 @@ async function init() {
   }
 }
 
+def get_agreement_content(year):
+    import agreement_content
+    return agreement_content.get_agreement_sections(year)
+
 init();
 </script>
 
