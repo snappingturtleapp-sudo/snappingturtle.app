@@ -57,6 +57,15 @@
   .btn-ghost { display: block; width: 100%; background: transparent; color: var(--cream); padding: 14px; font-size: 12px; letter-spacing: 2px; font-family: monospace; cursor: pointer; border: 1px solid var(--border); text-align: center; margin-top: 12px; }
   .btn-ghost:hover { border-color: var(--cream); }
 
+  /* Tier picker */
+  .tier-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .tier-card { border: 1.5px solid var(--border); padding: 20px 10px; text-align: center; cursor: pointer; }
+  .tier-card:hover { border-color: var(--brown); }
+  .tier-card.selected { border-color: var(--green); background: rgba(200,230,32,0.06); }
+  .tier-count { font-size: 13px; color: var(--cream); margin-bottom: 8px; }
+  .tier-price { font-size: 22px; font-weight: bold; color: var(--green); }
+  @media (max-width: 480px) { .tier-grid { grid-template-columns: 1fr; } }
+
   /* Photo picker */
   .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; margin-bottom: 20px; }
   .photo-thumb { position: relative; aspect-ratio: 1; overflow: hidden; border: 1.5px dashed var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; }
@@ -127,18 +136,38 @@
   <!-- STEP 1: PHOTOS -->
   <div class="step active" id="step-photos">
     <p class="eyebrow">Step 1 of 5</p>
-    <h1>Choose your photos.</h1>
-    <p class="sub">1 to 5 photos. Each one is checked automatically before you continue.</p>
+    <h1>Choose your package.</h1>
+    <p class="sub">Pick how many photos you'd like to send.</p>
 
-    <button type="button" class="btn-ghost" id="choose-all-btn" style="width:100%; margin-bottom:14px;">Choose all 5 from your device →</button>
-    <input type="file" id="multi-photo-input" accept="image/*" multiple style="display:none;" />
-    <p class="hint" style="margin-top:-6px; margin-bottom:14px;">Or tap an individual slot below to replace just one photo.</p>
+    <div class="tier-grid" id="tier-grid">
+      <div class="tier-card" data-count="5" data-price="2500">
+        <div class="tier-count">5 photos</div>
+        <div class="tier-price">$25</div>
+      </div>
+      <div class="tier-card" data-count="10" data-price="3500">
+        <div class="tier-count">10 photos</div>
+        <div class="tier-price">$35</div>
+      </div>
+      <div class="tier-card" data-count="20" data-price="5000">
+        <div class="tier-count">20 photos</div>
+        <div class="tier-price">$50</div>
+      </div>
+    </div>
 
-    <div class="photo-grid" id="photo-grid"></div>
+    <div id="photos-picker-section" style="display:none;">
+      <h1 id="photos-heading" style="margin-top:32px;">Choose your photos.</h1>
+      <p class="sub" id="photos-sub"></p>
 
-    <div id="photos-error" class="error-banner" style="display:none;"></div>
-    <button class="btn" id="check-photos-btn" disabled style="margin-top:16px;">Check &amp; Preview Photos</button>
-    <button class="btn" id="photos-next-btn" disabled style="margin-top:10px;">Next — Frame Your Photos</button>
+      <button type="button" class="btn-ghost" id="choose-all-btn" style="width:100%; margin-bottom:14px;">Choose all from your device →</button>
+      <input type="file" id="multi-photo-input" accept="image/*" multiple style="display:none;" />
+      <p class="hint" style="margin-top:-6px; margin-bottom:14px;">Or tap an individual slot below to replace just one photo.</p>
+
+      <div class="photo-grid" id="photo-grid"></div>
+
+      <div id="photos-error" class="error-banner" style="display:none;"></div>
+      <button class="btn" id="check-photos-btn" disabled style="margin-top:16px;">Check &amp; Preview Photos</button>
+      <button class="btn" id="photos-next-btn" disabled style="margin-top:10px;">Next — Frame Your Photos</button>
+    </div>
   </div>
 
   <!-- STEP 2: CROP -->
@@ -252,7 +281,7 @@
 
     <div class="price-line">
       <span style="font-size:12px; letter-spacing:2px; color:var(--dim);">TOTAL</span>
-      <span class="price-total">$25.00 + tax</span>
+      <span class="price-total" id="review-price-total">$25.00 + tax</span>
     </div>
 
     <div class="checkbox-row" id="agree-row">
@@ -357,35 +386,60 @@ function showStep(id) {
   window.scrollTo(0, 0);
 }
 
-/* ---------- STEP 1: Photo picking — mirrors Turtle Mail's real, proven flow ----------
-   Photos are staged purely client-side (as base64) — nothing is uploaded
-   yet. ALL staged photos are sent together in ONE call to /process-images,
-   which moderates and uploads in a single atomic step: a rejected photo
-   is never uploaded, never hosted anywhere, never shown. Only approved
-   photos come back with real URLs at all. */
+/* ---------- STEP 1a: Tier selection ---------- */
+state.tierPhotoCount = null;
+state.tierPriceCents = null;
+
 const photoGrid = document.getElementById('photo-grid');
-const slotStaged = [null, null, null, null, null];
+let slotStaged = [];
 
-for (let i = 0; i < 5; i++) {
-  const slot = document.createElement('div');
-  slot.className = 'photo-thumb';
-  slot.innerHTML = `<div class="placeholder">Photo ${i + 1}</div><img style="display:none;"><div class="badge" style="display:none;"></div>`;
-  photoGrid.appendChild(slot);
+document.querySelectorAll('.tier-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.tier-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
 
-  const hiddenInput = document.createElement('input');
-  hiddenInput.type = 'file';
-  hiddenInput.accept = 'image/*';
-  hiddenInput.style.display = 'none';
-  slot.appendChild(hiddenInput);
+    state.tierPhotoCount = parseInt(card.dataset.count, 10);
+    state.tierPriceCents = parseInt(card.dataset.price, 10);
 
-  slot.addEventListener('click', () => { if (!slot.classList.contains('has-image')) hiddenInput.click(); });
-  hiddenInput.addEventListener('change', e => { if (e.target.files[0]) stagePhoto(i, e.target.files[0]); });
+    document.getElementById('photos-sub').textContent =
+      `Choose ${state.tierPhotoCount} photos. Each one is checked automatically before you continue.`;
+    document.getElementById('choose-all-btn').textContent = `Choose all ${state.tierPhotoCount} from your device →`;
+
+    buildPhotoGrid(state.tierPhotoCount);
+    document.getElementById('photos-picker-section').style.display = 'block';
+  });
+});
+
+function buildPhotoGrid(count) {
+  photoGrid.innerHTML = '';
+  slotStaged = new Array(count).fill(null);
+
+  for (let i = 0; i < count; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'photo-thumb';
+    slot.innerHTML = `<div class="placeholder">Photo ${i + 1}</div><img style="display:none;"><div class="badge" style="display:none;"></div>`;
+    photoGrid.appendChild(slot);
+
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'file';
+    hiddenInput.accept = 'image/*';
+    hiddenInput.style.display = 'none';
+    slot.appendChild(hiddenInput);
+
+    slot.addEventListener('click', () => { if (!slot.classList.contains('has-image')) hiddenInput.click(); });
+    hiddenInput.addEventListener('change', e => { if (e.target.files[0]) stagePhoto(i, e.target.files[0]); });
+  }
+
+  document.getElementById('check-photos-btn').disabled = true;
+  document.getElementById('photos-next-btn').disabled = true;
+  document.getElementById('check-photos-btn').textContent = 'Check & Preview Photos';
+  clearPhotosError();
 }
 
 const multiInput = document.getElementById('multi-photo-input');
 document.getElementById('choose-all-btn').addEventListener('click', () => multiInput.click());
 multiInput.addEventListener('change', e => {
-  const files = Array.from(e.target.files).slice(0, 5);
+  const files = Array.from(e.target.files).slice(0, state.tierPhotoCount);
   files.forEach((file, i) => stagePhoto(i, file));
   multiInput.value = '';
 });
@@ -433,7 +487,7 @@ document.getElementById('check-photos-btn').addEventListener('click', async () =
   clearPhotosError();
 
   const stagedIndices = [];
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < state.tierPhotoCount; i++) {
     if (slotStaged[i]) {
       stagedIndices.push(i);
       const slotEl = photoGrid.children[i];
@@ -701,6 +755,9 @@ function renderReview() {
   document.getElementById('review-thumbs').innerHTML = state.imageResults
     .map(r => `<img src="${r.url}">`).join('');
 
+  document.getElementById('review-price-total').textContent =
+    `$${(state.tierPriceCents / 100).toFixed(2)} + tax`;
+
   const name = document.getElementById('r-name').value.trim();
   const street = document.getElementById('r-street').value.trim();
   const city = document.getElementById('r-city').value.trim();
@@ -737,7 +794,7 @@ document.getElementById('review-next-btn').addEventListener('click', async () =>
     const intentRes = await fetch(`${BACKEND_URL}/create-payment-intent`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ recipient }),
+      body: JSON.stringify({ recipient, photoCount: state.imageResults.length }),
     });
     const intentData = await intentRes.json();
     if (!intentData.clientSecret) throw new Error('Could not initialize payment.');
