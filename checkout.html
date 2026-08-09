@@ -187,6 +187,13 @@
     <h1 style="margin-top:40px;">Who's it going to?</h1>
     <p class="sub">Domestic (U.S.) delivery only.</p>
 
+    <div class="field" id="saved-address-field" style="display:none;">
+      <label for="saved-address-select">Choose a saved address</label>
+      <select id="saved-address-select">
+        <option value="">— Type a new address below —</option>
+      </select>
+    </div>
+
     <div class="field">
       <label for="r-name">Full name</label>
       <input type="text" id="r-name" autocomplete="off" />
@@ -615,6 +622,45 @@ document.getElementById('crop-next-btn').addEventListener('click', async () => {
 });
 
 /* ---------- STEP 3: Message + Recipient ---------- */
+
+// Saved addresses arrive one-directionally from the app via URL param —
+// this page never reads or writes AsyncStorage directly, it just displays
+// what the app already passed in. Absent entirely when opened from a
+// normal browser, so the picker stays hidden and nothing else changes.
+(function initSavedAddressPicker() {
+  const params = new URLSearchParams(window.location.search);
+  const raw = params.get('savedAddresses');
+  if (!raw) return;
+
+  let addresses = [];
+  try {
+    addresses = JSON.parse(decodeURIComponent(raw));
+  } catch (e) {
+    return; // malformed param — fail silently, just show the normal blank form
+  }
+  if (!Array.isArray(addresses) || addresses.length === 0) return;
+
+  const field = document.getElementById('saved-address-field');
+  const select = document.getElementById('saved-address-select');
+  addresses.forEach((addr, i) => {
+    const opt = document.createElement('option');
+    opt.value = String(i);
+    opt.textContent = `${addr.name} — ${addr.street}, ${addr.city}, ${addr.state}`;
+    select.appendChild(opt);
+  });
+  field.style.display = 'block';
+
+  select.addEventListener('change', () => {
+    if (select.value === '') return;
+    const addr = addresses[parseInt(select.value, 10)];
+    document.getElementById('r-name').value = addr.name || '';
+    document.getElementById('r-street').value = addr.street || '';
+    document.getElementById('r-city').value = addr.city || '';
+    document.getElementById('r-state').value = (addr.state || '').toUpperCase();
+    document.getElementById('r-zip').value = addr.zip || '';
+  });
+})();
+
 document.getElementById('promo-code-input').addEventListener('blur', async () => {
   const code = document.getElementById('promo-code-input').value.trim().toUpperCase();
   const hintEl = document.getElementById('promo-code-hint');
@@ -805,7 +851,12 @@ async function completeOrder(paymentIntentId, recipient) {
       // back automatically with the real order ID attached. Harmless if
       // opened directly in a normal browser — the redirect simply won't
       // go anywhere, and the manual link below still works either way.
-      const appReturnUrl = `snappingturtle://checkout-return?orderId=${encodeURIComponent(orderData.orderId || '')}`;
+      const appReturnUrl = `snappingturtle://checkout-return?orderId=${encodeURIComponent(orderData.orderId || '')}`
+        + `&rName=${encodeURIComponent(recipient.name || '')}`
+        + `&rStreet=${encodeURIComponent(recipient.street || '')}`
+        + `&rCity=${encodeURIComponent(recipient.city || '')}`
+        + `&rState=${encodeURIComponent(recipient.state || '')}`
+        + `&rZip=${encodeURIComponent(recipient.zip || '')}`;
       setTimeout(() => { window.location.href = appReturnUrl; }, 2500);
 
       const confirmStep = document.getElementById('step-confirm');
