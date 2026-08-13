@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Feedback — SnappingTurtle App</title>
+<style>
+  :root {
+    --black: #0A0A08;
+    --green: #C8E620;
+    --cream: #F5E9C8;
+    --brown: #9A8A72;
+    --dim: #6B5830;
+    --border: #3A3020;
+    --red: #CC2200;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--black); color: var(--cream); font-family: monospace; min-height: 100vh; }
+  .wrap { max-width: 520px; margin: 0 auto; padding: 60px 24px 100px; }
+  .eyebrow { color: var(--green); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 14px; }
+  h1 { font-size: clamp(24px, 4vw, 32px); font-weight: bold; margin-bottom: 10px; letter-spacing: 0.5px; }
+  .sub { color: var(--brown); font-size: 13px; line-height: 22px; margin-bottom: 32px; font-style: italic; }
+
+  .field { margin-bottom: 18px; }
+  .field label { display: block; font-size: 10px; color: var(--green); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+  .field input, .field textarea {
+    width: 100%; background: #1A1A18; border: 1px solid var(--border);
+    color: var(--cream); padding: 13px 14px; font-size: 14px; font-family: monospace;
+  }
+  .field input:focus, .field textarea:focus { outline: none; border-color: var(--green); }
+  .field textarea { resize: vertical; min-height: 160px; }
+  .field .hint { font-size: 11px; color: var(--dim); margin-top: 6px; letter-spacing: 0.5px; }
+
+  .btn { display: block; width: 100%; background: var(--red); color: var(--cream); padding: 16px; font-size: 13px; letter-spacing: 3px; font-weight: bold; font-family: monospace; cursor: pointer; border: none; text-align: center; text-transform: uppercase; transition: opacity 0.2s; }
+  .btn:hover { opacity: 0.85; }
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  .error-banner { border-left: 2px solid var(--red); padding-left: 14px; font-size: 13px; color: var(--cream); margin-bottom: 20px; display: none; }
+
+  .state-message { text-align: center; padding: 80px 0; }
+  .confirm-icon { font-size: 48px; margin-bottom: 20px; }
+</style>
+</head>
+<body>
+
+<div style="display: none; tab-index: -1;" aria-hidden="true">
+  <label for="website_secondary">Secondary Security Check Item Fields</label>
+  <input type="text" id="website_secondary" name="website_secondary" autocomplete="off" oninput="interceptBillboardBotAttack()">
+</div>
+<script>
+let landingClickTimestamps = [];
+document.addEventListener("DOMContentLoaded", () => {
+    window.addEventListener("click", () => {
+        const now = Date.now();
+        landingClickTimestamps.push(now);
+        landingClickTimestamps = landingClickTimestamps.filter(t => now - t < 5000);
+        if (landingClickTimestamps.length > 20) {
+            alert("Rapid interaction threshold exceeded. Protective security cooldown active.");
+            window.location.href = "https://snappingturtle.app";
+        }
+    });
+});
+function interceptBillboardBotAttack() {
+    const triggerVal = document.getElementById("website_secondary").value;
+    if (triggerVal) {
+        console.warn("⚠️ Bot screening triggered on static landing node. Evacuating browser context.");
+        window.location.href = "https://snappingturtle.app";
+    }
+}
+</script>
+
+<div class="wrap" id="app">
+  <p class="eyebrow">Feedback</p>
+  <h1>Tell us what you think.</h1>
+  <p class="sub">Good, bad, or somewhere in between — we read every message ourselves. No account needed.</p>
+
+  <div class="error-banner" id="error-banner"></div>
+
+  <div class="field">
+    <label for="message-input">Your feedback</label>
+    <textarea id="message-input" placeholder="What's working well? What could be better?"></textarea>
+  </div>
+  <div class="field">
+    <label for="email-input">Email (optional)</label>
+    <input type="email" id="email-input" placeholder="you@email.com" autocomplete="off" />
+    <p class="hint">Only if you'd like a reply. We won't use it for anything else.</p>
+  </div>
+
+  <button class="btn" id="submit-btn">Send Feedback</button>
+</div>
+
+<script>
+const BACKEND_URL = 'https://snappingturtle-backend-production.up.railway.app';
+const params = new URLSearchParams(window.location.search);
+const orderId = params.get('orderId');
+const source = params.get('source') || 'web';
+
+const app = document.getElementById('app');
+
+if (orderId) {
+  const sub = document.querySelector('.sub');
+  sub.textContent = `About your recent order (${orderId}) — or anything else on your mind. We read every message ourselves.`;
+}
+
+function showSuccess() {
+  app.innerHTML = `
+    <div class="state-message">
+      <div class="confirm-icon">📬</div>
+      <h1>Thank you.</h1>
+      <p class="sub" style="margin-top:12px;">Your feedback was sent — we genuinely read every one.</p>
+    </div>`;
+}
+
+document.getElementById('submit-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('submit-btn');
+  const errorBanner = document.getElementById('error-banner');
+  errorBanner.style.display = 'none';
+
+  const message = document.getElementById('message-input').value.trim();
+  const email = document.getElementById('email-input').value.trim();
+
+  if (!message) {
+    errorBanner.textContent = 'Please enter your feedback before submitting.';
+    errorBanner.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/submit-feedback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message,
+        email: email || null,
+        orderId: orderId || null,
+        source,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || 'Something went wrong — please try again.');
+    }
+    showSuccess();
+  } catch (err) {
+    errorBanner.textContent = err.message || 'Something went wrong — please try again.';
+    errorBanner.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Send Feedback';
+  }
+});
+</script>
+
+</body>
+</html>

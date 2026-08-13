@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Send Turtle Mail — SnappingTurtle</title>
-<meta name="description" content="Send real printed photos. $25. Up to 5 photos. Domestic delivery." />
+<meta name="description" content="Send real printed photos. $25 + tax. Up to 5 photos. Domestic delivery." />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
 <script src="https://js.stripe.com/v3/"></script>
@@ -330,7 +330,8 @@
       see this reflected if you ever need to file a damage claim.
     </div>
     <p class="confirm-ref" id="confirm-order-id"></p>
-    <button class="btn" onclick="location.reload()" style="margin-top:24px;">Send Another</button>
+    <a class="btn-ghost" id="confirm-feedback-link" href="/feedback.html" style="display:block; margin-top:16px; text-align:center;">How did we do? Leave feedback →</a>
+    <button class="btn" onclick="location.reload()" style="margin-top:12px;">Send Another</button>
   </div>
 
 </div>
@@ -948,6 +949,8 @@ async function completeOrder(paymentIntentId, recipient) {
 
     if (orderData.success) {
       document.getElementById('confirm-order-id').textContent = `Order: ${orderData.orderId || ''}`;
+      document.getElementById('confirm-feedback-link').href =
+        `/feedback.html?orderId=${encodeURIComponent(orderData.orderId || '')}&source=web`;
       showStep('step-confirm');
 
       // If this page was opened from the SnappingTurtle app, hand control
