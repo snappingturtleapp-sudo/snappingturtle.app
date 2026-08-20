@@ -201,12 +201,12 @@
   <!-- STEP 3: MESSAGE + RECIPIENT -->
   <div class="step" id="step-details">
     <p class="eyebrow">Step 3 of 5</p>
-    <h1>Your message.</h1>
-    <p class="sub">This prints on the card included with your photos.</p>
+    <h1>Write a Message</h1>
 
     <div class="field">
       <label for="message-input">Message</label>
       <textarea id="message-input" maxlength="600" placeholder="Write something personal..."></textarea>
+      <p class="hint">Privacy warning: your message will be sent unencrypted to a URL which will be printed on the enclosed packing slip.</p>
     </div>
     <div class="field">
       <label for="fromname-input">From (optional)</label>
@@ -217,9 +217,9 @@
     <p class="sub">Domestic (U.S.) delivery only.</p>
 
     <div class="field" id="saved-address-field" style="display:none;">
-      <label for="saved-address-select">Choose a saved address</label>
+      <label for="saved-address-select">Address Book</label>
       <select id="saved-address-select">
-        <option value="">— Type a new address below —</option>
+        <option value="">— Choose a Saved Address —</option>
       </select>
     </div>
 
@@ -287,13 +287,7 @@
     <div class="checkbox-row" id="agree-row">
       <div class="checkbox" id="agree-checkbox"></div>
       <p class="checkbox-label">
-        I agree to the <a href="/terms-of-sale.html" target="_blank" onclick="event.stopPropagation()" style="color:var(--green); text-decoration:underline;">Terms of Sale</a>.
-        Because each item is custom printed on demand, all sales are final — we do not offer cash or credit refunds
-        under any circumstances. Our fulfillment partner does not provide real-time delivery confirmation, so your
-        estimated delivery date is calculated from your order's ship date, not verified after the fact. Shipping
-        damage or a package that never arrives can be reported within 48 hours of that estimated delivery date. I
-        confirm the recipient name and address are correct — SnappingTurtle cannot redirect or recover mail sent to
-        an incorrect address, and there are no refunds for undeliverable mail.
+        I agree to the <a href="/terms.html" target="_blank" onclick="event.stopPropagation()" style="color:var(--green); text-decoration:underline;">Terms of Sale</a>. I understand that each photo is custom printed, therefore all sales are final. I understand there are no cash or credit refunds offered under any circumstances. I understand SnappingTurtle App's fulfillment partner will provide a tracking number from a third party shipping company after the photos are shipped. I understand that I will be responsible to monitor the shipment and verify the time and date of delivery. I understand and agree that shipping damage, if any, shall be reported within 48 hours of the ACTUAL delivery time and date, as confirmed by the third party shipping company. I understand that if a package is not delivered to the address provided, a lost package shall be reported not earlier than 10 days after the package was received by the third party shipping company as evidenced in the tracking details. I understand that I am responsible for the accuracy of the recipient's ACTUAL name and address. I understand SnappingTurtle App cannot redirect or recover photos mailed to an incorrect address or an undeliverable/outdated address. I confirm the recipient name and address I entered are correct, current and complete.
       </p>
     </div>
 
@@ -304,7 +298,7 @@
   <div class="step" id="step-payment">
     <p class="eyebrow">Step 5 of 5</p>
     <h1>Payment.</h1>
-    <p class="sub" id="payment-total-sub">$25.00 + applicable sales tax.</p>
+    <p class="sub" id="payment-total-sub">Calculating total…</p>
 
     <div id="card-element"></div>
     <div id="card-errors"></div>
@@ -315,7 +309,8 @@
   <!-- SENDING -->
   <div class="step" id="step-sending">
     <div class="loader">
-      <p class="loader-text" id="sending-text">Sending your Turtle Mail…</p>
+      <img src="icon.png" alt="" style="width:80px; height:80px; display:block; margin:0 auto 20px;" />
+      <p class="loader-text" id="sending-text">Sending your photos to our print-on-demand partner.</p>
     </div>
   </div>
 
@@ -759,6 +754,11 @@ document.getElementById('crop-next-btn').addEventListener('click', async () => {
     document.getElementById('r-city').value = addr.city || '';
     document.getElementById('r-state').value = (addr.state || '').toUpperCase();
     document.getElementById('r-zip').value = addr.zip || '';
+    recipientFromSavedAddress = true;
+  });
+
+  ['r-name', 'r-street', 'r-city', 'r-state', 'r-zip'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => { recipientFromSavedAddress = false; });
   });
 })();
 
@@ -847,7 +847,7 @@ document.getElementById('review-next-btn').addEventListener('click', async () =>
     if (!intentData.clientSecret) throw new Error('Could not initialize payment.');
 
     currentTotalDisplay = (intentData.totalCents / 100).toFixed(2);
-    document.getElementById('payment-total-sub').textContent = `$${currentTotalDisplay} — $25.00 plus applicable sales tax.`;
+    document.getElementById('payment-total-sub').textContent = `$${currentTotalDisplay} total, including applicable sales tax.`;
     document.getElementById('pay-btn').textContent = `Pay $${currentTotalDisplay}`;
 
     elements = stripe.elements({
@@ -879,6 +879,7 @@ document.getElementById('review-next-btn').addEventListener('click', async () =>
 /* ---------- STEP 5: Payment + submission ---------- */
 let payProcessing = false;
 let currentTotalDisplay = '25.00';
+let recipientFromSavedAddress = false;
 document.getElementById('pay-btn').addEventListener('click', async () => {
   if (payProcessing) return;
   payProcessing = true;
@@ -962,18 +963,9 @@ async function completeOrder(paymentIntentId, recipient) {
         + `&rStreet=${encodeURIComponent(recipient.street || '')}`
         + `&rCity=${encodeURIComponent(recipient.city || '')}`
         + `&rState=${encodeURIComponent(recipient.state || '')}`
-        + `&rZip=${encodeURIComponent(recipient.zip || '')}`;
+        + `&rZip=${encodeURIComponent(recipient.zip || '')}`
+        + `&fromSaved=${recipientFromSavedAddress ? '1' : '0'}`;
       setTimeout(() => { window.location.href = appReturnUrl; }, 2500);
-
-      const confirmStep = document.getElementById('step-confirm');
-      const returnLink = document.createElement('a');
-      returnLink.href = appReturnUrl;
-      returnLink.textContent = 'Return to App';
-      returnLink.className = 'btn-ghost';
-      returnLink.style.display = 'block';
-      returnLink.style.marginTop = '12px';
-      returnLink.style.textAlign = 'center';
-      confirmStep.appendChild(returnLink);
     } else {
       throw new Error(orderData.error || 'Could not submit order.');
     }
