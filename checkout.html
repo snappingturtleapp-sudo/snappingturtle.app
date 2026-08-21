@@ -160,7 +160,7 @@
 
       <button type="button" class="btn-ghost" id="choose-all-btn" style="width:100%; margin-bottom:14px;">Choose all from your device →</button>
       <input type="file" id="multi-photo-input" accept="image/*" multiple style="display:none;" />
-      <p class="hint" style="margin-top:-6px; margin-bottom:14px;">Or tap an individual slot below to replace just one photo.</p>
+      <p class="hint" style="margin-top:-6px; margin-bottom:14px;">Or tap an individual slot below to select one photo at a time.</p>
 
       <div class="photo-grid" id="photo-grid"></div>
 
@@ -713,6 +713,15 @@ document.getElementById('crop-next-btn').addEventListener('click', async () => {
 });
 
 /* ---------- STEP 3: Message + Recipient ---------- */
+
+function titleCase(str) {
+  return str.replace(/\b\w/g, ch => ch.toUpperCase());
+}
+['r-name', 'r-street', 'r-city'].forEach(id => {
+  document.getElementById(id).addEventListener('blur', (e) => {
+    e.target.value = titleCase(e.target.value);
+  });
+});
 
 // Saved addresses arrive one-directionally from the app via URL param —
 // this page never reads or writes AsyncStorage directly, it just displays
