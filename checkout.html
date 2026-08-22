@@ -320,7 +320,8 @@
       see this reflected if you ever need to file a damage claim.
     </div>
     <p class="confirm-ref" id="confirm-order-id"></p>
-    <a class="btn-ghost" id="confirm-feedback-link" href="/feedback.html" style="display:block; margin-top:16px; text-align:center;">How did we do? Leave feedback →</a>
+    <a class="btn-ghost" id="confirm-track-link" href="/track.html" style="display:block; margin-top:12px; text-align:center;">Track this order →</a>
+      <a class="btn-ghost" id="confirm-feedback-link" href="/feedback.html" style="display:block; margin-top:12px; text-align:center;">How did we do? Leave feedback →</a>
     <button class="btn" onclick="location.reload()" style="margin-top:12px;">Send Another</button>
   </div>
 
@@ -365,6 +366,7 @@ let paymentElement = null;
 
 let state = {
   imageResults: null,   // [{url, public_id}, ...] — only ever populated once ALL staged photos pass moderation together
+  orderSource: 'web',
   cropData: [null, null, null, null, null], // Cropper.js getData() output per photo — numbers only, never a canvas export
   currentCropIndex: 0,
   paymentIntentId: null,
@@ -730,6 +732,7 @@ function titleCase(str) {
 (function initSavedAddressPicker() {
   const params = new URLSearchParams(window.location.search);
   const raw = params.get('savedAddresses');
+  state.orderSource = raw ? 'app' : 'web';
   if (!raw) return;
 
   let addresses = [];
@@ -946,12 +949,15 @@ async function completeOrder(paymentIntentId, recipient) {
         fromName: fromName || null,
         paymentIntentId,
         promoCode: promoCode || null,
+        source: state.orderSource || 'web',
       }),
     });
     const orderData = await orderRes.json();
 
     if (orderData.success) {
       document.getElementById('confirm-order-id').textContent = `Order: ${orderData.orderId || ''}`;
+      document.getElementById('confirm-track-link').href =
+        `/track.html?orderId=${encodeURIComponent(orderData.orderId || '')}`;
       document.getElementById('confirm-feedback-link').href =
         `/feedback.html?orderId=${encodeURIComponent(orderData.orderId || '')}&source=web`;
       showStep('step-confirm');
