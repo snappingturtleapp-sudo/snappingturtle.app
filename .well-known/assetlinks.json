@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.snappingturtle.app",
+      "sha256_cert_fingerprints": [
+        "8C:60:1B:3C:64:BD:D2:29:36:1B:0B:83:A8:C7:64:21:D0:1D:12:C0:75:DF:8F:95:39:8C:8D:7E:64:0F:05:BA"
+      ]
+    }
+  }
+]
