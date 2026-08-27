@@ -365,8 +365,9 @@ let elements = null;
 let paymentElement = null;
 
 let state = {
-  imageResults: null,   // [{url, public_id}, ...] — only ever populated once ALL staged photos pass moderation together
+  imageResults: [],
   orderSource: 'web',
+  platform: null,
   cropData: [null, null, null, null, null], // Cropper.js getData() output per photo — numbers only, never a canvas export
   currentCropIndex: 0,
   paymentIntentId: null,
@@ -733,6 +734,7 @@ function titleCase(str) {
   const params = new URLSearchParams(window.location.search);
   const raw = params.get('savedAddresses');
   state.orderSource = raw ? 'app' : 'web';
+  state.platform = params.get('platform') || null;
   if (!raw) return;
 
   let addresses = [];
@@ -966,7 +968,10 @@ async function completeOrder(paymentIntentId, recipient) {
       // back automatically with the real order ID attached. Harmless if
       // opened directly in a normal browser — the redirect simply won't
       // go anywhere, and the manual link below still works either way.
-      const appReturnUrl = `snappingturtle://checkout-return?orderId=${encodeURIComponent(orderData.orderId || '')}`
+      const returnBase = state.platform === 'android'
+        ? 'https://snappingturtle.app/checkout-return'
+        : 'snappingturtle://checkout-return';
+      const appReturnUrl = `${returnBase}?orderId=${encodeURIComponent(orderData.orderId || '')}`
         + `&rName=${encodeURIComponent(recipient.name || '')}`
         + `&rStreet=${encodeURIComponent(recipient.street || '')}`
         + `&rCity=${encodeURIComponent(recipient.city || '')}`
