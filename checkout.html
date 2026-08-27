@@ -357,12 +357,20 @@ function interceptBillboardBotAttack() {
 }
 
 const BACKEND_URL = "https://snappingturtle-backend-production.up.railway.app";
-// Publishable key — safe to expose client-side by Stripe's own design (this is NOT a secret key).
-const STRIPE_PUBLISHABLE_KEY = "pk_test_51TjOp4GfVvzrUyxJXFAM6E8d1HPpj2CvmW0SlQXnpI3a96HQ5j2FAcWjj3z4wksBSJI5ZoOSteBkZbx2XyD309uv00lKkmUsL8";
-
-const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+// Publishable key is fetched live from the backend rather than hardcoded,
+// so it always automatically matches whichever Stripe environment
+// (test/live) the backend is currently set to — one switch, both sides
+// in sync, never manually kept in sync by hand.
+let stripe = null;
 let elements = null;
 let paymentElement = null;
+
+async function initStripe() {
+  const res = await fetch(`${BACKEND_URL}/stripe-config`);
+  const config = await res.json();
+  stripe = Stripe(config.publishableKey);
+}
+initStripe();
 
 let state = {
   imageResults: [],
@@ -858,6 +866,16 @@ document.getElementById('review-next-btn').addEventListener('click', async () =>
     currentTotalDisplay = (intentData.totalCents / 100).toFixed(2);
     document.getElementById('payment-total-sub').textContent = `$${currentTotalDisplay} total, including applicable sales tax.`;
     document.getElementById('pay-btn').textContent = `Pay $${currentTotalDisplay}`;
+
+    // Stripe.js initializes asynchronously now (the publishable key is
+    // fetched from the backend, not hardcoded) — wait for it if, for any
+    // reason, it hasn't finished yet by the time someone reaches this step.
+    let waitAttempts = 0;
+    while (!stripe && waitAttempts < 50) {
+      await new Promise(r => setTimeout(r, 100));
+      waitAttempts++;
+    }
+    if (!stripe) throw new Error('Could not load payment system. Please refresh and try again.');
 
     elements = stripe.elements({
       clientSecret: intentData.clientSecret,
