@@ -122,6 +122,23 @@
 
   .confirm-icon { font-size: 56px; text-align: center; margin-bottom: 20px; }
   .confirm-ref { color: var(--green); font-size: 22px; font-weight: bold; text-align: center; letter-spacing: 1px; margin-top: 24px; }
+
+  /* ── Tablet: only the crop step gets real extra room ──────────────────
+     Every other step (photo picker, message/recipient form, review,
+     payment) deliberately KEEPS its normal 560px reading width even on a
+     tablet — a form or paragraph stretched to 760px doesn't get more
+     useful, just harder to scan in one eye-sweep. The crop step is the
+     one genuine exception: precise photo framing is the actual reason
+     tablet support was prioritized, so it's the one place extra screen
+     real estate is a real improvement, not just empty space. Cropper.js
+     reads its container's rendered size at init time, so growing
+     .cropper-frame here is sufficient — no JS changes needed. */
+  @media (min-width: 768px) {
+    .wrap { max-width: 760px; }
+    .step:not(#step-crop) { max-width: 560px; margin: 0 auto; }
+    .cropper-frame { height: 560px; }
+    .crop-preview-box { width: 140px; height: 93px; }
+  }
 </style>
 </head>
 <body>
