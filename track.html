@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Track Your Order — SnappingTurtle App</title>
+<title>Track Your Order | SnappingTurtle — Photo Gifts by Mail</title>
 <style>
   :root {
     --black: #0A0A08;
@@ -16,7 +16,16 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--black); color: var(--cream); font-family: monospace; min-height: 100vh; }
-  .wrap { max-width: 520px; margin: 0 auto; padding: 60px 24px 100px; }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 40px; border-bottom: 1px solid var(--border);
+    background: rgba(10,10,8,0.97); backdrop-filter: blur(8px);
+  }
+  .nav-logo { color: var(--green); font-size: 12px; letter-spacing: 4px; text-decoration: none; }
+
+  .wrap { max-width: 520px; margin: 0 auto; padding: 110px 24px 100px; }
   .eyebrow { color: var(--green); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 14px; }
   h1 { font-size: clamp(24px, 4vw, 32px); font-weight: bold; margin-bottom: 10px; letter-spacing: 0.5px; }
   .sub { color: var(--brown); font-size: 13px; line-height: 22px; margin-bottom: 32px; font-style: italic; }
@@ -49,6 +58,11 @@
 </style>
 </head>
 <body>
+
+<nav>
+  <a href="/" class="nav-logo">✦ SNAPPINGTURTLE ✦</a>
+  <a href="/" style="font-size:10px; letter-spacing:2px; color:var(--cream); text-transform:uppercase;">Home</a>
+</nav>
 
 <div style="display: none; tab-index: -1;" aria-hidden="true">
   <label for="website_secondary">Secondary Security Check Item Fields</label>
